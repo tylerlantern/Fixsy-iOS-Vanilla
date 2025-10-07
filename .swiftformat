@@ -1,0 +1,48 @@
+--swiftversion 5.3
+
+# braces
+--allman false
+
+# fileHeader
+--header strip
+
+--disable trailingclosures
+--modifierorder
+
+--enable isEmpty
+
+# indent
+--indent 2
+
+# numberFormatting
+--decimalgrouping 3
+--hexgrouping "ignore"
+
+# redundantSelf
+# Reference `self` explicitly
+--self insert
+
+# ranges
+--nospaceoperators
+
+# trailingCommas
+--commas inline
+
+# unusedArguments
+--stripunusedargs closure-only
+
+# wrapArguments
+--wraparguments before-first
+--wrapcollections before-first
+
+# wrap lines
+--maxwidth 100
+
+# Disabled rules
+--disable redundantInit
+--voidtype tuple
+
+--disable extensionAccessControl
+
+# Excluded files
+--exclude bin,Carthage,Carthage/Checkouts,Template,Playgrounds,vendor
