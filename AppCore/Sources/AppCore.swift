@@ -6,7 +6,7 @@ import SwiftUI
 struct AppCore: App {
   var body: some Scene {
     WindowGroup {
-      Router.liveValue.route(.tabContainer)
+		Router.liveValue.route(.home(.root))
         .environment(\.router, Router.liveValue)
     }
   }
