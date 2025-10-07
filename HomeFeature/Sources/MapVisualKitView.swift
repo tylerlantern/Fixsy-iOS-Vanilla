@@ -1,14 +1,5 @@
-//import APIClient
-//import Combine
-//import ComposableArchitecture
-//import DatabaseClient
-//import LocationManagerClient
-//import MapKit
-//import Model
-//import Prelude
-//import SwiftUI
-//import UIKit
-//import UserDefaultClient
+import UIKit
+import SwiftUI
 
 //@Reducer
 //public struct MapVisual {
@@ -216,19 +207,19 @@
 //  }
 //}
 //
-//public struct MapVisualKitView: UIViewControllerRepresentable {
-//  let store: StoreOf<MapVisual>
-//
-//  public init(store: StoreOf<MapVisual>) {
-//    self.store = store
-//  }
-//
-//  public func makeUIViewController(context: Context) -> UIViewController {
-//    MapVisualViewController(store: self.store)
-//  }
-//
-//  public func updateUIViewController(
-//    _ uiViewController: UIViewController,
-//    context: Context
-//  ) {}
-//}
+public struct MapVisualKitView: UIViewControllerRepresentable {
+	let store: MapVisualViewController.Store
+
+  public init(store: MapVisualViewController.Store) {
+    self.store = store
+  }
+
+  public func makeUIViewController(context: Context) -> UIViewController {
+    MapVisualViewController(store: self.store)
+  }
+
+  public func updateUIViewController(
+    _ uiViewController: UIViewController,
+    context: Context
+  ) {}
+}

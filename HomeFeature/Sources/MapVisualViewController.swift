@@ -3,17 +3,51 @@ import UIKit
 import Models
 import Combine
 
-class MapVisualViewController: UINavigationController {
+public class MapVisualViewController: UINavigationController {
 
 	public struct Store {
+		public let placeContinuation : AsyncStream<[Place]>.Continuation
 		public let placeStream : AsyncStream<[Place]>
+		
+		public let userCoordinateRegionContinuation :  AsyncStream<MKCoordinateRegion>.Continuation
 		public let userCoordinateRegionStream :  AsyncStream<MKCoordinateRegion>
+		
+		public let requestSelectedIdContinuation : AsyncStream<Int?>.Continuation
 		public let requestSelectedIdStream : AsyncStream<Int?>
+		
+		public let requestDeselectedIdContinuation : AsyncStream<Int?>.Continuation
 		public let requestDeselectedIdStream : AsyncStream<Int?>
+		
 		public let viewDidloadContinuation : AsyncStream<Void>.Continuation
+		public let viewDidloadStream : AsyncStream<Void>
+		
 		public let zoomContinuation : AsyncStream<CLLocationCoordinate2D>.Continuation
+		public let zoomStream : AsyncStream<CLLocationCoordinate2D>
+		
 		public let didChangeCoordiateRegionContinuation : AsyncStream<MKCoordinateRegion>.Continuation
+		public let didChangeCoordiateRegionStream: AsyncStream<MKCoordinateRegion>
+		
 		public let didDeselectContinuation : AsyncStream<Void>.Continuation
+		public let didDeselectStream : AsyncStream<Void>
+		
+		public init(placeContinuation: AsyncStream<[Place]>.Continuation, placeStream: AsyncStream<[Place]>, userCoordinateRegionContinuation: AsyncStream<MKCoordinateRegion>.Continuation, userCoordinateRegionStream: AsyncStream<MKCoordinateRegion>, requestSelectedIdContinuation: AsyncStream<Int?>.Continuation, requestSelectedIdStream: AsyncStream<Int?>, requestDeselectedIdContinuation: AsyncStream<Int?>.Continuation, requestDeselectedIdStream: AsyncStream<Int?>, viewDidloadContinuation: AsyncStream<Void>.Continuation, viewDidloadStream: AsyncStream<Void>, zoomContinuation: AsyncStream<CLLocationCoordinate2D>.Continuation, zoomStream: AsyncStream<CLLocationCoordinate2D>, didChangeCoordiateRegionContinuation: AsyncStream<MKCoordinateRegion>.Continuation, didChangeCoordiateRegionStream: AsyncStream<MKCoordinateRegion>, didDeselectContinuation: AsyncStream<Void>.Continuation, didDeselectStream: AsyncStream<Void>) {
+			self.placeContinuation = placeContinuation
+			self.placeStream = placeStream
+			self.userCoordinateRegionContinuation = userCoordinateRegionContinuation
+			self.userCoordinateRegionStream = userCoordinateRegionStream
+			self.requestSelectedIdContinuation = requestSelectedIdContinuation
+			self.requestSelectedIdStream = requestSelectedIdStream
+			self.requestDeselectedIdContinuation = requestDeselectedIdContinuation
+			self.requestDeselectedIdStream = requestDeselectedIdStream
+			self.viewDidloadContinuation = viewDidloadContinuation
+			self.viewDidloadStream = viewDidloadStream
+			self.zoomContinuation = zoomContinuation
+			self.zoomStream = zoomStream
+			self.didChangeCoordiateRegionContinuation = didChangeCoordiateRegionContinuation
+			self.didChangeCoordiateRegionStream = didChangeCoordiateRegionStream
+			self.didDeselectContinuation = didDeselectContinuation
+			self.didDeselectStream = didDeselectStream
+		}
 	}
 	
 	public let store : Store
@@ -161,7 +195,7 @@ class MapVisualViewController: UINavigationController {
 				guard let self = self else {
 					return
 				}
-				for await id in self.store.requestDeselectedIdStream {
+				for await _ in self.store.requestDeselectedIdStream {
 					await MainActor.run { [weak self] in
 						guard let self else {
 							return
@@ -225,7 +259,7 @@ class MapVisualViewController: UINavigationController {
 }
 
 extension MapVisualViewController: MKMapViewDelegate {
-  func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+	public func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
     if annotation.isKind(of: MKUserLocation.self) {
       return nil
     }
@@ -331,7 +365,7 @@ extension MapVisualViewController: MKMapViewDelegate {
     return nil
   }
 
-  func mapView(
+	public func mapView(
     _ mapView: MKMapView,
     clusterAnnotationForMemberAnnotations memberAnnotations: [MKAnnotation]
   ) -> MKClusterAnnotation {
@@ -349,7 +383,7 @@ extension MapVisualViewController: MKMapViewDelegate {
     return ClusterAnnotation(memberAnnotations: memberAnnotations)
   }
 
-  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+	public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
     switch view {
     case let view as CarGarageAnnotationView:
       if let annotation = view.annotation as? CarGarageAnnotation {
@@ -402,11 +436,11 @@ extension MapVisualViewController: MKMapViewDelegate {
     }
   }
 
-  func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+  public func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
 		self.store.didChangeCoordiateRegionContinuation.yield(mapView.region)
   }
 
-  func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+	public func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
 		self.store.didDeselectContinuation.yield(())
   }
 	
