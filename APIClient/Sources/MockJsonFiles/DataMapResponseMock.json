@@ -1,0 +1,348 @@
+{
+  "motorcycleGarages": [
+    {
+      "id": 1,
+      "name": "Docker WJ",
+      "address": "11/32 Param3",
+      "latitude": 13.7117514,
+      "longtitude": 100.5467243,
+      "images": [
+        {
+          "id": 1,
+          "url": "https://media.glamour.com/photos/61ddaf070d81052b930afac3/2:3/w_2474,h_3711,c_limit/955761556"
+        },
+        {
+          "id": 2,
+          "url": "https://gamerism.co/wp-content/uploads/2020/01/escape-from-tarkov.jpg"
+        },
+        {
+          "id": 3,
+          "url": "https://www.theloadout.com/wp-content/uploads/2020/07/escape-from-tarkov-pumpkin-head.jpeg"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "TD Garage Shimanha",
+      "address": "11/32 Param6 Ake la de",
+      "latitude": 13.6722135,
+      "longtitude": 100.5283584,
+      "images": [
+        {
+          "id": 4,
+          "url": "https://media.glamour.com/photos/61ddaf070d81052b930afac3/2:3/w_2474,h_3711,c_limit/955761556"
+        },
+        {
+          "id": 5,
+          "url": "https://gamerism.co/wp-content/uploads/2020/01/escape-from-tarkov.jpg"
+        },
+        {
+          "id": 6,
+          "url": "https://www.theloadout.com/wp-content/uploads/2020/07/escape-from-tarkov-pumpkin-head.jpeg"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Saitama Motor",
+      "address": "11/32 Param3",
+      "latitude": 13.684675,
+      "longtitude":  100.522196,
+      "images": [
+        {
+          "id": 7,
+          "url": "https://media.glamour.com/photos/61ddaf070d81052b930afac3/2:3/w_2474,h_3711,c_limit/955761556"
+        },
+        {
+          "id": 8,
+          "url": "https://gamerism.co/wp-content/uploads/2020/01/escape-from-tarkov.jpg"
+        },
+        {
+          "id": 9,
+          "url": "https://www.theloadout.com/wp-content/uploads/2020/07/escape-from-tarkov-pumpkin-head.jpeg"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Takov Dick Motor",
+      "address": "11/32 Param3",
+      "latitude": 13.7813868,
+      "longtitude": 100.5375155,
+      "images": [
+        {
+          "id": 10,
+          "url": "https://media.glamour.com/photos/61ddaf070d81052b930afac3/2:3/w_2474,h_3711,c_limit/955761556"
+        },
+        {
+          "id": 11,
+          "url": "https://gamerism.co/wp-content/uploads/2020/01/escape-from-tarkov.jpg"
+        },
+        {
+          "id": 12,
+          "url": "https://www.theloadout.com/wp-content/uploads/2020/07/escape-from-tarkov-pumpkin-head.jpeg"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Death Race",
+      "address": "11/32 Param3",
+      "latitude": 13.7761351,
+      "longtitude": 100.5260141,
+      "images": [
+        {
+          "id": 13,
+          "url": "https://media.glamour.com/photos/61ddaf070d81052b930afac3/2:3/w_2474,h_3711,c_limit/955761556"
+        },
+        {
+          "id": 14,
+          "url": "https://gamerism.co/wp-content/uploads/2020/01/escape-from-tarkov.jpg"
+        },
+        {
+          "id": 15,
+          "url": "https://www.theloadout.com/wp-content/uploads/2020/07/escape-from-tarkov-pumpkin-head.jpeg"
+        }
+      ]
+    }
+
+  ],
+  "inflatingPoints": [
+    {
+      "id": 1,
+      "name": "inflatingPoints 1",
+      "address": "11/32 Param3 Du bo gu joker",
+      "latitude": 13.7077352,
+      "longtitude": 100.5619334,
+      "images": [
+        {
+          "id": 16,
+          "url": "https://media.glamour.com/photos/61ddaf070d81052b930afac3/2:3/w_2474,h_3711,c_limit/955761556"
+        },
+        {
+          "id": 17,
+          "url": "https://gamerism.co/wp-content/uploads/2020/01/escape-from-tarkov.jpg"
+        },
+        {
+          "id": 18,
+          "url": "https://www.theloadout.com/wp-content/uploads/2020/07/escape-from-tarkov-pumpkin-head.jpeg"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "inflatingPoints 2",
+      "address": "11/32 Param3",
+      "latitude": 13.695486,
+      "longtitude": 100.543455,
+      "images": [
+        {
+          "id": 19,
+          "url": "https://media.glamour.com/photos/61ddaf070d81052b930afac3/2:3/w_2474,h_3711,c_limit/955761556"
+        },
+        {
+          "id": 20,
+          "url": "https://gamerism.co/wp-content/uploads/2020/01/escape-from-tarkov.jpg"
+        },
+        {
+          "id": 21,
+          "url": "https://www.theloadout.com/wp-content/uploads/2020/07/escape-from-tarkov-pumpkin-head.jpeg"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "inflatingPoints 3",
+      "address": "11/32 Param3",
+      "latitude": 13.7362638,
+      "longtitude": 100.5303889,
+      "images": [
+        {
+          "id": 22,
+          "url": "https://media.glamour.com/photos/61ddaf070d81052b930afac3/2:3/w_2474,h_3711,c_limit/955761556"
+        },
+        {
+          "id": 23,
+          "url": "https://gamerism.co/wp-content/uploads/2020/01/escape-from-tarkov.jpg"
+        },
+        {
+          "id": 24,
+          "url": "https://www.theloadout.com/wp-content/uploads/2020/07/escape-from-tarkov-pumpkin-head.jpeg"
+        }
+      ]
+    }
+  ],
+  "washStations": [
+    {
+      "id": 1,
+      "name": "Wash 1",
+      "address": "11/32 Param3",
+      "latitude": 13.7362638,
+      "longtitude": 100.5303889,
+      "images": [
+        {
+          "id": 25,
+          "url": "https://media.glamour.com/photos/61ddaf070d81052b930afac3/2:3/w_2474,h_3711,c_limit/955761556"
+        },
+        {
+          "id": 26,
+          "url": "https://gamerism.co/wp-content/uploads/2020/01/escape-from-tarkov.jpg"
+        },
+        {
+          "id": 27,
+          "url": "https://www.theloadout.com/wp-content/uploads/2020/07/escape-from-tarkov-pumpkin-head.jpeg"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Wash 2",
+      "address": "11/32 Param3",
+      "latitude": 13.722742,
+      "longtitude": 100.6229613,
+      "images": [
+        {
+          "id": 28,
+          "url": "https://media.glamour.com/photos/61ddaf070d81052b930afac3/2:3/w_2474,h_3711,c_limit/955761556"
+        },
+        {
+          "id": 29,
+          "url": "https://gamerism.co/wp-content/uploads/2020/01/escape-from-tarkov.jpg"
+        },
+        {
+          "id": 30,
+          "url": "https://www.theloadout.com/wp-content/uploads/2020/07/escape-from-tarkov-pumpkin-head.jpeg"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Wash 3",
+      "address": "11/32 Param3",
+      "latitude": 13.7341075,
+      "longtitude": 100.5309513,
+      "images": [
+        {
+          "id": 31,
+          "url": "https://media.glamour.com/photos/61ddaf070d81052b930afac3/2:3/w_2474,h_3711,c_limit/955761556"
+        },
+        {
+          "id": 32,
+          "url": "https://gamerism.co/wp-content/uploads/2020/01/escape-from-tarkov.jpg"
+        },
+        {
+          "id": 33,
+          "url": "https://www.theloadout.com/wp-content/uploads/2020/07/escape-from-tarkov-pumpkin-head.jpeg"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Wash 4",
+      "address": "11/32 Param3",
+      "latitude": 13.7685074,
+      "longtitude": 100.5408628,
+      "images": [
+        {
+          "id": 34,
+          "url": "https://media.glamour.com/photos/61ddaf070d81052b930afac3/2:3/w_2474,h_3711,c_limit/955761556"
+        },
+        {
+          "id": 35,
+          "url": "https://gamerism.co/wp-content/uploads/2020/01/escape-from-tarkov.jpg"
+        },
+        {
+          "id": 36,
+          "url": "https://www.theloadout.com/wp-content/uploads/2020/07/escape-from-tarkov-pumpkin-head.jpeg"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Wash 4",
+      "address": "11/32 Param3",
+      "latitude": 13.764756,
+      "longtitude": 100.5420645,
+      "images": [
+        {
+          "id": 37,
+          "url": "https://media.glamour.com/photos/61ddaf070d81052b930afac3/2:3/w_2474,h_3711,c_limit/955761556"
+        },
+        {
+          "id": 38,
+          "url": "https://gamerism.co/wp-content/uploads/2020/01/escape-from-tarkov.jpg"
+        },
+        {
+          "id": 39,
+          "url": "https://www.theloadout.com/wp-content/uploads/2020/07/escape-from-tarkov-pumpkin-head.jpeg"
+        }
+      ]
+    }
+
+  ],
+  "patchTireStations": [
+    {
+      "id": 1,
+      "name": "Patch 1",
+      "address": "11/32 Param4 Taker not just",
+      "latitude": 13.675563,
+      "longtitude": 100.5485113,
+      "images": [
+        {
+          "id": 40,
+          "url": "https://media.glamour.com/photos/61ddaf070d81052b930afac3/2:3/w_2474,h_3711,c_limit/955761556"
+        },
+        {
+          "id": 41,
+          "url": "https://gamerism.co/wp-content/uploads/2020/01/escape-from-tarkov.jpg"
+        },
+        {
+          "id": 42,
+          "url": "https://www.theloadout.com/wp-content/uploads/2020/07/escape-from-tarkov-pumpkin-head.jpeg"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Patch 2",
+      "address": "11/32 Ei go go make my day",
+      "latitude": 13.7660558,
+      "longtitude": 100.6403032,
+      "images": [
+        {
+          "id": 43,
+          "url": "https://media.glamour.com/photos/61ddaf070d81052b930afac3/2:3/w_2474,h_3711,c_limit/955761556"
+        },
+        {
+          "id": 44,
+          "url": "https://gamerism.co/wp-content/uploads/2020/01/escape-from-tarkov.jpg"
+        },
+        {
+          "id": 45,
+          "url": "https://www.theloadout.com/wp-content/uploads/2020/07/escape-from-tarkov-pumpkin-head.jpeg"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Patch 2",
+      "address": "11/32 Ei go go make my day",
+      "latitude": 13.7205082,
+      "longtitude": 100.5293531,
+      "images": [
+        {
+          "id": 46,
+          "url": "https://media.glamour.com/photos/61ddaf070d81052b930afac3/2:3/w_2474,h_3711,c_limit/955761556"
+        },
+        {
+          "id": 47,
+          "url": "https://gamerism.co/wp-content/uploads/2020/01/escape-from-tarkov.jpg"
+        },
+        {
+          "id": 48,
+          "url": "https://www.theloadout.com/wp-content/uploads/2020/07/escape-from-tarkov-pumpkin-head.jpeg"
+        }
+      ]
+    }
+  ]
+}

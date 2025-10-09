@@ -29,7 +29,11 @@ let project = Project(
 			dependencies: [
 				.target(name: "Router"),
 				.target(name: "RouterLive"),
-				.target(name: "APIClient")
+				.target(name: "AccessTokenClient"),
+				.target(name: "AccessTokenClientLive"),
+				.target(name: "APIClient"),
+				.target(name: "APIClientLive")
+
 			],
 			settings: .settings(
 				base: [
@@ -79,6 +83,17 @@ let project = Project(
 		),
 		// Start Client
 		.framework(
+			name: "AccessTokenClient",
+			dependencies: []
+		),
+		.framework(
+			name: "AccessTokenClientLive",
+			dependencies: [
+				.target(name:"AccessTokenClient"),
+				.external(name: "KeychainAccess")
+			]
+		),
+		.framework(
 			name: "APIClient",
 			dependencies: []
 		),
@@ -93,6 +108,23 @@ let project = Project(
 			resources: [],
 			dependencies: [
 				.target(name: "APIClient")
+			]
+		),
+		.framework(
+			name: "APIClientLive",
+			dependencies: [
+				.target(name: "APIClient"),
+				.target(name: "AccessTokenClientLive"),
+			]
+		),
+		.framework(
+			name: "DatabaseClient",
+			dependencies: []
+		),
+		.framework(
+			name: "DatabaseClientLive",
+			dependencies: [
+				.target(name: "DatabaseClient")
 			]
 		),
 		// End Client
@@ -114,6 +146,8 @@ let project = Project(
 				dependencies: [
 					.target(name: "Router"),
 					.target(name: "Models"),
+					.target(name: "APIClient"),
+					.target(name: "DatabaseClient")
 				]
 			),
 		.featureDemoApp(
@@ -123,7 +157,8 @@ let project = Project(
 		.framework(
 			name: "DetailFeature",
 			dependencies: [
-				.target(name: "Router")
+				.target(name: "Router"),
+				
 			]
 		),
 		.framework(

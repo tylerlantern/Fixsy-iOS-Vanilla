@@ -2,15 +2,20 @@ import Router
 import SwiftUI
 import Models
 import MapKit
+import APIClient
 
 public struct HomeView: View {
 	enum Destination: Hashable { case detail }
 	
 	@Environment(\.router) var router
+	@Environment(\.apiClient) var apiClient
 	
 	@State var navPath = NavigationPath()
 	@State var store: MapVisualViewController.Store
+	@StateObject var placeStore : PlaceStore = .init()
+	
 	public init() {
+		
 		let (placeStream, placeCont) =
 		AsyncStream.makeStream(of: [Place].self)
 		
@@ -79,7 +84,6 @@ public struct HomeView: View {
 				self.router.route(route)
 			}
 			.task {
-				
 			}
 		}
 	}
