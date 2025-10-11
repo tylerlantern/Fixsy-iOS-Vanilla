@@ -1,5 +1,4 @@
 import Foundation
-import Prelude
 
 public struct EmptyRequest: Codable {
   public static func isEmpty(_ request: Any) -> Bool {
@@ -7,12 +6,20 @@ public struct EmptyRequest: Codable {
   }
 }
 
-public enum HttpMethod<Body> {
+public enum HttpMethod<Body : Encodable> {
   case get
   case post(Body)
   case put(Body)
   case patch(Body)
   case delete(Body)
+	
+	public var extractBody: Body? {
+		switch self {
+		case .get: return nil
+		case .post(let b), .put(let b), .patch(let b), .delete(let b): return b
+		}
+	}
+	
 }
 
 extension HttpMethod {
@@ -23,20 +30,6 @@ extension HttpMethod {
     case .put: return "PUT"
     case .patch: return "PATCH"
     case .delete: return "DELETE"
-    }
-  }
-
-  func data<B>(_ fn: (Body) -> B?) -> B? {
-    switch self {
-    case .get:
-      return nil
-    case let .put(body), let .post(body), let .patch(body), let .delete(body):
-      return (
-        body
-          |> { (body: Body) -> Body? in
-            body is EmptyRequest ? .none : .some(body)
-          }
-      ).flatMap(fn)
     }
   }
 }

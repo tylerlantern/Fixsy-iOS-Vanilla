@@ -1,6 +1,6 @@
 import Foundation
 
-public struct AuthCredential: Codable, Equatable, Sendable {
+public struct Token: Codable, Equatable, Sendable {
   public let accessToken: String
 	public let refreshToken : String
   public init(
@@ -12,16 +12,16 @@ public struct AuthCredential: Codable, Equatable, Sendable {
   }
 }
 
-extension AuthCredential {
-  public static let defaultValue = AuthCredential(
+extension Token {
+  public static let defaultValue = Token(
     accessToken: "acccessToken",
 		refreshToken: "refreshToken"
   )
 }
 
 #if DEBUG
-  extension AuthCredential {
-    public static let testValue = AuthCredential(
+  extension Token {
+    public static let testValue = Token(
       accessToken: "acccessToken",
 			refreshToken: "refreshToken"
     )

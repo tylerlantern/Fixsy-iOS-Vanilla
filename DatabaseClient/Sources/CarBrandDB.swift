@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import Models
 
 public struct CarBrandDB {
   public var observe: () -> AnyPublisher<Result<[CarBrand], DBError>, Never>

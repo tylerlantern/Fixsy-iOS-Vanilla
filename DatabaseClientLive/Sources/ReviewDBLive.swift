@@ -7,7 +7,15 @@ extension ReviewDB {
   static func live(cache: DatabaseWriter) -> ReviewDB {
     ReviewDB(
       observe: { placeId in
-        ValueObservation.tracking { db in
+//				let observation = ValueObservation.tracking { db in
+//						try Player.fetchAll(db)
+//				}
+				
+			 let observatation =	ValueObservation.tracking { db in
+					try fetchReviewItems(db: db, placeId: placeId)
+				}
+				
+        return ValueObservation.tracking { db in
           try fetchReviewItems(db: db, placeId: placeId)
         }
         .publisher(in: cache)

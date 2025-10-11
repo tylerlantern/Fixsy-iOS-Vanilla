@@ -3,6 +3,7 @@ import AccessTokenClientLive
 import APIClient
 import Combine
 import Foundation
+import TokenModel
 
 public extension APIClient {
   static func live(
@@ -12,7 +13,7 @@ public extension APIClient {
     Self(
       request: { route in try await anonymousRequest(url: url, route: route) },
       userRequest: { route in
-        let token = await accessTokenClient.accessToken()
+        let token = try await accessTokenClient.accessToken()
         guard let token = token else {
           throw URLError(
             URLError.Code(rawValue: 901),
@@ -71,7 +72,11 @@ public var apiUserRequest: (
       let statusCode = (response as! HTTPURLResponse).statusCode
       switch statusCode {
       case 200:
-        let newToken = try JSONDecoder().decode(TokenResponse.self, from: data).token()
+        let tokenResponse = try JSONDecoder().decode(TokenResponse.self, from: data)
+				let newToken = Token(
+					accessToken: tokenResponse.accessToken,
+					refreshToken: tokenResponse.refreshToken
+				)
         await block?()
         return try await refetchRequest(url, newToken, route, tokenUpdated)
       case 401:
@@ -100,5 +105,10 @@ public var refetchRequest: (
 }
 
 public var refreshTokenRequest: (URL, Token) async throws -> (Data, URLResponse) = { url, token in
-  try await anonymousRequest(url: url, route: APIRoute.refreshToken(token))
+  try await anonymousRequest(
+		url: url,
+		route: APIRoute.refreshToken(
+			accessToken: token.accessToken, refreshToken: token.refreshToken
+		)
+	)
 }

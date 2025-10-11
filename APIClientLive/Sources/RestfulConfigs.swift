@@ -1,4 +1,3 @@
-import Configs
 import Foundation
 
 public enum RestfulConfigs {

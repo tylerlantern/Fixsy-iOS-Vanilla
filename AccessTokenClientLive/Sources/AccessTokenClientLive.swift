@@ -3,6 +3,7 @@ import Foundation
 import KeychainAccess
 import os
 import Synchronization
+import TokenModel
 
 let logger = Logger(
 	subsystem: Bundle.main.bundleIdentifier!,
@@ -42,25 +43,25 @@ public actor AccessTokenStore {
 		.accessibility(.afterFirstUnlock)
 	}
 	
-	public func initialize() throws -> AuthCredential? {
+	public func initialize() throws -> Token? {
 		try self.getAuthCredential()
 	}
 	
-	public func getAuthCredential() throws -> AuthCredential? {
+	public func getAuthCredential() throws -> Token? {
 		guard
-			let accessToken = try? self.keychain.get(Self.accessTokenKey),
-			let refreshToken = try? self.keychain.get(Self.refreshTokenKey)
+			let accessToken = try self.keychain.get(Self.accessTokenKey),
+			let refreshToken = try self.keychain.get(Self.refreshTokenKey)
 		else {
 			return nil
 		}
-		return AuthCredential(
+		return Token(
 			accessToken: accessToken,
 			refreshToken: refreshToken
 		)
 	}
 	
 	@discardableResult
-	func updateToken(token: AuthCredential?) throws -> AuthCredential? {
+	func updateToken(token: Token?) throws -> Token? {
 		if let token {
 			try self.keychain.set(token.accessToken, key: Self.accessTokenKey)
 		} else {

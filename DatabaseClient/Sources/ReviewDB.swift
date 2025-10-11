@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import Models
 
 public struct ReviewDB {
   public var observe: (Int) -> AnyPublisher<[ReviewItem], DBError>

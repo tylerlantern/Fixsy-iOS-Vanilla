@@ -1,4 +1,4 @@
-import Model
+import Models
 
 public enum OAuthProvider: Int, Codable, Equatable {
   case facebook = 1

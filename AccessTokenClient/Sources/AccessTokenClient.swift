@@ -1,15 +1,16 @@
 import Foundation
 import SwiftUI
+import TokenModel
 
 public struct AccessTokenClient: Sendable {
-  public var initialize: @Sendable () async throws -> AuthCredential?
-  public var accessToken: @Sendable () async throws -> AuthCredential?
-  public var updateAccessToken: @Sendable (AuthCredential?) async throws -> AuthCredential?
+  public var initialize: @Sendable () async throws -> Token?
+  public var accessToken: @Sendable () async throws -> Token?
+  public var updateAccessToken: @Sendable (Token?) async throws -> Token?
 
   public init(
-    initialize: @escaping @Sendable () async throws -> AuthCredential?,
-    accessToken: @escaping @Sendable () async throws -> AuthCredential?,
-    updateAccessToken: @escaping @Sendable (AuthCredential?) async throws -> AuthCredential?
+    initialize: @escaping @Sendable () async throws -> Token?,
+    accessToken: @escaping @Sendable () async throws -> Token?,
+    updateAccessToken: @escaping @Sendable (Token?) async throws -> Token?
   ) {
     self.initialize = initialize
     self.accessToken = accessToken

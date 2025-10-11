@@ -1,8 +1,6 @@
 import APIClient
-import Configs
 import Foundation
-import Model
-import Overture
+import TokenModel
 
 extension APIRoute {
   func urlRequest(url: URL) -> URLRequest {
@@ -12,88 +10,70 @@ extension APIRoute {
     case .signUp:
       fatalError()
     case .mapData:
-      return update(
-        URLRequest(
-          url: url
-            .appendingPathComponent("mapdata")
-            .appendingPathComponent("serviceplaces")
-        ),
-        setHeader(name: "version", value: "1.1"),
-        mut(\.httpMethod, .get),
-        jsonContentType
-      )
+			 return url
+				.appendingPathComponent("mapdata")
+				.appendingPathComponent("serviceplaces")
+				.makeAnonymousURLRequest(
+					version: "1.1",
+					method: .get
+				)
     case let .socialSignIn(
       token: token,
       provider: provider
     ):
-      return update(
-        URLRequest(
-          url: url
-            .appendingPathComponent("auth")
-            .appendingPathComponent("socialsignin")
-        ),
-        setHeader(name: "version", value: "1.0"),
-        mut(\.httpMethod, .post),
-        jsonBody(
-          body: SocialSignInRequest(
-            token: token,
-            provider: provider
-          )
-        ),
-        jsonContentType
-      )
+			return url
+			 .appendingPathComponent("mapdata")
+			 .appendingPathComponent("serviceplaces")
+			 .makeAnonymousURLRequest(
+				 version: "1.1",
+				 method: .post(
+					SocialSignInRequest(
+						token: token,
+						provider: provider
+					)
+				 )
+			 )
+
     case let .reviewList(pageNumber: pageNumber, pageSize: pageSize, branchId: branchId):
       var queryItems = [URLQueryItem]()
       queryItems.append(.init(name: "pageNumber", value: "\(pageNumber)"))
       queryItems.append(.init(name: "pageSize", value: "\(pageSize)"))
       queryItems.append(.init(name: "branchId", value: "\(branchId)"))
-      return update(
-        URLRequest(
-          url: url
-            .appendingPathComponent("review")
-            .appendingQueries(queryItems)
-        ),
-        setHeader(name: "version", value: "1.0"),
-        mut(\.httpMethod, .get),
-        jsonContentType
-      )
+			let url = url
+				.appendingPathComponent("review")
+				.appendingQueries(queryItems)
+			return url.makeAnonymousURLRequest(
+				version: "1.0",
+				method: .get
+			)
 		case let .refreshToken(
 			accessToken,
 			refreshToken
 		):
-      return update(
-        URLRequest(
-          url: url
-            .appendingPathComponent("auth/refreshtoken")
-        ),
-        setHeader(name: "version", value: "1.0"),
-        mut(\.httpMethod, .post),
-        jsonBody(
-          body: RefreshTokenRequest(
-            accessToken: accessToken,
-            refreshToken: refreshToken
-          )
-        ),
-        jsonContentType
-      )
+			return url
+				.appendingPathComponent("auth/refreshtoken")
+				.makeAnonymousURLRequest(
+					version: "1.0",
+					method: .post(
+						RefreshTokenRequest(
+							accessToken: accessToken,
+							refreshToken: refreshToken
+						)
+					)
+				)
     case let .socialSignin(token: token, provider: provider):
-      return update(
-        URLRequest(
-          url: url
-            .appendingPathComponent("auth")
-            .appendingPathComponent("socialsignin")
-        ),
-        mut(\.httpMethod, .post),
-        setHeader(name: "version", value: "1.0"),
-        jsonBody(
-          body:
-          SocialSignInRequest(
-            token: token,
-            provider: provider
-          )
-        ),
-        jsonContentType
-      )
+			return url
+				.appendingPathComponent("auth")
+				.appendingPathComponent("socialsignin")
+				.makeAnonymousURLRequest(
+					version: "1.0",
+					method: .post(
+						SocialSignInRequest(
+							token: token,
+							provider: provider
+						)
+					)
+				)
     case let .socialSignup(
       token: token,
       provider: provider,
@@ -102,27 +82,22 @@ extension APIRoute {
       username: username,
       picture: picture
     ):
-      return update(
-        URLRequest(
-          url: url
-            .appendingPathComponent("auth")
-            .appendingPathComponent("socialsignup")
-        ),
-        mut(\.httpMethod, .post),
-        setHeader(name: "version", value: "1.0"),
-        jsonBody(
-          body:
-          SocialSignupRequest(
-            token: token,
-            provider: provider,
-            firstname: firstname,
-            lastname: lastname,
-            username: username,
-            picture: picture ?? ""
-          )
-        ),
-        jsonContentType
-      )
+			return url
+				.appendingPathComponent("auth")
+				.appendingPathComponent("socialsignup")
+				.makeAnonymousURLRequest(
+					version: "1.0",
+					method: .post(
+						SocialSignupRequest(
+							token: token,
+							provider: provider,
+							firstname: firstname,
+							lastname: lastname,
+							username: username,
+							picture: picture ?? ""
+						)
+					)
+				)
     }
   }
 }
@@ -268,14 +243,78 @@ extension APIUserRoute {
   }
 }
 
-let guaranteeHeaders: (inout URLRequest) -> () =
-  mver(\URLRequest.allHTTPHeaderFields) { $0 = $0 ?? [:] }
+public struct EmptyBody: Codable { public init() {} }
+public typealias HttpMethodNoBody = HttpMethod<EmptyBody>
+
+extension URL {
+	
+	// Overload for no-body methods
+	func makeAnonymousURLRequest(
+		version: String?,
+		method: HttpMethodNoBody = .get   // default GET without body
+	) -> URLRequest {
+		makeCommonRequest(url: self, version: version, method: method)
+	}
+	
+	func makeAnonymousURLRequest<Body : Encodable>(
+		version : String?,
+		method : HttpMethod<Body>
+	) -> URLRequest {
+		return makeCommonRequest(
+			url: self,
+			version: version,
+			method: method
+		)
+	}
+	
+	func makeAuthorizationURLRequest<Body : Encodable>(
+		token : Token,
+		version : String?,
+		method : HttpMethod<Body>
+	) -> URLRequest {
+		var urlRequest = makeCommonRequest(
+			url: self,
+			version: version,
+			method: method
+		)
+		authorizationHeader(
+			accessToken: token.accessToken
+		)(&urlRequest)
+		return urlRequest
+	}
+	
+}
+
+func makeCommonRequest<Body : Encodable>(
+	url : URL,
+	version : String?,
+	method : HttpMethod<Body>
+) -> URLRequest {
+	var urlRequest = URLRequest(
+		url: url
+	)
+	if let version = version {
+		setHeader(name: "version", value: "1.0")(&urlRequest)
+	}
+	urlRequest.httpMethod = method.httpMethod
+	if let body = method.extractBody {
+		let encodedBody = try? JSONEncoder().encode(body)
+		urlRequest.httpBody = encodedBody
+	}
+	jsonContentType(&urlRequest)
+	return urlRequest
+}
+
+
+
 
 func setHeader(name: String, value: String?) -> (inout URLRequest) -> () {
-  concat(
-    guaranteeHeaders,
-    { $0.allHTTPHeaderFields?[name] = value }
-  )
+	return { (urlRequest : inout URLRequest) in
+		if urlRequest.allHTTPHeaderFields == nil {
+			urlRequest.allHTTPHeaderFields = [:]
+		}
+		urlRequest.allHTTPHeaderFields?[name] = value
+	}
 }
 
 func authorizationHeader(accessToken: String) -> (inout URLRequest) -> () {
@@ -289,7 +328,8 @@ func method(_ method: String) -> (inout URLRequest) -> () {
 }
 
 func jsonBody<T: Encodable>(body: T) -> (inout URLRequest) -> () {
-  mut(\URLRequest.httpBody, try? JSONEncoder().encode(body))
+	
+//  mut(\URLRequest.httpBody, try? JSONEncoder().encode(body))
 }
 
 typealias HTTPMethod = String
@@ -301,18 +341,18 @@ extension HTTPMethod {
   static var delete: Self = "DELETE"
 }
 
-func genderValue(gender: Gender) -> String {
-  switch gender {
-  case .male:
-    return "Male"
-  case .female:
-    return "Female"
-  case .other:
-    return "other"
-  case .none:
-    return ""
-  }
-}
+//func genderValue(gender: Gender) -> String {
+//  switch gender {
+//  case .male:
+//    return "Male"
+//  case .female:
+//    return "Female"
+//  case .other:
+//    return "other"
+//  case .none:
+//    return ""
+//  }
+//}
 
 func dateValue(date: Date?) -> String {
   guard let date = date else { return "" }

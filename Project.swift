@@ -81,10 +81,25 @@ let project = Project(
 				.target(name: "ExpandedCommentFeature")
 			]
 		),
+		
+		// Start Model
+		.framework(
+			name: "Models"
+		),
+		.framework(
+			name: "UserProfileModel"
+		),
+		.framework(
+			name: "TokenModel"
+		),
+		// End Model
+		
 		// Start Client
 		.framework(
 			name: "AccessTokenClient",
-			dependencies: []
+			dependencies: [
+				.target(name: "TokenModel")
+			]
 		),
 		.framework(
 			name: "AccessTokenClientLive",
@@ -114,12 +129,16 @@ let project = Project(
 			name: "APIClientLive",
 			dependencies: [
 				.target(name: "APIClient"),
+				.target(name: "TokenModel"),
 				.target(name: "AccessTokenClientLive"),
 			]
 		),
 		.framework(
 			name: "DatabaseClient",
-			dependencies: []
+			dependencies: [
+				.target(name: "UserProfileModel"),
+				.target(name: "Models" )
+			]
 		),
 		.framework(
 			name: "DatabaseClientLive",
@@ -129,11 +148,6 @@ let project = Project(
 		),
 		// End Client
 		
-		// Start Model
-			.framework(
-				name: "Models"
-			),
-		// End Model
 		.framework(
 			name: "TabContainerFeature",
 			dependencies: [
@@ -157,8 +171,7 @@ let project = Project(
 		.framework(
 			name: "DetailFeature",
 			dependencies: [
-				.target(name: "Router"),
-				
+				.target(name: "Router")
 			]
 		),
 		.framework(

@@ -1,5 +1,4 @@
 import Foundation
-import Model
 
 public struct SocialSignInRequest: Codable {
   public let token: String

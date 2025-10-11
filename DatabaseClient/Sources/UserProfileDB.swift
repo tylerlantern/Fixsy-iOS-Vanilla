@@ -1,21 +1,21 @@
 import Combine
 import Foundation
-import Model
+import UserProfileModel
 
 public struct UserProfileDB {
-  public init(
-    observeUserProfile: @escaping () -> AnyPublisher<UserProfile?, DBError>,
-    saveUserProfile: @escaping (UserProfile) async throws -> (),
-    updateName: @escaping (_ firstName: String, _ lastName: String) async throws -> (),
-    clearUserProfile: @escaping () async throws -> Int
-  ) {
-    self.observeUserProfile = observeUserProfile
-    self.saveUserProfile = saveUserProfile
-    self.updateName = updateName
-    self.clearUserProfile = clearUserProfile
-  }
 
-  public var observeUserProfile: () -> AnyPublisher<UserProfile?, DBError>
+	public init(
+		observeUserProfile: @escaping () -> AsyncStream<UserProfile?>,
+		saveUserProfile: @escaping (UserProfile) -> Void,
+		updateName: @escaping (String, String) -> Void,
+		clearUserProfile: @escaping () async throws -> Int) {
+		self.observeUserProfile = observeUserProfile
+		self.saveUserProfile = saveUserProfile
+		self.updateName = updateName
+		self.clearUserProfile = clearUserProfile
+	}
+	
+  public var observeUserProfile: () -> AsyncStream<UserProfile?>
   public var saveUserProfile: (UserProfile) async throws -> ()
   public var updateName: (String, String) async throws -> ()
   public var clearUserProfile: () async throws -> Int
