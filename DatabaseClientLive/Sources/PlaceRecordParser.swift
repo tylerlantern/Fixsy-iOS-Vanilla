@@ -1,5 +1,5 @@
 import Foundation
-import Model
+import Models
 
 func toCarBrand(_ r: CarBrandRecord) -> CarBrand {
   CarBrand(

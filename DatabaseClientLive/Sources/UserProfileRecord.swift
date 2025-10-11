@@ -1,6 +1,7 @@
 import Foundation
 import GRDB
-import Model
+import Models
+import UserProfileModel
 
 public struct UserProfileRecord: Codable, FetchableRecord, PersistableRecord {
   public static var databaseTableName: String {

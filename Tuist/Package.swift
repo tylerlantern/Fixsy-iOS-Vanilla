@@ -16,11 +16,14 @@ let package = Package(
   name: "iOS",
   dependencies: [
     // You can read more about dependencies here:
-    //shttps://docs.tuist.io/documentation/tuist/dependencies
-		.package(
-			url: "https://github.com/kishikawakatsumi/KeychainAccess.git",
-			from: "4.2.2"
-		),
-
+    // shttps://docs.tuist.io/documentation/tuist/dependencies
+    .package(
+      url: "https://github.com/kishikawakatsumi/KeychainAccess.git",
+      from: "4.2.2"
+    ),
+    .package(
+      url: "https://github.com/groue/GRDB.swift.git",
+      from: "7.8.0"
+    )
   ]
 )

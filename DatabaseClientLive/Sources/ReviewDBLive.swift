@@ -1,26 +1,28 @@
-import ComposableArchitecture
 import DatabaseClient
 import GRDB
-import Model
+import Models
 
 extension ReviewDB {
   static func live(cache: DatabaseWriter) -> ReviewDB {
     ReviewDB(
       observe: { placeId in
-//				let observation = ValueObservation.tracking { db in
-//						try Player.fetchAll(db)
-//				}
-				
-			 let observatation =	ValueObservation.tracking { db in
-					try fetchReviewItems(db: db, placeId: placeId)
-				}
-				
-        return ValueObservation.tracking { db in
-          try fetchReviewItems(db: db, placeId: placeId)
+        AsyncThrowingStream { continuation in
+          let cancellable = ValueObservation.tracking { db in
+            try fetchReviewItems(db: db, placeId: placeId)
+          }.start(
+            in: cache,
+            scheduling: .immediate,
+            onError: { error in
+              continuation.finish(throwing: error)
+            },
+            onChange: { items in
+              continuation.yield(items)
+            }
+          )
+          continuation.onTermination = { @Sendable _ in
+            cancellable.cancel()
+          }
         }
-        .publisher(in: cache)
-        .mapError(DBError.error)
-        .eraseToAnyPublisher()
       },
       sync: { placeId, remoteItems, pageIndex in
         try await cache.write { db in

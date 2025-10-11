@@ -25,7 +25,7 @@ class ClusterAnnotationView: MKAnnotationView {
 
   private var _numberOfChildren: Int = 1 {
     didSet {
-      setUp()
+      self.setUp()
     }
   }
 

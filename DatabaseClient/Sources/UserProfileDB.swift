@@ -1,22 +1,21 @@
-import Combine
 import Foundation
 import UserProfileModel
 
 public struct UserProfileDB {
+  public init(
+    observeUserProfile: @escaping () -> AsyncThrowingStream<UserProfile?, Error>,
+    saveUserProfile: @escaping @Sendable (UserProfile) async throws -> (),
+    updateName: @escaping (String, String) async throws -> (),
+    clearUserProfile: @escaping () async throws -> Int
+  ) {
+    self.observeUserProfile = observeUserProfile
+    self.saveUserProfile = saveUserProfile
+    self.updateName = updateName
+    self.clearUserProfile = clearUserProfile
+  }
 
-	public init(
-		observeUserProfile: @escaping () -> AsyncStream<UserProfile?>,
-		saveUserProfile: @escaping (UserProfile) -> Void,
-		updateName: @escaping (String, String) -> Void,
-		clearUserProfile: @escaping () async throws -> Int) {
-		self.observeUserProfile = observeUserProfile
-		self.saveUserProfile = saveUserProfile
-		self.updateName = updateName
-		self.clearUserProfile = clearUserProfile
-	}
-	
-  public var observeUserProfile: () -> AsyncStream<UserProfile?>
-  public var saveUserProfile: (UserProfile) async throws -> ()
+  public var observeUserProfile: () -> AsyncThrowingStream<UserProfile?, Error>
+  public var saveUserProfile: @Sendable (UserProfile) async throws -> ()
   public var updateName: (String, String) async throws -> ()
   public var clearUserProfile: () async throws -> Int
 }

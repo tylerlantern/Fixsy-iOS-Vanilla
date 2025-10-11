@@ -1,11 +1,10 @@
 import Combine
-import ComposableArchitecture
 import DatabaseClient
 import Foundation
 import GRDB
-import Model
+import Models
 
-extension DatabaseClient: DependencyKey {
+extension DatabaseClient {
   public static var liveValue: DatabaseClient {
     let (pref, cache) = try! createDatabaseConnections()
     return Self(
@@ -21,13 +20,29 @@ extension DatabaseClient: DependencyKey {
       },
       userProfileDB: .live(cache: cache),
       carBrandDB: .live(cache: cache),
-      observeMapData: { placeFilter in
-        ValueObservation.tracking { db in
-          try fetchPlaces(db: db, filter: placeFilter, keyword: "")
+      observeMapData: { placeFilter in AsyncThrowingStream { continuation in
+        let starter = Task { @MainActor in
+          let cancellable = ValueObservation.tracking { db in
+            try fetchPlaces(db: db, filter: placeFilter, keyword: "")
+          }.start(
+            in: cache,
+            scheduling: .immediate,
+            onError: { error in
+              continuation.finish(throwing: error)
+            },
+            onChange: { items in
+              continuation.yield(items)
+            }
+          )
+
+          continuation.onTermination = { _ in
+            cancellable.cancel()
+          }
         }
-        .publisher(in: cache)
-        .mapError(DBError.error)
-        .eraseToAnyPublisher()
+        continuation.onTermination = { _ in
+          starter.cancel()
+        }
+      }
       },
       fetchMapData: { keyword, placeFilter, _ in
         try await cache.read { db in
@@ -49,25 +64,47 @@ extension DatabaseClient: DependencyKey {
         }
       },
       observePlaceDetail: { id in
-        AsyncThrowingStream(
-          ValueObservation.tracking { db in
+        AsyncThrowingStream { continuation in
+          let cancellable = ValueObservation.tracking { db in
             try PlaceInfo.fetchOne(
               db,
               PlaceRecord
                 .filter(Column("id") == id)
                 .include()
             ).map(toPlace)
+          }.start(
+            in: cache,
+            scheduling: .immediate,
+            onError: { error in
+              continuation.finish(throwing: error)
+            },
+            onChange: { items in
+              continuation.yield(items)
+            }
+          )
+          continuation.onTermination = { @Sendable _ in
+            cancellable.cancel()
           }
-          .values(in: cache)
-        )
+        }
       },
       observePlaceFilter: {
-        AsyncThrowingStream(
-          ValueObservation.tracking { db in
+        AsyncThrowingStream { continuation in
+          let cancellable = ValueObservation.tracking { db in
             try getPlaceFilter(db: db)
+          }.start(
+            in: cache,
+            scheduling: .immediate,
+            onError: { error in
+              continuation.finish(throwing: error)
+            },
+            onChange: { items in
+              continuation.yield(items)
+            }
+          )
+          continuation.onTermination = { @Sendable _ in
+            cancellable.cancel()
           }
-          .values(in: cache)
-        )
+        }
       },
       syncPlaceFilter: { filter in
         try await cache.write({ db in

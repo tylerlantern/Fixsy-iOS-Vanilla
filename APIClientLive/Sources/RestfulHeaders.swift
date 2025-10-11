@@ -6,20 +6,19 @@ public struct EmptyRequest: Codable {
   }
 }
 
-public enum HttpMethod<Body : Encodable> {
+public enum HttpMethod<Body: Encodable> {
   case get
   case post(Body)
   case put(Body)
   case patch(Body)
   case delete(Body)
-	
-	public var extractBody: Body? {
-		switch self {
-		case .get: return nil
-		case .post(let b), .put(let b), .patch(let b), .delete(let b): return b
-		}
-	}
-	
+
+  public var extractBody: Body? {
+    switch self {
+    case .get: return nil
+    case let .post(b), let .put(b), let .patch(b), let .delete(b): return b
+    }
+  }
 }
 
 extension HttpMethod {

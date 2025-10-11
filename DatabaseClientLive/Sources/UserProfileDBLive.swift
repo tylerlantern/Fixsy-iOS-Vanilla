@@ -1,8 +1,7 @@
-import Combine
-import ComposableArchitecture
 import DatabaseClient
 import GRDB
-import Model
+import Models
+import UserProfileModel
 
 extension UserProfileDB {
   static func live(cache: DatabaseWriter) ->
@@ -10,18 +9,23 @@ extension UserProfileDB {
   {
     .init(
       observeUserProfile: {
-//				// Define the observed value
-//				let observation = ValueObservation.tracking { db in
-//						try Player.fetchAll(db)
-//				}
-				
-        ValueObservation.tracking { db in
-          try fetchUserProfile(db: db)
+        AsyncThrowingStream { continuation in
+          let cancellable = ValueObservation.tracking { db in
+            try fetchUserProfile(db: db)
+          }.start(
+            in: cache,
+            scheduling: .immediate,
+            onError: { error in
+              continuation.finish(throwing: error)
+            },
+            onChange: { items in
+              continuation.yield(items)
+            }
+          )
+          continuation.onTermination = { @Sendable _ in
+            cancellable.cancel()
+          }
         }
-				.values(in: cache)
-//        .publisher(in: cache)
-//        .mapError(DBError.error)
-//        .eraseToAnyPublisher()
       },
       saveUserProfile: { userProfile in
         try await cache.write { db in

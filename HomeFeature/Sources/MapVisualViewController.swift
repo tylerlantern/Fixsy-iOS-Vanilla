@@ -1,67 +1,21 @@
-import MapKit
-import UIKit
-import Models
 import Combine
+import MapKit
+import Models
+import UIKit
 
 public class MapVisualViewController: UINavigationController {
+  public let channel: MapChannel
 
-	public struct Store {
-		public let placeContinuation : AsyncStream<[Place]>.Continuation
-		public let placeStream : AsyncStream<[Place]>
-		
-		public let userCoordinateRegionContinuation :  AsyncStream<MKCoordinateRegion>.Continuation
-		public let userCoordinateRegionStream :  AsyncStream<MKCoordinateRegion>
-		
-		public let requestSelectedIdContinuation : AsyncStream<Int?>.Continuation
-		public let requestSelectedIdStream : AsyncStream<Int?>
-		
-		public let requestDeselectedIdContinuation : AsyncStream<Int?>.Continuation
-		public let requestDeselectedIdStream : AsyncStream<Int?>
-		
-		public let viewDidloadContinuation : AsyncStream<Void>.Continuation
-		public let viewDidloadStream : AsyncStream<Void>
-		
-		public let zoomContinuation : AsyncStream<CLLocationCoordinate2D>.Continuation
-		public let zoomStream : AsyncStream<CLLocationCoordinate2D>
-		
-		public let didChangeCoordiateRegionContinuation : AsyncStream<MKCoordinateRegion>.Continuation
-		public let didChangeCoordiateRegionStream: AsyncStream<MKCoordinateRegion>
-		
-		public let didDeselectContinuation : AsyncStream<Void>.Continuation
-		public let didDeselectStream : AsyncStream<Void>
-		
-		public init(placeContinuation: AsyncStream<[Place]>.Continuation, placeStream: AsyncStream<[Place]>, userCoordinateRegionContinuation: AsyncStream<MKCoordinateRegion>.Continuation, userCoordinateRegionStream: AsyncStream<MKCoordinateRegion>, requestSelectedIdContinuation: AsyncStream<Int?>.Continuation, requestSelectedIdStream: AsyncStream<Int?>, requestDeselectedIdContinuation: AsyncStream<Int?>.Continuation, requestDeselectedIdStream: AsyncStream<Int?>, viewDidloadContinuation: AsyncStream<Void>.Continuation, viewDidloadStream: AsyncStream<Void>, zoomContinuation: AsyncStream<CLLocationCoordinate2D>.Continuation, zoomStream: AsyncStream<CLLocationCoordinate2D>, didChangeCoordiateRegionContinuation: AsyncStream<MKCoordinateRegion>.Continuation, didChangeCoordiateRegionStream: AsyncStream<MKCoordinateRegion>, didDeselectContinuation: AsyncStream<Void>.Continuation, didDeselectStream: AsyncStream<Void>) {
-			self.placeContinuation = placeContinuation
-			self.placeStream = placeStream
-			self.userCoordinateRegionContinuation = userCoordinateRegionContinuation
-			self.userCoordinateRegionStream = userCoordinateRegionStream
-			self.requestSelectedIdContinuation = requestSelectedIdContinuation
-			self.requestSelectedIdStream = requestSelectedIdStream
-			self.requestDeselectedIdContinuation = requestDeselectedIdContinuation
-			self.requestDeselectedIdStream = requestDeselectedIdStream
-			self.viewDidloadContinuation = viewDidloadContinuation
-			self.viewDidloadStream = viewDidloadStream
-			self.zoomContinuation = zoomContinuation
-			self.zoomStream = zoomStream
-			self.didChangeCoordiateRegionContinuation = didChangeCoordiateRegionContinuation
-			self.didChangeCoordiateRegionStream = didChangeCoordiateRegionStream
-			self.didDeselectContinuation = didDeselectContinuation
-			self.didDeselectStream = didDeselectStream
-		}
-	}
-	
-	public let store : Store
-	
-	init(store: Store) {
-		self.store = store
-		super.init(nibName: nil, bundle: nil)
-	}
-	
+  init(channel: MapChannel) {
+    self.channel = channel
+    super.init(nibName: nil, bundle: nil)
+  }
+
   // MARK: Identifier
 
-	private var tasks: [Task<Void, Never>] = []
-	private let map = MKMapView()
-	
+  private var task: Task<(), Never>?
+  private let map = MKMapView()
+
   private let CarGarageIdentifier = "CarGarageIdentifier"
   private let MotorcycleGarageIdentifier = "MotorcycleGarageIdentifier"
   private let InflatingPointIdentifier = "InflatingPointIdentifier"
@@ -84,6 +38,7 @@ public class MapVisualViewController: UINavigationController {
 
   override public func viewDidLoad() {
     super.viewDidLoad()
+
     // MARK: - Register Cluster Annotations
 
     self.map.register(
@@ -139,82 +94,54 @@ public class MapVisualViewController: UINavigationController {
 
     self.map.showsUserLocation = true
     self.layoutUI()
-		tasks.append(
-			Task { [weak self] in
-				guard let self = self else {
-					return
-				}
-				for await places in self.store.placeStream{
-					if Task.isCancelled { break }
-					await MainActor.run { [weak self] in
-						if let annotations = self?.map.annotations, !annotations.isEmpty {
-							self?.map.removeAnnotations(annotations)
-						}
-						self?.map.addAnnotations(places.map(MapVisualViewController.mapToAnnotation(place:)))
-					}
-				}
-			}
-		)
-		
-		tasks.append(
-			Task {[weak self] in
-				guard let self = self else {
-					return
-				}
-				for await coordinate in self.store.userCoordinateRegionStream {
-					await MainActor.run { [weak self] in
-						self?.map.setRegion(coordinate, animated: true)
-					}
-				}
-			}
-		)
-		
-		tasks.append(
-			Task {[weak self] in
-				guard let self = self else {
-					return
-				}
-				for await id in self.store.requestSelectedIdStream {
-					await MainActor.run { [weak self] in
-						guard let self else {
-							return
-						}
-						guard let foundedAnnotation = self.map.annotations.first(where: {
-							getIdPlaceFromAnnotation($0) == id
-						}) else {
-							return
-						}
-						self.map.selectedAnnotations = [foundedAnnotation]
-						self.map.region.center = foundedAnnotation.coordinate
-					}
-				}
-			}
-		)
-		tasks.append(
-			Task {[weak self] in
-				guard let self = self else {
-					return
-				}
-				for await _ in self.store.requestDeselectedIdStream {
-					await MainActor.run { [weak self] in
-						guard let self else {
-							return
-						}
-						for annotation in self.map.selectedAnnotations {
-							self.map.deselectAnnotation(annotation, animated: true)
-						}
-					}
-				}
-			}
-		)
-		self.store.viewDidloadContinuation.yield(())
+    self.task = Task { [weak self] in
+      guard let self else { return }
+      for await event in self.channel.event {
+        if Task.isCancelled { break }
+        switch event {
+        case let .places(array):
+          await MainActor.run { [weak self] in
+            if let annotations = self?.map.annotations, !annotations.isEmpty {
+              self?.map.removeAnnotations(annotations)
+            }
+            self?.map.addAnnotations(
+              array.map(MapVisualViewController.mapToAnnotation(place:))
+            )
+          }
+        case let .userRegion(coordinate):
+          await MainActor.run { [weak self] in
+            self?.map.setRegion(coordinate, animated: true)
+          }
+        case let .selectedId(id):
+          await MainActor.run { [weak self] in
+            guard let self else {
+              return
+            }
+            guard let foundedAnnotation = self.map.annotations.first(where: {
+              getIdPlaceFromAnnotation($0) == id
+            }) else {
+              return
+            }
+            self.map.selectedAnnotations = [foundedAnnotation]
+            self.map.region.center = foundedAnnotation.coordinate
+          }
+        case .requestDeselectedId:
+          await MainActor.run { [weak self] in
+            guard let self else {
+              return
+            }
+            for annotation in self.map.selectedAnnotations {
+              self.map.deselectAnnotation(annotation, animated: true)
+            }
+          }
+        }
+      }
+    }
   }
 
   deinit {
-		for task in tasks {
-			task.cancel()
-		}
-		self.tasks.removeAll()
+    task?.cancel()
+    task = nil
   }
 
   public func layoutUI() {
@@ -236,9 +163,9 @@ public class MapVisualViewController: UINavigationController {
   }
 
   func showDetail(id: Int) {
-//    self.store.send(
-//      .showDetail(id)
-//    )
+    //    self.store.send(
+    //      .showDetail(id)
+    //    )
   }
 
   static func mapToAnnotation(place: Place) -> MKAnnotation {
@@ -259,7 +186,7 @@ public class MapVisualViewController: UINavigationController {
 }
 
 extension MapVisualViewController: MKMapViewDelegate {
-	public func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+  public func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
     if annotation.isKind(of: MKUserLocation.self) {
       return nil
     }
@@ -271,56 +198,57 @@ extension MapVisualViewController: MKMapViewDelegate {
         withIdentifier: self.CarGarageIdentifier,
         for: carGarageAnnotation
       ) as! CarGarageAnnotationView
-			let image = HomeFeatureAsset.Images.carIcon.image
+      let image = HomeFeatureAsset.Images.carIcon.image
       view.glyphImage = image
-			view.markerTintColor = HomeFeatureAsset.Colors.carGarage.color
+      view.markerTintColor = HomeFeatureAsset.Colors.carGarage.color
       view.clusteringIdentifier = self.CarClusterIdentifier
       view.displayPriority = .required
       return view
     } else if let motorcycleAnnotation = annotation as? MotorcycleGarageAnnotation {
-			let view = mapView.dequeueReusableAnnotationView(
-				withIdentifier: self.MotorcycleGarageIdentifier,
-				for: motorcycleAnnotation
-			) as! MotorCycleGarageAnnotationView
-			let image =  HomeFeatureAsset.Images.motorcycleIcon.image
-			view.glyphImage = image
-			view.markerTintColor = HomeFeatureAsset.Colors.motorcycleGarage.color
-			view.clusteringIdentifier = self.MotorCycleClusterIdentifier
-			view.displayPriority = .required
-			return view
-		} else if let inflatingPointAnnotation = annotation as? InflatingPointAnnotation {
-			let view = mapView.dequeueReusableAnnotationView(
-				withIdentifier: self.InflatingPointIdentifier,
-				for: inflatingPointAnnotation
-			) as! InflatingPointsAnnotationView
-			view.glyphImage = HomeFeatureAsset.Images.psiIcon.image
-			view.markerTintColor = HomeFeatureAsset.Colors.inflationPoint.color
-			view.clusteringIdentifier = self.InflatingPointClusterIdentifier
-			view.displayPriority = .required
-			return view
-		} else if let washStationAnnotation = annotation as? WashStationAnnotation {
-			let view = mapView.dequeueReusableAnnotationView(
-				withIdentifier: self.WashStationIdentifier,
-				for: washStationAnnotation
-			) as! WashStationAnnotationView
-			view.glyphImage = HomeFeatureAsset.Images.waterDropIcon.image
-			view.markerTintColor = HomeFeatureAsset.Colors.washStation.color
-			view.clusteringIdentifier = self.WashStationClusterIdentifier
-			view.displayPriority = .required
-			return view
-		} else if let patchTireStationAnnotation = annotation as? PatchTireStationAnnotation {
-			let view = mapView.dequeueReusableAnnotationView(
-				withIdentifier: self.PatchTireStationIdentifier,
-				for: patchTireStationAnnotation
-			) as! PatchTireAnnotationView
-			view.glyphImage = HomeFeatureAsset.Images.patchTireIcon.image
-			view.markerTintColor = HomeFeatureAsset.Colors.patchTireStation.color
-			view.clusteringIdentifier = self.PatchTireStationClusterIdentifier
-			view.displayPriority = .required
-			return view
-		}
+      let view = mapView.dequeueReusableAnnotationView(
+        withIdentifier: self.MotorcycleGarageIdentifier,
+        for: motorcycleAnnotation
+      ) as! MotorCycleGarageAnnotationView
+      let image = HomeFeatureAsset.Images.motorcycleIcon.image
+      view.glyphImage = image
+      view.markerTintColor = HomeFeatureAsset.Colors.motorcycleGarage.color
+      view.clusteringIdentifier = self.MotorCycleClusterIdentifier
+      view.displayPriority = .required
+      return view
+    } else if let inflatingPointAnnotation = annotation as? InflatingPointAnnotation {
+      let view = mapView.dequeueReusableAnnotationView(
+        withIdentifier: self.InflatingPointIdentifier,
+        for: inflatingPointAnnotation
+      ) as! InflatingPointsAnnotationView
+      view.glyphImage = HomeFeatureAsset.Images.psiIcon.image
+      view.markerTintColor = HomeFeatureAsset.Colors.inflationPoint.color
+      view.clusteringIdentifier = self.InflatingPointClusterIdentifier
+      view.displayPriority = .required
+      return view
+    } else if let washStationAnnotation = annotation as? WashStationAnnotation {
+      let view = mapView.dequeueReusableAnnotationView(
+        withIdentifier: self.WashStationIdentifier,
+        for: washStationAnnotation
+      ) as! WashStationAnnotationView
+      view.glyphImage = HomeFeatureAsset.Images.waterDropIcon.image
+      view.markerTintColor = HomeFeatureAsset.Colors.washStation.color
+      view.clusteringIdentifier = self.WashStationClusterIdentifier
+      view.displayPriority = .required
+      return view
+    } else if let patchTireStationAnnotation = annotation as? PatchTireStationAnnotation {
+      let view = mapView.dequeueReusableAnnotationView(
+        withIdentifier: self.PatchTireStationIdentifier,
+        for: patchTireStationAnnotation
+      ) as! PatchTireAnnotationView
+      view.glyphImage = HomeFeatureAsset.Images.patchTireIcon.image
+      view.markerTintColor = HomeFeatureAsset.Colors.patchTireStation.color
+      view.clusteringIdentifier = self.PatchTireStationClusterIdentifier
+      view.displayPriority = .required
+      return view
+    }
 
     // MARK: Cluster
+
     else if let clusterAnnotation = annotation as? CarClusterAnnotation {
       let clusterAnnotationView = mapView.dequeueReusableAnnotationView(
         withIdentifier: self.CarClusterIdentifier,
@@ -335,7 +263,7 @@ extension MapVisualViewController: MKMapViewDelegate {
         for: clusterAnnotation
       ) as! MotorcycleClusterAnnotationView
       clusterAnnotationView.numberOfChildren = clusterAnnotation.memberAnnotations.count
-			clusterAnnotationView.backgroundColor = HomeFeatureAsset.Colors.motorcycleGarage.color
+      clusterAnnotationView.backgroundColor = HomeFeatureAsset.Colors.motorcycleGarage.color
       return clusterAnnotationView
     } else if let clusterAnnotation = annotation as? InflatingPointClusterAnnotation {
       let clusterAnnotationView = mapView.dequeueReusableAnnotationView(
@@ -343,7 +271,7 @@ extension MapVisualViewController: MKMapViewDelegate {
         for: clusterAnnotation
       ) as! InflatingPointClusterAnnotationView
       clusterAnnotationView.numberOfChildren = clusterAnnotation.memberAnnotations.count
-			clusterAnnotationView.backgroundColor = HomeFeatureAsset.Colors.inflationPoint.color
+      clusterAnnotationView.backgroundColor = HomeFeatureAsset.Colors.inflationPoint.color
       return clusterAnnotationView
     } else if let clusterAnnotation = annotation as? WashStationClusterAnnotation {
       let clusterAnnotationView = mapView.dequeueReusableAnnotationView(
@@ -351,7 +279,7 @@ extension MapVisualViewController: MKMapViewDelegate {
         for: clusterAnnotation
       ) as! WashStationClusterAnnotationView
       clusterAnnotationView.numberOfChildren = clusterAnnotation.memberAnnotations.count
-			clusterAnnotationView.backgroundColor = HomeFeatureAsset.Colors.washStation.color
+      clusterAnnotationView.backgroundColor = HomeFeatureAsset.Colors.washStation.color
       return clusterAnnotationView
     } else if let clusterAnnotation = annotation as? PatchTireClusterAnnotation {
       let clusterAnnotationView = mapView.dequeueReusableAnnotationView(
@@ -359,13 +287,13 @@ extension MapVisualViewController: MKMapViewDelegate {
         for: clusterAnnotation
       ) as! PatchTireClusterAnnotationView
       clusterAnnotationView.numberOfChildren = clusterAnnotation.memberAnnotations.count
-			clusterAnnotationView.backgroundColor = HomeFeatureAsset.Colors.patchTireStation.color
+      clusterAnnotationView.backgroundColor = HomeFeatureAsset.Colors.patchTireStation.color
       return clusterAnnotationView
     }
     return nil
   }
 
-	public func mapView(
+  public func mapView(
     _ mapView: MKMapView,
     clusterAnnotationForMemberAnnotations memberAnnotations: [MKAnnotation]
   ) -> MKClusterAnnotation {
@@ -383,7 +311,7 @@ extension MapVisualViewController: MKMapViewDelegate {
     return ClusterAnnotation(memberAnnotations: memberAnnotations)
   }
 
-	public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+  public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
     switch view {
     case let view as CarGarageAnnotationView:
       if let annotation = view.annotation as? CarGarageAnnotation {
@@ -393,7 +321,6 @@ extension MapVisualViewController: MKMapViewDelegate {
       if let annotation = view.annotation as? MotorcycleGarageAnnotation {
         self.showDetail(id: annotation.id)
       }
-
     case let view as InflatingPointsAnnotationView:
       if let annotation = view.annotation as? InflatingPointAnnotation {
         self.showDetail(id: annotation.id)
@@ -408,28 +335,37 @@ extension MapVisualViewController: MKMapViewDelegate {
       }
 
     // MARK: - Cluster View
-
     case let view as CarClusterAnnotationView:
       if let coordinate = view.annotation?.coordinate {
         mapView.deselectAnnotation(view.annotation, animated: false)
-				self.store.zoomContinuation.yield(coordinate)
+        self.channel.sendAction(
+          .zoom(to: coordinate)
+        )
       }
     case let view as MotorcycleClusterAnnotationView:
       if let coordinate = view.annotation?.coordinate {
         mapView.deselectAnnotation(view.annotation, animated: false)
-				self.store.zoomContinuation.yield(coordinate)
+        self.channel.sendAction(
+          .zoom(to: coordinate)
+        )
       }
     case let view as InflatingPointClusterAnnotationView:
       if let coordinate = view.annotation?.coordinate {
-				self.store.zoomContinuation.yield(coordinate)
+        self.channel.sendAction(
+          .zoom(to: coordinate)
+        )
       }
     case let view as WashStationClusterAnnotationView:
       if let coordinate = view.annotation?.coordinate {
-				self.store.zoomContinuation.yield(coordinate)
+        self.channel.sendAction(
+          .zoom(to: coordinate)
+        )
       }
     case let view as PatchTireClusterAnnotationView:
       if let coordinate = view.annotation?.coordinate {
-				self.store.zoomContinuation.yield(coordinate)
+        self.channel.sendAction(
+          .zoom(to: coordinate)
+        )
       }
     default:
       break
@@ -437,13 +373,16 @@ extension MapVisualViewController: MKMapViewDelegate {
   }
 
   public func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-		self.store.didChangeCoordiateRegionContinuation.yield(mapView.region)
+    self.channel.sendAction(
+      .didChangeCoordiateRegion(mapView.region)
+    )
   }
 
-	public func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
-		self.store.didDeselectContinuation.yield(())
+  public func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+    self.channel.sendAction(
+      .didDeselect
+    )
   }
-	
 }
 
 func getIdPlaceFromAnnotation(_ annotation: MKAnnotation) -> Int? {

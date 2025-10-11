@@ -16,7 +16,6 @@ public struct AccessTokenClient: Sendable {
     self.accessToken = accessToken
     self.updateAccessToken = updateAccessToken
   }
-	
 }
 
 extension AccessTokenClient: EnvironmentKey {

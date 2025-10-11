@@ -1,12 +1,21 @@
 SHELL := /bin/bash
 
+SECRETS_SH := ./bin/secrets.sh
+
+.PHONY: fmt loadSecret saveSecret secrets-get secrets-put chmod-secrets
+
 fmt:
 	swiftformat .
 
-loadSecret:
-	@chmod +x ./bin/load-secret.sh
-	sh ./bin/load-secret.sh
+chmod-secrets:
+	@chmod +x $(SECRETS_SH)
 
-saveSecret:
-	@chmod +x ./bin/save-secret.sh
-	sh ./bin/save-secret.sh
+# Backward compatible names
+loadSecret: secrets-get
+saveSecret: secrets-put
+
+secrets-get: chmod-secrets
+	$(SECRETS_SH) get
+
+secrets-put: chmod-secrets
+	$(SECRETS_SH) put

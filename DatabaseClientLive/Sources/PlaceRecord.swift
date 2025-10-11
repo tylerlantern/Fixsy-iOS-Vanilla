@@ -1,6 +1,6 @@
 import Foundation
 import GRDB
-import Model
+import Models
 
 public struct PlaceRecord: Codable, FetchableRecord, PersistableRecord {
   public static var databaseTableName: String {

@@ -1,23 +1,33 @@
 import DatabaseClient
 import GRDB
-import Model
+import Models
 
 extension CarBrandDB {
   static func live(cache: DatabaseWriter) -> CarBrandDB {
     CarBrandDB(
       observe: {
-        ValueObservation.tracking { db in
-          try fetchCarBrands(db: db)
+        AsyncThrowingStream { continuation in
+          let cancellable = ValueObservation.tracking { db in
+            try fetchCarBrands(db: db)
+          }
+          .start(
+            in: cache,
+            scheduling: .immediate,
+            onError: { error in
+              continuation.finish(throwing: error)
+            },
+            onChange: { items in
+              continuation.yield(items)
+            }
+          )
+          continuation.onTermination = { @Sendable _ in
+            cancellable.cancel()
+          }
         }
-        .publisher(in: cache)
-        .mapError(DBError.error)
-        .castToResult()
       },
       sync: { carBrands in
-        Result {
-          try cache.write { db in
-            try syncCarBrands(db: db, carBrands)
-          }
+        try cache.write { db in
+          try syncCarBrands(db: db, carBrands)
         }
       }
     )

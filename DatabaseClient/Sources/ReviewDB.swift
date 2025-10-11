@@ -3,12 +3,12 @@ import Foundation
 import Models
 
 public struct ReviewDB {
-  public var observe: (Int) -> AnyPublisher<[ReviewItem], DBError>
+  public var observe: (Int) -> AsyncThrowingStream<[ReviewItem], Error>
   public var sync: (Int, [ReviewItem], Int) async throws -> Int
   public var update: (Int, ReviewItem) async throws -> Int
 
   public init(
-    observe: @escaping (Int) -> AnyPublisher<[ReviewItem], DBError>,
+    observe: @escaping (Int) -> AsyncThrowingStream<[ReviewItem], Error>,
     sync: @escaping (Int, [ReviewItem], Int) async throws -> Int,
     update: @escaping (Int, ReviewItem) async throws -> Int
   ) {

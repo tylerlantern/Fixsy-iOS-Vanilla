@@ -1,5 +1,5 @@
 import GRDB
-import Model
+import Models
 
 public struct MotorcycleGarageRecord: Codable, FetchableRecord, PersistableRecord {
   public static var databaseTableName: String {

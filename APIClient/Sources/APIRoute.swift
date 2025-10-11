@@ -23,9 +23,9 @@ public enum APIRoute: Equatable {
     branchId: Int
   )
   case refreshToken(
-		accessToken : String,
-		refreshToken : String
-	)
+    accessToken: String,
+    refreshToken: String
+  )
   case socialSignin(
     token: String,
     provider: String
@@ -41,7 +41,7 @@ public enum APIRoute: Equatable {
 }
 
 public enum APIUserRoute: Equatable {
-	case editName(firstName: String, lastName: String)
+  case editName(firstName: String, lastName: String)
   case delete
   case carBrands
   case userProfile
@@ -63,40 +63,39 @@ public enum APIUserRoute: Equatable {
     images: [UIImage],
     carBrands: [CarBrand]
   )
-	
-	public enum Service: String, Equatable, CaseIterable, Identifiable {
-		public var id: String { self.rawValue }
-		case
-		car,
-		motorcycle,
-		inflatingPoint,
-		wash,
-		patchTire
-		
-		public var postValue: String {
-			switch self {
-			case .car:
-				return "cargarage"
-			case .motorcycle:
-				return "motorcyclegarage"
-			case .inflatingPoint:
-				return "inflatingpoint"
-			case .wash:
-				return "washstation"
-			case .patchTire:
-				return "patchtirestation"
-			}
-		}
-		
-	}
-	public struct CarBrand: Equatable, Identifiable {
-		public let id: Int
-		public let displayName: String
 
-		public init(id: Int, displayName: String) {
-			self.id = id
-			self.displayName = displayName
-		}
-	}
-	
+  public enum Service: String, Equatable, CaseIterable, Identifiable {
+    public var id: String { self.rawValue }
+    case
+      car,
+      motorcycle,
+      inflatingPoint,
+      wash,
+      patchTire
+
+    public var postValue: String {
+      switch self {
+      case .car:
+        return "cargarage"
+      case .motorcycle:
+        return "motorcyclegarage"
+      case .inflatingPoint:
+        return "inflatingpoint"
+      case .wash:
+        return "washstation"
+      case .patchTire:
+        return "patchtirestation"
+      }
+    }
+  }
+
+  public struct CarBrand: Equatable, Identifiable {
+    public let id: Int
+    public let displayName: String
+
+    public init(id: Int, displayName: String) {
+      self.id = id
+      self.displayName = displayName
+    }
+  }
 }

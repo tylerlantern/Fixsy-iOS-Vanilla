@@ -1,5 +1,5 @@
-import SwiftUI
 import Foundation
+import SwiftUI
 
 public struct APIClient {
   public var request: (APIRoute) async throws -> (data: Data, response: URLResponse)
@@ -19,7 +19,7 @@ public struct APIClient {
   public func call<A: Decodable>(
     route: APIUserRoute,
     as: A.Type,
-		decoder: JSONDecoder = JSONDecoder.init(),
+    decoder: JSONDecoder = JSONDecoder.init(),
     file: StaticString = #file,
     line: UInt = #line
   ) async throws -> A {
@@ -70,6 +70,7 @@ public struct APIClient {
 
   private func handleAPIError(decoder: JSONDecoder, statusCode: Int, data: Data) -> APIError {
     // MARK: - After Confirm New Error Parser Model `APIErrorData`
+
     let message = String(decoding: data, as: UTF8.self)
     return .data(
       statusCode,
@@ -83,19 +84,18 @@ public struct APIClient {
 }
 
 extension APIClient: EnvironmentKey {
-	public static let defaultValue: APIClient = .init { route in
-		fatalError("\(Self.self).request is unimplemented")
-	} userRequest: { _ in
-		fatalError("\(Self.self).userRequest is unimplemented")
-	}
-
+  public static let defaultValue: APIClient = .init { _ in
+    fatalError("\(Self.self).request is unimplemented")
+  } userRequest: { _ in
+    fatalError("\(Self.self).userRequest is unimplemented")
+  }
 }
 
 extension EnvironmentValues {
-	public var apiClient: APIClient {
-		get { self[APIClient.self] }
-		set { self[APIClient.self] = newValue }
-	}
+  public var apiClient: APIClient {
+    get { self[APIClient.self] }
+    set { self[APIClient.self] = newValue }
+  }
 }
 
 public extension APIClient {

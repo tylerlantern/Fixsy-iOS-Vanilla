@@ -10,70 +10,69 @@ extension APIRoute {
     case .signUp:
       fatalError()
     case .mapData:
-			 return url
-				.appendingPathComponent("mapdata")
-				.appendingPathComponent("serviceplaces")
-				.makeAnonymousURLRequest(
-					version: "1.1",
-					method: .get
-				)
+      return url
+        .appendingPathComponent("mapdata")
+        .appendingPathComponent("serviceplaces")
+        .makeAnonymousURLRequest(
+          version: "1.1",
+          method: .get
+        )
     case let .socialSignIn(
       token: token,
       provider: provider
     ):
-			return url
-			 .appendingPathComponent("mapdata")
-			 .appendingPathComponent("serviceplaces")
-			 .makeAnonymousURLRequest(
-				 version: "1.1",
-				 method: .post(
-					SocialSignInRequest(
-						token: token,
-						provider: provider
-					)
-				 )
-			 )
-
+      return url
+        .appendingPathComponent("mapdata")
+        .appendingPathComponent("serviceplaces")
+        .makeAnonymousURLRequest(
+          version: "1.1",
+          method: .post(
+            SocialSignInRequest(
+              token: token,
+              provider: provider
+            )
+          )
+        )
     case let .reviewList(pageNumber: pageNumber, pageSize: pageSize, branchId: branchId):
       var queryItems = [URLQueryItem]()
       queryItems.append(.init(name: "pageNumber", value: "\(pageNumber)"))
       queryItems.append(.init(name: "pageSize", value: "\(pageSize)"))
       queryItems.append(.init(name: "branchId", value: "\(branchId)"))
-			let url = url
-				.appendingPathComponent("review")
-				.appendingQueries(queryItems)
-			return url.makeAnonymousURLRequest(
-				version: "1.0",
-				method: .get
-			)
-		case let .refreshToken(
-			accessToken,
-			refreshToken
-		):
-			return url
-				.appendingPathComponent("auth/refreshtoken")
-				.makeAnonymousURLRequest(
-					version: "1.0",
-					method: .post(
-						RefreshTokenRequest(
-							accessToken: accessToken,
-							refreshToken: refreshToken
-						)
-					)
-				)
+      let url = url
+        .appendingPathComponent("review")
+        .appendingQueries(queryItems)
+      return url.makeAnonymousURLRequest(
+        version: "1.0",
+        method: .get
+      )
+    case let .refreshToken(
+      accessToken,
+      refreshToken
+    ):
+      return url
+        .appendingPathComponent("auth/refreshtoken")
+        .makeAnonymousURLRequest(
+          version: "1.0",
+          method: .post(
+            RefreshTokenRequest(
+              accessToken: accessToken,
+              refreshToken: refreshToken
+            )
+          )
+        )
     case let .socialSignin(token: token, provider: provider):
-			return url
-				.appendingPathComponent("auth")
-				.appendingPathComponent("socialsignin")
-				.makeAnonymousURLRequest(
-					version: "1.0",
-					method: .post(
-						SocialSignInRequest(
-							token: token,
-							provider: provider
-						)
-					)
-				)
+      return url
+        .appendingPathComponent("auth")
+        .appendingPathComponent("socialsignin")
+        .makeAnonymousURLRequest(
+          version: "1.0",
+          method: .post(
+            SocialSignInRequest(
+              token: token,
+              provider: provider
+            )
+          )
+        )
     case let .socialSignup(
       token: token,
       provider: provider,
@@ -82,22 +81,22 @@ extension APIRoute {
       username: username,
       picture: picture
     ):
-			return url
-				.appendingPathComponent("auth")
-				.appendingPathComponent("socialsignup")
-				.makeAnonymousURLRequest(
-					version: "1.0",
-					method: .post(
-						SocialSignupRequest(
-							token: token,
-							provider: provider,
-							firstname: firstname,
-							lastname: lastname,
-							username: username,
-							picture: picture ?? ""
-						)
-					)
-				)
+      return url
+        .appendingPathComponent("auth")
+        .appendingPathComponent("socialsignup")
+        .makeAnonymousURLRequest(
+          version: "1.0",
+          method: .post(
+            SocialSignupRequest(
+              token: token,
+              provider: provider,
+              firstname: firstname,
+              lastname: lastname,
+              username: username,
+              picture: picture ?? ""
+            )
+          )
+        )
     }
   }
 }
@@ -106,29 +105,29 @@ extension APIUserRoute {
   func urlRequest(url: URL, token: Token) -> URLRequest {
     switch self {
     case let .editName(firstName: firstName, lastName: lastName):
-			return url
-				.appendingPathComponent("profile/editname")
-				.makeAuthorizationURLRequest(
-					token: token,
-					version: nil,
-					method: .post(EditingNameRequest(firstName: firstName, lastName: lastName))
-				)
+      return url
+        .appendingPathComponent("profile/editname")
+        .makeAuthorizationURLRequest(
+          token: token,
+          version: nil,
+          method: .post(EditingNameRequest(firstName: firstName, lastName: lastName))
+        )
     case .logout:
-			return url
-				.appendingPathComponent("auth/revoke")
-				.makeAuthorizationURLRequest(
-					token: token,
-					version: nil,
-					method: .post(EmptyRequest())
-				)
+      return url
+        .appendingPathComponent("auth/revoke")
+        .makeAuthorizationURLRequest(
+          token: token,
+          version: nil,
+          method: .post(EmptyRequest())
+        )
     case .userProfile:
-			return url
-				.appendingPathComponent("profile")
-				.makeAuthorizationURLRequest(
-					token: token,
-					version: nil,
-					method: .get
-				)
+      return url
+        .appendingPathComponent("profile")
+        .makeAuthorizationURLRequest(
+          token: token,
+          version: nil,
+          method: .get
+        )
     case let .requestForm(
       name,
       service,
@@ -163,22 +162,22 @@ extension APIUserRoute {
       }
 
       let multipartFormData = MultipartFormData(multipartFormParameters: parameters)
-			let urlRequest = url
-				.appendingPathComponent("requestform")
-				.appendingPathComponent("create")
-				.makeAuthorizationURLRequest(
-					token: token,
-					version: "1.1",
-					formData: multipartFormData
-				)
-			return urlRequest
+      let urlRequest = url
+        .appendingPathComponent("requestform")
+        .appendingPathComponent("create")
+        .makeAuthorizationURLRequest(
+          token: token,
+          version: "1.1",
+          formData: multipartFormData
+        )
+      return urlRequest
     case .carBrands:
-			return url
-				.appendingPathComponent("brand")
-				.appendingPathComponent("car")
-				.makeAuthorizationURLRequest(
-					token: token
-				)
+      return url
+        .appendingPathComponent("brand")
+        .appendingPathComponent("car")
+        .makeAuthorizationURLRequest(
+          token: token
+        )
     case let .reviewForm(
       branchId: branchId,
       text: text,
@@ -204,23 +203,23 @@ extension APIUserRoute {
         parameters["brandOfCarIds"] = .string(carBrandIds)
       }
       let multipartFormData = MultipartFormData(multipartFormParameters: parameters)
-			let urlRequest = url
-				.appendingPathComponent("review")
-				.appendingPathComponent("create")
-				.makeAuthorizationURLRequest(
-					token: token,
-					version: "1.1",
-					formData: multipartFormData
-				)
-			return urlRequest
+      let urlRequest = url
+        .appendingPathComponent("review")
+        .appendingPathComponent("create")
+        .makeAuthorizationURLRequest(
+          token: token,
+          version: "1.1",
+          formData: multipartFormData
+        )
+      return urlRequest
     case .delete:
-			return url
-				.appendingPathComponent("auth")
-				.appendingPathComponent("delete")
-				.makeAnonymousURLRequest(
-					version: "1.0",
-					method: .post(EmptyRequest())
-				)
+      return url
+        .appendingPathComponent("auth")
+        .appendingPathComponent("delete")
+        .makeAnonymousURLRequest(
+          version: "1.0",
+          method: .post(EmptyRequest())
+        )
     }
   }
 }
@@ -229,126 +228,123 @@ public struct EmptyBody: Codable { public init() {} }
 public typealias HttpMethodNoBody = HttpMethod<EmptyBody>
 
 extension URL {
-	
-	// Overload for no-body methods
-	func makeAnonymousURLRequest(
-		version: String?,
-		method: HttpMethodNoBody = .get   // default GET without body
-	) -> URLRequest {
-		makeCommonRequest(url: self, version: version, method: method)
-	}
-	
-	func makeAnonymousURLRequest<Body : Encodable>(
-		version : String?,
-		method : HttpMethod<Body>
-	) -> URLRequest {
-		return makeCommonRequest(
-			url: self,
-			version: version,
-			method: method
-		)
-	}
-	
-	func makeAuthorizationURLRequest(
-		token : Token,
-		version : String? = nil,
-		method : HttpMethodNoBody = .get
-	) -> URLRequest {
-		var urlRequest = makeCommonRequest(
-			url: self,
-			version: version,
-			method: method
-		)
-		authorizationHeader(
-			accessToken: token.accessToken
-		)(&urlRequest)
-		return urlRequest
-	}
-	
-	func makeAuthorizationURLRequest<Body : Encodable>(
-		token : Token,
-		version : String?,
-		method : HttpMethod<Body>
-	) -> URLRequest {
-		var urlRequest = makeCommonRequest(
-			url: self,
-			version: version,
-			method: method
-		)
-		authorizationHeader(
-			accessToken: token.accessToken
-		)(&urlRequest)
-		return urlRequest
-	}
-	
-	func makeAuthorizationURLRequest(
-		token : Token,
-		version : String?,
-		formData : MultipartFormData
-	) -> URLRequest {
-		var urlRequest = makeCommonRequest(
-			url: self,
-			version: version,
-			method: HttpMethodNoBody.get,
-			formData: formData
-		)
-		authorizationHeader(
-			accessToken: token.accessToken
-		)(&urlRequest)
-		return urlRequest
-	}
-	
+  // Overload for no-body methods
+  func makeAnonymousURLRequest(
+    version: String?,
+    method: HttpMethodNoBody = .get // default GET without body
+  ) -> URLRequest {
+    makeCommonRequest(url: self, version: version, method: method)
+  }
+
+  func makeAnonymousURLRequest<Body: Encodable>(
+    version: String?,
+    method: HttpMethod<Body>
+  ) -> URLRequest {
+    makeCommonRequest(
+      url: self,
+      version: version,
+      method: method
+    )
+  }
+
+  func makeAuthorizationURLRequest(
+    token: Token,
+    version: String? = nil,
+    method: HttpMethodNoBody = .get
+  ) -> URLRequest {
+    var urlRequest = makeCommonRequest(
+      url: self,
+      version: version,
+      method: method
+    )
+    authorizationHeader(
+      accessToken: token.accessToken
+    )(&urlRequest)
+    return urlRequest
+  }
+
+  func makeAuthorizationURLRequest<Body: Encodable>(
+    token: Token,
+    version: String?,
+    method: HttpMethod<Body>
+  ) -> URLRequest {
+    var urlRequest = makeCommonRequest(
+      url: self,
+      version: version,
+      method: method
+    )
+    authorizationHeader(
+      accessToken: token.accessToken
+    )(&urlRequest)
+    return urlRequest
+  }
+
+  func makeAuthorizationURLRequest(
+    token: Token,
+    version: String?,
+    formData: MultipartFormData
+  ) -> URLRequest {
+    var urlRequest = makeCommonRequest(
+      url: self,
+      version: version,
+      method: HttpMethodNoBody.get,
+      formData: formData
+    )
+    authorizationHeader(
+      accessToken: token.accessToken
+    )(&urlRequest)
+    return urlRequest
+  }
 }
 
-func makeCommonRequest<Body : Encodable>(
-	url : URL,
-	version : String?,
-	method : HttpMethod<Body>?,
-	formData : MultipartFormData? = nil
+func makeCommonRequest<Body: Encodable>(
+  url: URL,
+  version: String?,
+  method: HttpMethod<Body>?,
+  formData: MultipartFormData? = nil
 ) -> URLRequest {
-	var urlRequest = URLRequest(
-		url: url,
-		formData: formData!
-	)
-	if let version = version {
-		setHeader(name: "version", value: version)(&urlRequest)
-	}
-	if let method = method,
-		let body = method.extractBody {
-		urlRequest.httpMethod = method.httpMethod
-		let encodedBody = try? JSONEncoder().encode(body)
-		urlRequest.httpBody = encodedBody
-	}
-	if let formData = formData {
-		setMultipartFormData(formData)(&urlRequest)
-	}
-	
-	jsonContentType(&urlRequest)
-	return urlRequest
-}
+  var urlRequest = URLRequest(
+    url: url
+  )
+  if let version = version {
+    setHeader(name: "version", value: version)(&urlRequest)
+  }
+  if let method = method,
+     let body = method.extractBody
+  {
+    urlRequest.httpMethod = method.httpMethod
+    let encodedBody = try? JSONEncoder().encode(body)
+    urlRequest.httpBody = encodedBody
+  }
+  if let formData = formData {
+    setMultipartFormData(formData)(&urlRequest)
+  }
 
+  jsonContentType(&urlRequest)
+  return urlRequest
+}
 
 func setHeader(name: String, value: String?) -> (inout URLRequest) -> () {
-	return { (urlRequest : inout URLRequest) in
-		if urlRequest.allHTTPHeaderFields == nil {
-			urlRequest.allHTTPHeaderFields = [:]
-		}
-		urlRequest.allHTTPHeaderFields?[name] = value
-	}
+  { (urlRequest: inout URLRequest) in
+    if urlRequest.allHTTPHeaderFields == nil {
+      urlRequest.allHTTPHeaderFields = [:]
+    }
+    urlRequest.allHTTPHeaderFields?[name] = value
+  }
 }
 
 func setMultipartFormData(
-	_ formData: MultipartFormData
+  _ formData: MultipartFormData
 ) -> (inout URLRequest) -> () {
-	return { urlRequest in
-		urlRequest.httpMethod = "POST"
-		urlRequest.setValue(
-			"multipart/form-data; boundary=\(formData.boundary)",
-			forHTTPHeaderField: "Content-Type"
-		)
-		urlRequest.setValue("*/*", forHTTPHeaderField: "Accept")
-		urlRequest.httpBody = formData.data
-	}
+  { urlRequest in
+    urlRequest.httpMethod = "POST"
+    urlRequest.setValue(
+      "multipart/form-data; boundary=\(formData.boundary)",
+      forHTTPHeaderField: "Content-Type"
+    )
+    urlRequest.setValue("*/*", forHTTPHeaderField: "Accept")
+    urlRequest.httpBody = formData.data
+  }
 }
 
 func authorizationHeader(accessToken: String) -> (inout URLRequest) -> () {
@@ -370,7 +366,7 @@ extension HTTPMethod {
   static var delete: Self = "DELETE"
 }
 
-//func genderValue(gender: Gender) -> String {
+// func genderValue(gender: Gender) -> String {
 //  switch gender {
 //  case .male:
 //    return "Male"
@@ -381,7 +377,7 @@ extension HTTPMethod {
 //  case .none:
 //    return ""
 //  }
-//}
+// }
 
 func dateValue(date: Date?) -> String {
   guard let date = date else { return "" }

@@ -16,6 +16,18 @@
    xed .
    ```
 
+5. Load secret file (`ConfgsLive.swift`)
+  ```bash
+
+  make loadSecret
+  ```
+```
+```
+
+
+# Save Secret
+ `make saveSecret`
+
 # Edit Tuist configulation
 - Run `tuist edit`
 
@@ -54,10 +66,3 @@
 
 The `Router` is the navigation graph that holds all view navigation implementations in `RouterLive`.  
 The graph is self-explanatory, providing a clear overview of the navigation flow throughout the app. Reviewing it will give you a big-picture understanding of how views are navigated in the application.
-
-# Modular At Ease
-
-The project template is designed to keep things simple and minimal.  
-You can adapt it to various architectural patterns like **MVVM**, **MVC**, or **Clean Architecture**. However, it is recommended to stick with a lightweight, vanilla approach similar to **React**.
-
-For additional insights, check this [discussion on the Apple Developer forums](https://forums.developer.apple.com/forums/thread/699003?page=2).

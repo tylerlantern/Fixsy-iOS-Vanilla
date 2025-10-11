@@ -1,5 +1,4 @@
-
-public struct PlaceFilter: Codable, Equatable {
+public struct PlaceFilter: Codable, Equatable, Sendable {
   public var showCarGarage: Bool
   public var showMotorcycleGarages: Bool
   public var showInflationPoints: Bool

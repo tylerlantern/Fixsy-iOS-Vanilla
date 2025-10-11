@@ -16,6 +16,8 @@ extension Router {
 }
 
 struct RouteView: View {
+  @Environment(\.databaseClient) var databaseClient
+
   let route: Route
 
   var body: some View {
@@ -23,7 +25,12 @@ struct RouteView: View {
     case .tabContainer:
       TabContainerView()
     case .home(.root):
-      HomeView()
+      HomeView(
+        placeStore: .init(
+          observeLocalDataCallback: self.databaseClient.observeMapData,
+          syncLocalCallback: self.databaseClient.syncPlaces
+        )
+      )
     case let .home(
       .detail(.root(navPath, title))
     ):

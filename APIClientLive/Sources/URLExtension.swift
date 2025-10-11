@@ -10,7 +10,7 @@ extension URL {
     else { return self }
 
     var queryItems: [URLQueryItem] = urlComponents.queryItems ?? []
-    queries.forEach { query in
+    for query in queries {
       queryItems.append(query)
     }
     urlComponents.queryItems = queryItems

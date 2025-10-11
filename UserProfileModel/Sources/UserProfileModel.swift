@@ -1,6 +1,6 @@
 import Foundation
 
-public struct UserProfile: Equatable, Codable {
+public struct UserProfile: Equatable, Codable, Sendable {
   public var id: String
   public var email: String
   public var firstName: String

@@ -8,5 +8,4 @@ public struct MapDataResponse: Decodable {
   ) {
     self.places = places
   }
-
 }

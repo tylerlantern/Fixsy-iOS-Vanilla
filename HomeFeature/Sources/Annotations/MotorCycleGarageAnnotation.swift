@@ -1,7 +1,6 @@
 import MapKit
-import UIKit
 import Models
-
+import UIKit
 
 public class MotorcycleGarageAnnotation: NSObject, MKAnnotation {
   public let coordinate: CLLocationCoordinate2D

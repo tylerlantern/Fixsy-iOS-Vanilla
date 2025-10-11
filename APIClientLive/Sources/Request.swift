@@ -8,7 +8,7 @@ public struct Request {
 public extension Request {
   init(get url: URL, headers: HttpHeaders = .init()) {
     var urlRequest = URLRequest(url: url)
-    headers.forEach { field in
+    for field in headers {
       urlRequest.addValue(field.value, forHTTPHeaderField: field.key.header)
     }
     self.urlRequest = urlRequest
@@ -36,7 +36,7 @@ public extension Request {
     headers: HttpHeaders = .init()
   ) {
     var urlRequest = URLRequest(url: url)
-    headers.forEach { field in
+    for field in headers {
       urlRequest.addValue(field.value, forHTTPHeaderField: field.key.header)
     }
     urlRequest.httpMethod = "POST"
