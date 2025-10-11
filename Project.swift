@@ -27,9 +27,21 @@ let project = Project(
 			sources: ["AppCore/Sources/**"],
 			resources: ["AppCore/Resources/**"],
 			dependencies: [
+				//Start Config
+				.target(name: "Configs"),
+				.target(name: "ConfigsLive"),
+				//End Configs
+				
 				.target(name: "Router"),
 				.target(name: "RouterLive"),
-				.target(name: "APIClient")
+				
+				//Start Clients
+				.target(name: "AccessTokenClient"),
+				.target(name: "AccessTokenClientLive"),
+				.target(name: "APIClient"),
+				.target(name: "APIClientLive")
+				//End Clients
+
 			],
 			settings: .settings(
 				base: [
@@ -77,7 +89,45 @@ let project = Project(
 				.target(name: "ExpandedCommentFeature")
 			]
 		),
+		
+		//Start Config
+		.framework(
+			name: "Configs"
+		),
+		.framework(
+			name: "ConfigsLive",
+			dependencies: [
+				.target(name : "Configs")
+			]
+		),
+		//End Config
+		
+		// Start Model
+		.framework(
+			name: "Models"
+		),
+		.framework(
+			name: "UserProfileModel"
+		),
+		.framework(
+			name: "TokenModel"
+		),
+		// End Model
+		
 		// Start Client
+		.framework(
+			name: "AccessTokenClient",
+			dependencies: [
+				.target(name: "TokenModel")
+			]
+		),
+		.framework(
+			name: "AccessTokenClientLive",
+			dependencies: [
+				.target(name:"AccessTokenClient"),
+				.external(name: "KeychainAccess")
+			]
+		),
 		.framework(
 			name: "APIClient",
 			dependencies: []
@@ -95,13 +145,29 @@ let project = Project(
 				.target(name: "APIClient")
 			]
 		),
+		.framework(
+			name: "APIClientLive",
+			dependencies: [
+				.target(name: "APIClient"),
+				.target(name: "TokenModel"),
+				.target(name: "AccessTokenClientLive"),
+			]
+		),
+		.framework(
+			name: "DatabaseClient",
+			dependencies: [
+				.target(name: "UserProfileModel"),
+				.target(name: "Models" )
+			]
+		),
+		.framework(
+			name: "DatabaseClientLive",
+			dependencies: [
+				.target(name: "DatabaseClient")
+			]
+		),
 		// End Client
 		
-		// Start Model
-			.framework(
-				name: "Models"
-			),
-		// End Model
 		.framework(
 			name: "TabContainerFeature",
 			dependencies: [
@@ -114,6 +180,8 @@ let project = Project(
 				dependencies: [
 					.target(name: "Router"),
 					.target(name: "Models"),
+					.target(name: "APIClient"),
+					.target(name: "DatabaseClient")
 				]
 			),
 		.featureDemoApp(

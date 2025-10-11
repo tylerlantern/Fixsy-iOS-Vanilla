@@ -1,8 +1,9 @@
 import Foundation
 
-public struct Token: Codable, Sendable, Equatable {
+public struct TokenResponse: Codable, Equatable {
   public let accessToken: String
   public let refreshToken: String
+
   public init(
     accessToken: String,
     refreshToken: String
@@ -11,12 +12,3 @@ public struct Token: Codable, Sendable, Equatable {
     self.refreshToken = refreshToken
   }
 }
-
-#if DEBUG
-  public extension Token {
-    static let mock: Self = .init(
-      accessToken: "mock",
-      refreshToken: "mock-refresh"
-    )
-  }
-#endif

@@ -1,0 +1,76 @@
+import Foundation
+
+public struct EmptyRequest: Codable {
+  public static func isEmpty(_ request: Any) -> Bool {
+    request is EmptyRequest
+  }
+}
+
+public enum HttpMethod<Body : Encodable> {
+  case get
+  case post(Body)
+  case put(Body)
+  case patch(Body)
+  case delete(Body)
+	
+	public var extractBody: Body? {
+		switch self {
+		case .get: return nil
+		case .post(let b), .put(let b), .patch(let b), .delete(let b): return b
+		}
+	}
+	
+}
+
+extension HttpMethod {
+  var httpMethod: String {
+    switch self {
+    case .get: return "GET"
+    case .post: return "POST"
+    case .put: return "PUT"
+    case .patch: return "PATCH"
+    case .delete: return "DELETE"
+    }
+  }
+}
+
+public enum HttpHeaderName: Hashable {
+  case authorization
+  case contentType
+}
+
+public enum ContentType {
+  case json
+
+  public var value: String {
+    switch self {
+    case .json: return "application/json"
+    }
+  }
+}
+
+public extension HttpHeaderName {
+  var header: String {
+    switch self {
+    case .authorization: return "Authorization"
+    case .contentType: return "Content-Type"
+    }
+  }
+}
+
+public typealias HttpHeaders = [HttpHeaderName: String]
+
+public struct RestfulHeaders {
+  public var publicHeaders: () -> (HttpHeaders) = {
+    [.contentType: ContentType.json.value]
+  }
+
+  public var privateHeaders: (String) -> (HttpHeaders) = { token in
+    [
+      .contentType: ContentType.json.value,
+      .authorization: "Bearer \(token)"
+    ]
+  }
+
+  public init() {}
+}

@@ -1,0 +1,113 @@
+import Combine
+import ComposableArchitecture
+import DatabaseClient
+import Foundation
+import GRDB
+import Model
+
+extension DatabaseClient: DependencyKey {
+  public static var liveValue: DatabaseClient {
+    let (pref, cache) = try! createDatabaseConnections()
+    return Self(
+      migrate: {
+        let result = Result { try DatabaseMigrator.migrate(pref: pref, cache: cache) }
+        switch result {
+        case .success:
+          break
+        case let .failure(error):
+          print("migrate error", error)
+        }
+        return result
+      },
+      userProfileDB: .live(cache: cache),
+      carBrandDB: .live(cache: cache),
+      observeMapData: { placeFilter in
+        ValueObservation.tracking { db in
+          try fetchPlaces(db: db, filter: placeFilter, keyword: "")
+        }
+        .publisher(in: cache)
+        .mapError(DBError.error)
+        .eraseToAnyPublisher()
+      },
+      fetchMapData: { keyword, placeFilter, _ in
+        try await cache.read { db in
+          try fetchPlaces(db: db, filter: placeFilter, keyword: keyword)
+        }
+      },
+      syncPlaces: { (places: [Place]) -> Int in
+        try await cache.write({ db in
+          try savePlaces(db: db, places: places)
+          return places.count
+        })
+      },
+      deleteAll: {
+        try await cache.write { db in
+          try MotorcycleGarageRecord.deleteAll(db)
+          try InflatingPointRecord.deleteAll(db)
+          try WashStationRecord.deleteAll(db)
+          try PatchTireStationRecord.deleteAll(db)
+        }
+      },
+      observePlaceDetail: { id in
+        AsyncThrowingStream(
+          ValueObservation.tracking { db in
+            try PlaceInfo.fetchOne(
+              db,
+              PlaceRecord
+                .filter(Column("id") == id)
+                .include()
+            ).map(toPlace)
+          }
+          .values(in: cache)
+        )
+      },
+      observePlaceFilter: {
+        AsyncThrowingStream(
+          ValueObservation.tracking { db in
+            try getPlaceFilter(db: db)
+          }
+          .values(in: cache)
+        )
+      },
+      syncPlaceFilter: { filter in
+        try await cache.write({ db in
+          try savePlaceFilter(db: db, filter)
+        })
+      },
+      reviewDB: .live(cache: cache)
+    )
+  }
+}
+
+private func createDatabaseConnections() throws -> (pref: DatabaseWriter, cache: DatabaseWriter) {
+  let fileManager = FileManager()
+  let folderURL = try fileManager
+    .url(
+      for: .applicationSupportDirectory,
+      in: .userDomainMask,
+      appropriateFor: nil,
+      create: true
+    )
+    .appendingPathComponent("database", isDirectory: true)
+
+  // Support for tests: delete the database if requested
+  if CommandLine.arguments.contains("-reset") {
+    try? fileManager.removeItem(at: folderURL)
+  }
+
+  try fileManager.createDirectory(at: folderURL, withIntermediateDirectories: true)
+
+  let prefPath = folderURL.appendingPathComponent("pref.sqlite").path
+  let cachePath = folderURL.appendingPathComponent("cache.sqlite").path
+
+  #if DEBUG
+    print("--- Database connection info ---")
+    print("--- Pref:\nopen \"\(prefPath)\"")
+    print("--- Cache:\nopen \"\(cachePath)\"")
+  #endif
+
+  return try (
+    pref: DatabaseQueue(path: prefPath),
+    cache: DatabaseQueue(path: cachePath)
+  )
+}
