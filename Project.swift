@@ -27,12 +27,20 @@ let project = Project(
 			sources: ["AppCore/Sources/**"],
 			resources: ["AppCore/Resources/**"],
 			dependencies: [
+				//Start Config
+				.target(name: "Configs"),
+				.target(name: "ConfigsLive"),
+				//End Configs
+				
 				.target(name: "Router"),
 				.target(name: "RouterLive"),
+				
+				//Start Clients
 				.target(name: "AccessTokenClient"),
 				.target(name: "AccessTokenClientLive"),
 				.target(name: "APIClient"),
 				.target(name: "APIClientLive")
+				//End Clients
 
 			],
 			settings: .settings(
@@ -81,6 +89,18 @@ let project = Project(
 				.target(name: "ExpandedCommentFeature")
 			]
 		),
+		
+		//Start Config
+		.framework(
+			name: "Configs"
+		),
+		.framework(
+			name: "ConfigsLive",
+			dependencies: [
+				.target(name : "Configs")
+			]
+		),
+		//End Config
 		
 		// Start Model
 		.framework(

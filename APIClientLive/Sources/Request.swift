@@ -14,21 +14,21 @@ public extension Request {
     self.urlRequest = urlRequest
   }
 
-  init<Body: Encodable>(
-    post url: URL,
-    method: HttpMethod<Body>,
-    headers: HttpHeaders = .init()
-  ) {
-    var urlRequest = URLRequest(url: url)
-    urlRequest.httpMethod = method.httpMethod
-    // swiftlint:disable:next force_try
-    urlRequest.httpBody = method.data { body in try! JSONEncoder().encode(body) }
-    headers.forEach { field in
-      urlRequest.addValue(field.value, forHTTPHeaderField: field.key.header)
-    }
-
-    self.urlRequest = urlRequest
-  }
+//  init<Body: Encodable>(
+//    post url: URL,
+//    method: HttpMethod<Body>,
+//    headers: HttpHeaders = .init()
+//  ) {
+//    var urlRequest = URLRequest(url: url)
+//    urlRequest.httpMethod = method.httpMethod
+//    // swiftlint:disable:next force_try
+//    urlRequest.httpBody = method.data { body in try! JSONEncoder().encode(body) }
+//    headers.forEach { field in
+//      urlRequest.addValue(field.value, forHTTPHeaderField: field.key.header)
+//    }
+//
+//    self.urlRequest = urlRequest
+//  }
 
   init(
     upload url: URL,

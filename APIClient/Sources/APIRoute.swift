@@ -67,13 +67,26 @@ public enum APIUserRoute: Equatable {
 	public enum Service: String, Equatable, CaseIterable, Identifiable {
 		public var id: String { self.rawValue }
 		case
-			car,
-			motorcycle,
-			inflatingPoint,
-			wash,
-			patchTire
+		car,
+		motorcycle,
+		inflatingPoint,
+		wash,
+		patchTire
 		
-		
+		public var postValue: String {
+			switch self {
+			case .car:
+				return "cargarage"
+			case .motorcycle:
+				return "motorcyclegarage"
+			case .inflatingPoint:
+				return "inflatingpoint"
+			case .wash:
+				return "washstation"
+			case .patchTire:
+				return "patchtirestation"
+			}
+		}
 		
 	}
 	public struct CarBrand: Equatable, Identifiable {
