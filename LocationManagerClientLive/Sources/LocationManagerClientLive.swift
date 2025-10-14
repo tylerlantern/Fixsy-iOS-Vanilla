@@ -1,63 +1,71 @@
 import CoreLocation
-import LocationManagerClient
 import SwiftUI
 import Synchronization
+import LocationManagerClient
 
 public extension LocationManagerClient {
-  @MainActor
-  static let liveValue: Self = {
-    let locationManager = CLLocationManager()
-    return LocationManagerClient(
-      authorizationStatus: {
-        locationManager.authorizationStatus
-      },
-      requestWhenInUseAuthorization: {
-        locationManager.requestWhenInUseAuthorization()
-      },
-      requestLocation: {
-        locationManager.requestLocation()
-      },
+	@MainActor
+	static let liveValue: Self = {
+		let box = LocationManagerBox()            // keeps strong refs & sets delegate once
 
-      location: {
-        locationManager.location
-      },
-      delegate: {
-        let delegate = Mutex<Delegate?>(nil)
-        return AsyncStream<LocationManagerDelegateEvent> { continuation in
-          delegate.withLock { $0 = Delegate(continuation: continuation) }
-          continuation.onTermination = { _ in
-            delegate.withLock { $0 = nil }
-          }
-          delegate.withLock { delegate in
-            locationManager.delegate = delegate
-          }
-        }
-      }
-    )
-  }()
+		return LocationManagerClient(
+			authorizationStatus: { box.manager.authorizationStatus },
+			requestWhenInUseAuthorization: { box.manager.requestWhenInUseAuthorization() },
+			requestLocation: { box.manager.requestLocation() },
+			location: { box.manager.location },
+			delegate: { box.broadcaster.makeStream() } // multicast to all subscribers
+		)
+	}()
 }
 
-final class Delegate: NSObject, CLLocationManagerDelegate, Sendable {
-  let continuation: AsyncStream<LocationManagerDelegateEvent>.Continuation
+/// Keeps strong refs to the Core Location objects and the broadcaster.
+@MainActor
+final class LocationManagerBox {
+	let manager = CLLocationManager()
+	let broadcaster = Broadcaster()
 
-  init(
-    continuation: AsyncStream<LocationManagerDelegateEvent>.Continuation
-  ) {
-    self.continuation = continuation
-  }
+	private let delegateImpl: Delegate
 
-  public func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-    self.continuation.yield(.didChangeAuthorization(manager.authorizationStatus))
-  }
+	init() {
+		delegateImpl = Delegate(broadcaster: broadcaster)
+		manager.delegate = delegateImpl
+	}
+}
 
-  public func locationManager(
-    _ manager: CLLocationManager,
-    didUpdateLocations locations: [CLLocation]
-  ) {
-    self.continuation.yield(.didUpdateLocations(locations))
-  }
+final class Delegate: NSObject, CLLocationManagerDelegate {
+	let broadcaster: Broadcaster
+	init(broadcaster: Broadcaster) { self.broadcaster = broadcaster }
 
-  func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
-    self.continuation.yield(.didFailWithError(error))
-  }
+	func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+		broadcaster.yield(.didChangeAuthorization(manager.authorizationStatus))
+	}
+
+	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+		broadcaster.yield(.didUpdateLocations(locations))
+	}
+
+	func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+		broadcaster.yield(.didFailWithError(error))
+	}
+}
+
+/// Thread-safe broadcaster (mutex). Multicasts events to many AsyncStreams.
+final class Broadcaster {
+	private let dict = Mutex<[UUID: AsyncStream<LocationManagerClient.Event>.Continuation]>([:])
+
+	func makeStream() -> AsyncStream<LocationManagerClient.Event> {
+		let id = UUID()
+		return AsyncStream { continuation in
+			dict.withLock { $0[id] = continuation }
+			continuation.onTermination = { [weak self] _ in
+				_ = self?.dict.withLock { $0.removeValue(forKey: id) }
+			}
+		}
+	}
+
+	func yield(_ event: LocationManagerClient.Event) {
+		// snapshot under lock, then yield outside the critical section
+		let sinks = dict.withLock { Array($0.values) }
+		for c in sinks { _ = c.yield(event) }
+	}
 }

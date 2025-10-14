@@ -3,18 +3,25 @@ import Foundation
 import SwiftUI
 
 public struct LocationManagerClient {
+	
+	public enum Event {
+		case didChangeAuthorization(CLAuthorizationStatus)
+		case didUpdateLocations([CLLocation])
+		case didFailWithError(any Error)
+	}
+	
   public var authorizationStatus: () -> CLAuthorizationStatus
   public var requestWhenInUseAuthorization: () -> ()
   public var requestLocation: () -> ()
   public var location: () -> CLLocation?
-  public var delegate: () -> AsyncStream<LocationManagerDelegateEvent>
+  public var delegate: () -> AsyncStream<Event>
 
   public init(
     authorizationStatus: @escaping () -> CLAuthorizationStatus,
     requestWhenInUseAuthorization: @escaping () -> (),
     requestLocation: @escaping () -> (),
     location: @escaping () -> CLLocation?,
-    delegate: @escaping () -> AsyncStream<LocationManagerDelegateEvent>,
+    delegate: @escaping () -> AsyncStream<Event>,
   ) {
     self.authorizationStatus = authorizationStatus
     self.requestWhenInUseAuthorization = requestWhenInUseAuthorization
@@ -33,7 +40,7 @@ extension LocationManagerClient: EnvironmentKey {
       location: { nil },
       delegate: {
         AsyncStream {
-          LocationManagerDelegateEvent.didChangeAuthorization(.denied)
+					Event.didChangeAuthorization(.denied)
         }
       }
     )

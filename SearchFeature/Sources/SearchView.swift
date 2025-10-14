@@ -71,23 +71,23 @@ public struct SearchView: View {
       self.store.observePlaceFilter(
         callback: self.databaseClient.observePlaceFilter
       )
-      //			let locStream: AsyncStream<CLLocation?> = AsyncStream { continuation in
-      //				let child = Task {
-      //					for await event in self.locationManagerClient.delegate() {
-      //						if case let .didUpdateLocations(list) = event {
-      //							_ = continuation.yield(list.last)
-      //						}
-      //					}
-      //					continuation.finish()
-      //				}
-      //				continuation.onTermination = { _ in
-      //					child.cancel()
-      //				}
-      //			}
-      //			self.store.observeLocalData(
-      //				placeCallback: self.databaseClient.observeMapData,
-      //				locationCallback: locStream
-      //			)
+			let locStream: AsyncStream<CLLocation?> = AsyncStream { continuation in
+				let child = Task {
+					for await event in self.locationManagerClient.delegate() {
+						if case let .didUpdateLocations(list) = event {
+							_ = continuation.yield(list.last)
+						}
+					}
+					continuation.finish()
+				}
+				continuation.onTermination = { _ in
+					child.cancel()
+				}
+			}
+			self.store.observeLocalData(
+				placeCallback: self.databaseClient.observeMapData,
+				locationCallback: locStream
+			)
     }
   }
 }
