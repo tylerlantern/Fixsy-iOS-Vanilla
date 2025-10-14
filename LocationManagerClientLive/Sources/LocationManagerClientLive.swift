@@ -6,29 +6,26 @@ import LocationManagerClient
 public extension LocationManagerClient {
 	@MainActor
 	static let liveValue: Self = {
-		let box = LocationManagerBox()            // keeps strong refs & sets delegate once
+		let box = LocationManagerBox()
 
 		return LocationManagerClient(
 			authorizationStatus: { box.manager.authorizationStatus },
 			requestWhenInUseAuthorization: { box.manager.requestWhenInUseAuthorization() },
 			requestLocation: { box.manager.requestLocation() },
 			location: { box.manager.location },
-			delegate: { box.broadcaster.makeStream() } // multicast to all subscribers
+			delegate: { box.broadcaster.makeStream() }
 		)
 	}()
 }
 
-/// Keeps strong refs to the Core Location objects and the broadcaster.
 @MainActor
 final class LocationManagerBox {
 	let manager = CLLocationManager()
 	let broadcaster = Broadcaster()
-
-	private let delegateImpl: Delegate
-
+	private let delegate: Delegate
 	init() {
-		delegateImpl = Delegate(broadcaster: broadcaster)
-		manager.delegate = delegateImpl
+		delegate = Delegate(broadcaster: broadcaster)
+		manager.delegate = delegate
 	}
 }
 
@@ -49,7 +46,6 @@ final class Delegate: NSObject, CLLocationManagerDelegate {
 	}
 }
 
-/// Thread-safe broadcaster (mutex). Multicasts events to many AsyncStreams.
 final class Broadcaster {
 	private let dict = Mutex<[UUID: AsyncStream<LocationManagerClient.Event>.Continuation]>([:])
 
@@ -64,7 +60,6 @@ final class Broadcaster {
 	}
 
 	func yield(_ event: LocationManagerClient.Event) {
-		// snapshot under lock, then yield outside the critical section
 		let sinks = dict.withLock { Array($0.values) }
 		for c in sinks { _ = c.yield(event) }
 	}
