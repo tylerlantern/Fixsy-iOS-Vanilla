@@ -9,13 +9,13 @@ public class PlaceStore: ObservableObject {
   }
 
   var filter: PlaceFilter = .identity
-	@Published var keyword : String = ""
+  @Published var keyword: String = ""
   let eventChannel = AsyncStream.makeStream(of: Event.self)
-  let observeLocalDataCallback: (PlaceFilter,String) -> AsyncThrowingStream<[Place], Error>
+  let observeLocalDataCallback: (PlaceFilter, String) -> AsyncThrowingStream<[Place], Error>
   let syncLocalCallback: ([Place]) async throws -> Int
   var observeTask: Task<(), Error>?
   public init(
-    observeLocalDataCallback: @escaping @Sendable (PlaceFilter,String) -> AsyncThrowingStream<
+    observeLocalDataCallback: @escaping @Sendable (PlaceFilter, String) -> AsyncThrowingStream<
       [Place],
       Error
     >,
@@ -38,11 +38,11 @@ public class PlaceStore: ObservableObject {
   }
 
   public func observeLocalData() {
-		self.observeTask?.cancel()
+    self.observeTask?.cancel()
     self.observeTask = Task {
       for try await localPlaces in self.observeLocalDataCallback(
-				self.filter, keyword
-			) {
+        self.filter, self.keyword
+      ) {
         self.eventChannel.continuation.yield(
           .places(localPlaces)
         )

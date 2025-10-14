@@ -5,7 +5,6 @@ public struct PlaceFilter: Codable, Equatable, Sendable {
   public var showWashStations: Bool
   public var showPatchTireStations: Bool
 
-	
   public init(
     showCarGarage: Bool,
     showMotorcycleGarages: Bool,

@@ -20,36 +20,36 @@ extension DatabaseClient {
       },
       userProfileDB: .live(cache: cache),
       carBrandDB: .live(cache: cache),
-			observeMapData: { placeFilter,keyword in
-				AsyncThrowingStream { continuation in
-					final class Holder { var dbCancellable: AnyDatabaseCancellable? }
-					let holder = Holder()
-					let startTask = Task { @MainActor in
-						holder.dbCancellable = ValueObservation
-							.tracking { db in
-								try fetchPlaces(db: db,filter: placeFilter, keyword : keyword)
-							}
-							.start(
-								in: cache,
-								scheduling: .immediate,
-								onError: { error in
-									continuation.finish(throwing: error)
-								},
-								onChange: { items in
-									_ = continuation.yield(items)
-								}
-							)
-					}
-					continuation.onTermination = { @Sendable _ in
-						Task { @MainActor in
-							startTask.cancel()
-							holder.dbCancellable?.cancel()
-							holder.dbCancellable = nil
-						}
-					}
-				}
-			},
-      fetchMapData: {placeFilter, keyword in
+      observeMapData: { placeFilter, keyword in
+        AsyncThrowingStream { continuation in
+          final class Holder { var dbCancellable: AnyDatabaseCancellable? }
+          let holder = Holder()
+          let startTask = Task { @MainActor in
+            holder.dbCancellable = ValueObservation
+              .tracking { db in
+                try fetchPlaces(db: db, filter: placeFilter, keyword: keyword)
+              }
+              .start(
+                in: cache,
+                scheduling: .immediate,
+                onError: { error in
+                  continuation.finish(throwing: error)
+                },
+                onChange: { items in
+                  _ = continuation.yield(items)
+                }
+              )
+          }
+          continuation.onTermination = { @Sendable _ in
+            Task { @MainActor in
+              startTask.cancel()
+              holder.dbCancellable?.cancel()
+              holder.dbCancellable = nil
+            }
+          }
+        }
+      },
+      fetchMapData: { placeFilter, keyword in
         try await cache.read { db in
           try fetchPlaces(db: db, filter: placeFilter, keyword: keyword)
         }

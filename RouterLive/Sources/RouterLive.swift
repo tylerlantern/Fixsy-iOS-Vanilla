@@ -6,9 +6,9 @@ import ExploreFeature
 import HomeFeature
 import ProfileFeature
 import Router
+import SearchFeature
 import SwiftUI
 import TabContainerFeature
-import SearchFeature
 
 extension Router {
   public static let liveValue: Router = .init { route in
@@ -36,8 +36,8 @@ struct RouteView: View {
       .detail(.root(navPath, title))
     ):
       DetailView(navPath: navPath, title: title)
-		case let .home(.search(onTapItemById) ):
-			SearchView(onTapItemById: onTapItemById)
+    case let .home(.search(onTapItemById)):
+      SearchView(onTapItemById: onTapItemById)
     case let .home(.detail(.comment(.root(navPath)))):
       CommentView(navPath: navPath)
     case let .home(.detail(.comment(.expandedComment(.root(navPath))))):
@@ -52,6 +52,6 @@ struct RouteView: View {
       EmptyView()
     case .profile(.root):
       ProfileView()
-		}
+    }
   }
 }

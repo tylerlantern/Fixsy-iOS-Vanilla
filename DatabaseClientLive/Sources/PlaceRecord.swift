@@ -74,16 +74,15 @@ struct PlaceInfo: Decodable, FetchableRecord {
 func fetchPlaces(
   db: Database,
   filter: PlaceFilter,
-	keyword : String
+  keyword: String
 ) throws -> [Place] {
-	
-	var keywordFilter: SQLExpression?
-	if keyword.count > 0 {
-		keywordFilter = [
-			Column("name").like("%\(keyword)%"),
-			Column("address").like("%\(keyword)%")
-		].joined(operator: .or)
-	}
+  var keywordFilter: SQLExpression?
+  if !keyword.isEmpty {
+    keywordFilter = [
+      Column("name").like("%\(keyword)%"),
+      Column("address").like("%\(keyword)%")
+    ].joined(operator: .or)
+  }
 
   let carGarages = filter.showCarGarage
     ? try PlaceInfo.fetchAll(
@@ -100,7 +99,7 @@ func fetchPlaces(
       db,
       PlaceRecord
         .filter(Column("hasMotorcycleGarage") == true)
-				.filter(keywordFilter ?? true)
+        .filter(keywordFilter ?? true)
         .include()
     ).map(toPlace)
     : []
@@ -110,7 +109,7 @@ func fetchPlaces(
       db,
       PlaceRecord
         .filter(Column("hasInflationStation") == true)
-				.filter(keywordFilter ?? true)
+        .filter(keywordFilter ?? true)
         .include()
     ).map(toPlace)
     : []
@@ -120,7 +119,7 @@ func fetchPlaces(
       db,
       PlaceRecord
         .filter(Column("hasWashStation") == true)
-				.filter(keywordFilter ?? true)
+        .filter(keywordFilter ?? true)
         .include()
     ).map(toPlace)
     : []
@@ -130,7 +129,7 @@ func fetchPlaces(
       db,
       PlaceRecord
         .filter(Column("hasPatchTireStation") == filter.showPatchTireStations)
-				.filter(keywordFilter ?? true)
+        .filter(keywordFilter ?? true)
         .include()
     ).map(toPlace)
     : []
