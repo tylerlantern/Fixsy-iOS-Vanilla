@@ -1,4 +1,3 @@
-import Configs
 import CoreLocation
 import Foundation
 import SwiftUI

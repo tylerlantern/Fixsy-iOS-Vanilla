@@ -24,6 +24,10 @@ let package = Package(
     .package(
       url: "https://github.com/groue/GRDB.swift.git",
       from: "7.8.0"
-    )
+    ),
+		.package(
+			url: "https://github.com/apple/swift-async-algorithms",
+			from: "1.0.4"
+		)
   ]
 )

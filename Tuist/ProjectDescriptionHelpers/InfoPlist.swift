@@ -46,7 +46,6 @@ public extension InfoPlist {
           "UIInterfaceOrientationLandscapeLeft",
           "UIInterfaceOrientationLandscapeRight"
         ]),
-        "UIRequiresFullScreen": .boolean(true),
         "UIRequiresFullScreen~ipad": .boolean(true),
 
         // MARK: - Background Modes

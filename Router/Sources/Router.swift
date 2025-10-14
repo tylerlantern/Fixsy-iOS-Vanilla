@@ -1,5 +1,6 @@
 import SwiftUI
 
+
 public enum Route {
   case tabContainer
 
@@ -10,6 +11,9 @@ public enum Route {
 
   public enum HomeRoute {
     case root
+		case search(
+			onTapItemById : (Int) -> ()
+		)
     case detail(
       DetailRoute
     )
