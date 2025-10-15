@@ -15,19 +15,22 @@ public struct LocationManagerClient {
   public var requestLocation: () -> ()
   public var location: () -> CLLocation?
   public var delegate: () -> AsyncStream<Event>
-
+	public var locationStream: @Sendable () ->  AsyncStream<[CLLocation]>
+	
   public init(
     authorizationStatus: @escaping () -> CLAuthorizationStatus,
     requestWhenInUseAuthorization: @escaping () -> (),
     requestLocation: @escaping () -> (),
     location: @escaping () -> CLLocation?,
     delegate: @escaping () -> AsyncStream<Event>,
+		locationStream :@Sendable @escaping  () -> AsyncStream<[CLLocation]>
   ) {
     self.authorizationStatus = authorizationStatus
     self.requestWhenInUseAuthorization = requestWhenInUseAuthorization
     self.requestLocation = requestLocation
     self.location = location
     self.delegate = delegate
+		self.locationStream = locationStream
   }
 }
 
@@ -42,7 +45,10 @@ extension LocationManagerClient: EnvironmentKey {
         AsyncStream {
 					Event.didChangeAuthorization(.denied)
         }
-      }
+      },
+			locationStream : {
+				AsyncStream {_ in }
+			}
     )
   }
 

@@ -15,7 +15,7 @@ public struct DatabaseClient {
     syncPlaces: @escaping @Sendable ([Place]) async throws -> Int,
     deleteAll: @escaping () async throws -> (),
     observePlaceDetail: @escaping (Int) -> AsyncThrowingStream<Place?, Error>,
-    observePlaceFilter: @escaping () -> AsyncThrowingStream<PlaceFilter, Error>,
+    observePlaceFilter: @escaping @Sendable () -> AsyncThrowingStream<PlaceFilter, Error>,
     syncPlaceFilter: @escaping (PlaceFilter) async throws -> (),
     reviewDB: ReviewDB
   ) {
@@ -40,7 +40,7 @@ public struct DatabaseClient {
   public var syncPlaces: @Sendable ([Place]) async throws -> Int
   public var deleteAll: () async throws -> ()
   public var observePlaceDetail: (Int) -> AsyncThrowingStream<Place?, Error>
-  public var observePlaceFilter: () -> AsyncThrowingStream<PlaceFilter, Error>
+  public var observePlaceFilter: @Sendable () -> AsyncThrowingStream<PlaceFilter, Error>
   public var syncPlaceFilter: (PlaceFilter) async throws -> ()
   public var reviewDB: ReviewDB
 }

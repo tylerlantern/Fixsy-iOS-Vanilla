@@ -8,7 +8,9 @@ public struct BottomSheetModifier<SheetContent: View>: ViewModifier {
   @State private var toolbarOpacity: CGFloat = 1
   private let sheetContent: SheetContent
 
-  public init(@ViewBuilder sheetContent: () -> SheetContent) {
+  public init(
+		@ViewBuilder sheetContent: () -> SheetContent
+	) {
     self.sheetContent = sheetContent()
   }
 
@@ -29,12 +31,8 @@ public struct BottomSheetModifier<SheetContent: View>: ViewModifier {
           max(min($0.size.height, 350), 0)
         } action: { oldValue, newValue in
           self.sheetHeight = newValue
-
-          // Calculating Opacity
           let progress = max(min((newValue - 300) / 50, 1), 0)
           self.toolbarOpacity = 1 - progress
-
-          // Calculating Animation Duration
           let diff = abs(newValue - oldValue)
           let duration = max(min(diff / 100, 0.3), 0)
           self.animationDuration = duration
@@ -43,13 +41,9 @@ public struct BottomSheetModifier<SheetContent: View>: ViewModifier {
         .interactiveDismissDisabled()
       }
       .ignoresSafeArea()
-      .overlay(alignment: .bottomTrailing) {
-        // trailing overlay (empty as in original)
-      }
+      .overlay(alignment: .bottomTrailing) {}
   }
 }
-
-// MARK: - Convenience API
 
 public extension View {
   func bottomSheet<Sheet: View>(
@@ -58,8 +52,6 @@ public extension View {
     self.modifier(BottomSheetModifier(sheetContent: sheetContent))
   }
 }
-
-// MARK: - readSize utility
 
 private struct SizePreferenceKey: PreferenceKey {
   static var defaultValue: CGSize = .zero

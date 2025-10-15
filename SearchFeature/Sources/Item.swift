@@ -27,39 +27,59 @@ struct ItemView: View {
   }
 
   public var body: some View {
-    HStack(spacing: 12) {
-      self.item.image
-        .renderingMode(.template)
-        .resizable()
-        .foregroundColor(.white)
-        .frame(width: 24, height: 24)
-        .padding(12)
-        .background(
-          self.serviceColor
-        )
+		VStack {
+			HStack(spacing: 12) {
+				self.item.image
+					.renderingMode(.template)
+					.resizable()
+					.foregroundColor(.white)
+					.frame(width: 24, height: 24)
+					.padding(12)
+					.background(
+						Circle().fill(self.serviceColor) // round background
+					)
+					
+				VStack(alignment: .leading, spacing: 8) {
+					HStack(alignment: .firstTextBaseline, spacing: 4) {
+						Text(self.item.name)
+							.font(.title3)
+							.bold()
+							.lineLimit(1)
 
-      VStack(alignment: .leading, spacing: 8) {
-        HStack(alignment: .firstTextBaseline, spacing: 4) {
-          Text(self.item.name)
-            .font(.title3)
-            .bold()
-            .lineLimit(1)
+						Spacer()
 
-          Spacer()
+						if let displayKmAways = self.item.displayKmAways {
+							Text(
+								displayKmAways
+							)
+							.font(.callout)
+						}
+					}
 
-          if let displayKmAways = self.item.displayKmAways {
-            Text(
-              displayKmAways
-            )
-            .font(.callout)
-          }
-        }
-
-        Text(self.item.address)
-          .font(.body).lineLimit(2)
-      }
-      Spacer()
-    }
+					Text(self.item.address)
+						.font(.body).lineLimit(2)
+				}
+				Spacer()
+			}
+			Divider()
+		}
+		.padding(.horizontal)
     .onTapGesture {}
   }
 }
+
+#if DEBUG
+#Preview {
+	ItemView.init(
+		item: .init(
+			id: 1,
+			name: "Palonto",
+			image: SearchFeatureAsset.Images.carIcon.swiftUIImage,
+			service: .car,
+			address: "1/25 Param 3 road, Bangkok",
+			distance: 20)
+	) { _ in
+			
+		}
+}
+#endif

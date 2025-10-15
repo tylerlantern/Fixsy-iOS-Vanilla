@@ -7,13 +7,19 @@ public extension LocationManagerClient {
 	@MainActor
 	static let liveValue: Self = {
 		let box = LocationManagerBox()
-
 		return LocationManagerClient(
 			authorizationStatus: { box.manager.authorizationStatus },
 			requestWhenInUseAuthorization: { box.manager.requestWhenInUseAuthorization() },
 			requestLocation: { box.manager.requestLocation() },
 			location: { box.manager.location },
-			delegate: { box.broadcaster.makeStream() }
+			delegate: {
+				box.broadcaster.makeStream()
+			},
+			locationStream: {
+				box.broadcaster.makeStreamLocation(
+					box.manager.location
+				)
+			}
 		)
 	}()
 }
@@ -37,7 +43,11 @@ final class Delegate: NSObject, CLLocationManagerDelegate {
 		broadcaster.yield(.didChangeAuthorization(manager.authorizationStatus))
 	}
 
-	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+	func locationManager(
+		_ manager: CLLocationManager,
+		didUpdateLocations locations: [CLLocation]
+	) {
+		broadcaster.yieldLocation(locations)
 		broadcaster.yield(.didUpdateLocations(locations))
 	}
 
@@ -48,7 +58,8 @@ final class Delegate: NSObject, CLLocationManagerDelegate {
 
 final class Broadcaster {
 	private let dict = Mutex<[UUID: AsyncStream<LocationManagerClient.Event>.Continuation]>([:])
-
+	private let locationDict = Mutex<[UUID: AsyncStream<[CLLocation]>.Continuation]>([:])
+	
 	func makeStream() -> AsyncStream<LocationManagerClient.Event> {
 		let id = UUID()
 		return AsyncStream { continuation in
@@ -63,4 +74,30 @@ final class Broadcaster {
 		let sinks = dict.withLock { Array($0.values) }
 		for c in sinks { _ = c.yield(event) }
 	}
+	
+	func makeStreamLocation(_ loc : CLLocation?) -> AsyncStream<[CLLocation]> {
+		let id = UUID()
+		return AsyncStream { continuation in
+			locationDict.withLock { $0[id] = continuation }
+			continuation.yield(
+				loc.map({ [$0]}) ?? []
+			)
+			continuation.onTermination = { [weak self] _ in
+				_ = self?.locationDict.withLock { $0.removeValue(forKey: id) }
+			}
+		}
+	}
+	
+	func yieldLocation(_ event: [CLLocation]) {
+		let sinks = locationDict.withLock { Array($0.values) }
+		for c in sinks { _ = c.yield(event) }
+	}
+	
+	func searchTextChange() {
+		Task {
+			try await Task.sleep(nanoseconds: 120_000_000)
+
+		}
+	}
+	
 }

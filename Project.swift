@@ -91,7 +91,9 @@ let project = Project(
         .target(name: "ProfileFeature"),
         .target(name: "CommentFeature"),
         .target(name: "ExpandedCommentFeature"),
-        .target(name: "SearchFeature")
+        .target(name: "SearchFeature"),
+				.target(name: "LocationManagerClient"),
+				.target(name: "DatabaseClient")
       ]
     ),
 

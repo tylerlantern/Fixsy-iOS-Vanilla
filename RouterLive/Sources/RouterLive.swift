@@ -9,6 +9,8 @@ import Router
 import SearchFeature
 import SwiftUI
 import TabContainerFeature
+import LocationManagerClient
+import DatabaseClient
 
 extension Router {
   public static let liveValue: Router = .init { route in
@@ -18,7 +20,8 @@ extension Router {
 
 struct RouteView: View {
   @Environment(\.databaseClient) var databaseClient
-
+	@Environment(\.locationManagerClient) var locationManagerClient
+	
   let route: Route
 
   var body: some View {
@@ -36,8 +39,22 @@ struct RouteView: View {
       .detail(.root(navPath, title))
     ):
       DetailView(navPath: navPath, title: title)
-    case let .home(.search(onTapItemById)):
-      SearchView(onTapItemById: onTapItemById)
+    case let .home(
+			.search(
+				onFocusSearch,
+				onTapItemById
+			)
+		):
+		
+			SearchView(
+				store: .init(
+					placeCallback: self.databaseClient.observeMapData,
+					filterCallback: self.databaseClient.observePlaceFilter,
+					locationCallback: self.locationManagerClient.locationStream
+				),
+				onFocusSearch: onFocusSearch,
+				onTapItemById: onTapItemById
+			)
     case let .home(.detail(.comment(.root(navPath)))):
       CommentView(navPath: navPath)
     case let .home(.detail(.comment(.expandedComment(.root(navPath))))):

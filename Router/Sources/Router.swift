@@ -11,6 +11,7 @@ public enum Route {
   public enum HomeRoute {
     case root
     case search(
+			onFocusSearch: () -> (),
       onTapItemById: (Int) -> ()
     )
     case detail(

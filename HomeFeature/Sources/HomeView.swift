@@ -97,7 +97,11 @@ public struct HomeView: View {
       self.router.route(
         .home(
           .search(
+						onFocusSearch: {
+							
+						},
             onTapItemById: { _ in
+							
             }
           )
         )

@@ -83,7 +83,6 @@ func fetchPlaces(
       Column("address").like("%\(keyword)%")
     ].joined(operator: .or)
   }
-
   let carGarages = filter.showCarGarage
     ? try PlaceInfo.fetchAll(
       db,
