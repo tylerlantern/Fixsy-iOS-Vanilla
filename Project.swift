@@ -92,8 +92,8 @@ let project = Project(
         .target(name: "CommentFeature"),
         .target(name: "ExpandedCommentFeature"),
         .target(name: "SearchFeature"),
-				.target(name: "LocationManagerClient"),
-				.target(name: "DatabaseClient")
+        .target(name: "LocationManagerClient"),
+        .target(name: "DatabaseClient")
       ]
     ),
 
@@ -264,7 +264,8 @@ let project = Project(
         .target(name: "Router"),
         .target(name: "Models"),
         .target(name: "DatabaseClient"),
-        .target(name: "LocationManagerClient")
+        .target(name: "LocationManagerClient"),
+        .target(name: "BottomSheetModule")
       ]
     ),
     .demoApp(

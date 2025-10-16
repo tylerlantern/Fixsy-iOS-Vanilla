@@ -19,6 +19,7 @@ struct Item: Identifiable {
       return .none
     }
   }
+
   static func parseImage(
     _ place: Place
   ) -> SwiftUI.Image {
@@ -48,7 +49,7 @@ struct Item: Identifiable {
 
   let id: Int
   let name: String
-	let image : SwiftUI.Image
+  let image: SwiftUI.Image
   let service: Service
   let address: String
   let distance: Double?
@@ -70,7 +71,7 @@ struct Item: Identifiable {
   ) {
     self.id = id
     self.name = name
-		self.image = image
+    self.image = image
     self.service = service
     self.address = address
     self.distance = distance

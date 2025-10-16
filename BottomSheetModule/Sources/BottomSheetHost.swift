@@ -2,15 +2,18 @@ import SwiftUI
 
 public struct BottomSheetModifier<SheetContent: View>: ViewModifier {
   @State private var showBottomSheet: Bool = true
-  @State private var sheetDetent: PresentationDetent = .height(80)
   @State private var sheetHeight: CGFloat = 0
   @State private var animationDuration: CGFloat = 0
   @State private var toolbarOpacity: CGFloat = 1
+
+  @Binding var detent: PresentationDetent
   private let sheetContent: SheetContent
 
   public init(
-		@ViewBuilder sheetContent: () -> SheetContent
-	) {
+    detent: Binding<PresentationDetent>,
+    @ViewBuilder sheetContent: () -> SheetContent
+  ) {
+    self._detent = detent
     self.sheetContent = sheetContent()
   }
 
@@ -19,12 +22,19 @@ public struct BottomSheetModifier<SheetContent: View>: ViewModifier {
       .background(Color.black)
       .sheet(isPresented: self.$showBottomSheet) {
         BottomSheetView(
-          sheetDetent: self.$sheetDetent,
+          sheetDetent: self.$detent,
           content: {
             self.sheetContent
           }
         )
-        .presentationDetents([.height(80), .height(350), .large])
+        .presentationDetents(
+          [
+            BottomSheetDetents.collapsed,
+            BottomSheetDetents.medium,
+            BottomSheetDetents.expanded
+          ],
+          selection: self.$detent
+        )
         .presentationBackgroundInteraction(.enabled)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onGeometryChange(for: CGFloat.self) {
@@ -47,9 +57,15 @@ public struct BottomSheetModifier<SheetContent: View>: ViewModifier {
 
 public extension View {
   func bottomSheet<Sheet: View>(
+    detent: Binding<PresentationDetent>,
     @ViewBuilder _ sheetContent: @escaping () -> Sheet
   ) -> some View {
-    self.modifier(BottomSheetModifier(sheetContent: sheetContent))
+    self.modifier(
+      BottomSheetModifier(
+        detent: detent,
+        sheetContent: sheetContent
+      )
+    )
   }
 }
 
@@ -86,4 +102,10 @@ public struct BottomSheetView<Content: View>: View {
   public var body: some View {
     self.content
   }
+}
+
+public enum BottomSheetDetents {
+  public static let collapsed = PresentationDetent.height(80)
+  public static let medium = PresentationDetent.medium
+  public static let expanded = PresentationDetent.large
 }

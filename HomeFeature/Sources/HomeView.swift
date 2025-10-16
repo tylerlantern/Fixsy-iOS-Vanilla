@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct HomeView: View {
   enum Destination: Hashable { case detail }
-
+  @State private var detent: PresentationDetent = BottomSheetDetents.collapsed
   @Environment(\.router) var router
   @Environment(\.apiClient) var apiClient
   @Environment(\.databaseClient) var databaseClient
@@ -93,16 +93,15 @@ public struct HomeView: View {
         }
       }
     }
-    .bottomSheet {
+    .bottomSheet(
+      detent: self.$detent
+    ) {
       self.router.route(
         .home(
           .search(
-						onFocusSearch: {
-							
-						},
-            onTapItemById: { _ in
-							
-            }
+            detent: self.$detent,
+            onFocusSearch: {},
+            onTapItemById: { _ in }
           )
         )
       )
