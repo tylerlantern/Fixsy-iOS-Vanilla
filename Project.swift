@@ -49,13 +49,12 @@ let project = Project(
         .target(name: "LocationManagerClient"),
         .target(name: "LocationManagerClientLive")
         // End Clients
-
       ],
       settings: .settings(
         base: [
           "PRODUCT_NAME": "Fixsy"
         ]
-      )
+      ),
     ),
 //		.target(
 //			name: "iOSTests",
@@ -306,7 +305,7 @@ let project = Project(
   ],
   schemes: [
 		.scheme(
-			name: "Fixsy",
+			name: "Fixsy-Tests",
 			shared: true,
 			buildAction: .buildAction(targets: [.target("AppCore")]),
 			testAction: .targets([
