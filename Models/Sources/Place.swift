@@ -69,17 +69,16 @@ public struct Place: Equatable, Identifiable {
       self.sundayOpen = sundayOpen
       self.sundayClose = sundayClose
     }
-		
-		public static let empty = OpenCloseTime(
-			mondayOpen: "", mondayClose: "",
-			tuesdayOpen: "", tuesdayClose: "",
-			wednesdayOpen: "", wednesdayClose: "",
-			thursdayOpen: "", thursdayClose: "",
-			fridayOpen: "", fridayClose: "",
-			saturdayOpen: "", saturdayClose: "",
-			sundayOpen: "", sundayClose: ""
-		)
 
+    public static let empty = OpenCloseTime(
+      mondayOpen: "", mondayClose: "",
+      tuesdayOpen: "", tuesdayClose: "",
+      wednesdayOpen: "", wednesdayClose: "",
+      thursdayOpen: "", thursdayClose: "",
+      fridayOpen: "", fridayClose: "",
+      saturdayOpen: "", saturdayClose: "",
+      sundayOpen: "", sundayClose: ""
+    )
   }
 
   public struct Image: Equatable, Identifiable {

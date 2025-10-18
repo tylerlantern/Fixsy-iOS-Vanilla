@@ -1,9 +1,8 @@
 import MapKit
-import SwiftUI
 import PlaceStore
+import SwiftUI
 
 extension HomeView {
-	
   func handleLocationAuthorizationStatus() {
     let authorizationStatus = self.locationManagerClient.authorizationStatus()
     switch authorizationStatus {
@@ -21,25 +20,52 @@ extension HomeView {
       break
     }
   }
-	
-	func handlePlaceStoreChannelAction(
-		action : MapVisualChannel.Action
-	) {
-		switch action {
-		case .viewDidLoad:
-			break;
-		case .didSelect(let placeId) :
-			
-			break;
-		case .zoom(let to):
-			break;
-		case .regionChanged(let mKCoordinateRegion):
-			break;
-		case .didDeselect:
-			break;
-		case .didChangeCoordiateRegion(let mKCoordinateRegion):
-			break;
-		}
-	}
-	
+
+  func handlePlaceStoreChannelAction(
+    action: MapVisualChannel.Action
+  ) {
+    switch action {
+    case .viewDidLoad:
+      break
+    case let .didSelect(placeId):
+
+      break
+    case let .zoom(to):
+      break
+    case let .regionChanged(mKCoordinateRegion):
+      break
+    case .didDeselect:
+      break
+    case let .didChangeCoordiateRegion(mKCoordinateRegion):
+      break
+    }
+  }
+
+  func bindPlaces() {
+    let clock = ContinuousClock()
+    var innerTask: Task<(), Never>?
+    Task {
+      for try await filter in databaseClient
+        .observePlaceFilter()
+        .removeDuplicates()
+        .debounce(for: .milliseconds(200), clock: clock)
+      {
+        innerTask?.cancel()
+        innerTask = Task {
+          do {
+            for try await localPlaces in self.databaseClient.observeMapData(filter, "") {
+              self.mapVisualChannel.sendEvent(.places(localPlaces))
+            }
+          } catch is CancellationError {
+            // expected when a newer filter arrives
+          } catch {
+            // TODO: surface error if you want
+          }
+        }
+      }
+
+      // 4) outer loop finished (stream ended) — clean up the last inner
+      innerTask?.cancel()
+    }
+  }
 }

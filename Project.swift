@@ -35,10 +35,10 @@ let project = Project(
         .target(name: "Router"),
         .target(name: "RouterLive"),
 
-				// Start Store
-				.target(name: "PlaceStore"),
-				// End Store
-				
+        // Start Store
+        .target(name: "PlaceStore"),
+        // End Store
+
         // Start Clients
         .target(name: "AccessTokenClient"),
         .target(name: "AccessTokenClientLive"),
@@ -56,18 +56,18 @@ let project = Project(
         ]
       ),
     ),
-//		.target(
-//			name: "iOSTests",
-//			destinations: .iOS,
-//			product: .unitTests,
-//			bundleId: "com.to.fixsy.iOSTests",
-//			infoPlist: .default,
-//			sources: ["Tests/**"],
-//			resources: [],
-//			dependencies: [
-//				.target(name: "AppCore"),
-//			]
-//		),
+    //		.target(
+    //			name: "iOSTests",
+    //			destinations: .iOS,
+    //			product: .unitTests,
+    //			bundleId: "com.to.fixsy.iOSTests",
+    //			infoPlist: .default,
+    //			sources: ["Tests/**"],
+    //			resources: [],
+    //			dependencies: [
+    //				.target(name: "AppCore"),
+    //			]
+    //		),
     .target(
       name: "Router",
       destinations: .iOS,
@@ -124,17 +124,17 @@ let project = Project(
       name: "TokenModel"
     ),
     // End Model
-		// Start Store
-		.framework(
-			name: "PlaceStore",
-			dependencies: [
-				.target(name: "Models"),
-				.target(name: "DatabaseClient"),
-				.target(name: "APIClient")
-			]
-		),
-		// End Stores
-		
+    // Start Store
+    .framework(
+      name: "PlaceStore",
+      dependencies: [
+        .target(name: "Models"),
+        .target(name: "DatabaseClient"),
+        .target(name: "APIClient")
+      ]
+    ),
+    // End Stores
+
     // Start Modules
     .framework(
       name: "BottomSheetModule",
@@ -228,7 +228,7 @@ let project = Project(
         .target(name: "DatabaseClient"),
         .target(name: "LocationManagerClient"),
         .target(name: "BottomSheetModule"),
-				.target(name: "PlaceStore")
+        .target(name: "PlaceStore")
       ]
     ),
     .demoApp(
@@ -281,22 +281,22 @@ let project = Project(
         .target(name: "DatabaseClient"),
         .target(name: "LocationManagerClient"),
         .target(name: "BottomSheetModule"),
-				.target(name: "PlaceStore")
+        .target(name: "PlaceStore")
       ]
     ),
-		.target(
-			name: "SearchFeatureTests",
-			destinations: .iOS,
-			product: .unitTests,
-			bundleId: "\(prefixBundleId)SearchFeatureTests",
-			infoPlist: .default,
-			// 👇 This is the folder shape you asked for
-			sources: ["Tests/SearchFeatureTests/**"],
-			resources: [],
-			dependencies: [
-				.target(name: "SearchFeature")
-			]
-		),
+    .target(
+      name: "SearchFeatureTests",
+      destinations: .iOS,
+      product: .unitTests,
+      bundleId: "\(prefixBundleId)SearchFeatureTests",
+      infoPlist: .default,
+      // 👇 This is the folder shape you asked for
+      sources: ["Tests/SearchFeatureTests/**"],
+      resources: [],
+      dependencies: [
+        .target(name: "SearchFeature")
+      ]
+    ),
     .demoApp(
       "SearchFeature",
       deps: []
@@ -304,16 +304,16 @@ let project = Project(
     // End Features
   ],
   schemes: [
-		.scheme(
-			name: "Fixsy-Tests",
-			shared: true,
-			buildAction: .buildAction(targets: [.target("AppCore")]),
-			testAction: .targets([
-				.testableTarget(target: "APIClientTests"),
-				.testableTarget(target: "SearchFeatureTests")
-			]),
-		),
-	]
+    .scheme(
+      name: "Fixsy-Tests",
+      shared: true,
+      buildAction: .buildAction(targets: [.target("AppCore")]),
+      testAction: .targets([
+        .testableTarget(target: "APIClientTests"),
+        .testableTarget(target: "SearchFeatureTests")
+      ]),
+    )
+  ]
 )
 
 public extension Target {

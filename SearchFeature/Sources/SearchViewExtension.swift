@@ -1,53 +1,48 @@
-import SwiftUI
 import AsyncAlgorithms
-import Models
 import MapKit
+import Models
+import SwiftUI
 
 extension SearchView {
-	
-	func observePlaceFilter() {
-		self.observeFilterTask = Task {
-			for try await localFilter in self.databaseClient.observePlaceFilter() {
-				self.filter = localFilter
-			}
-		}
-	}
+  func observeLocalData() {
+    self.observeFilterTask?.cancel()
+    self.transformTask?.cancel()
+    self.observeFilterTask = Task {
+      for try await filter in self.databaseClient.observePlaceFilter() {
+        self.filter = filter
+        let placesSeq = self.databaseClient.observeMapData(
+          self.filter,
+          self.searchText
+        ).removeDuplicates()
+        let locSeq = self.locationManagerClient.locationStream()
+        self.observePlaceTask?.cancel()
+        self.observePlaceTask = Task {
+          for try await(places, locs) in combineLatest(placesSeq, locSeq) {
+            self.transformTask?.cancel()
+            self.transformTask = Task.detached {
+              let sortedItems = sortItesmByNearest(
+                locs,
+                places: places
+              )
+              await MainActor.run {
+                self.items = sortedItems
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
-	func observeLocalData() {
-		self.observePlacesTask?.cancel()
-		self.transformTask?.cancel()
-		self.observePlacesTask = Task {
-			let placesSeq = self.databaseClient.observeMapData(
-				self.filter,
-				self.searchText
-			).removeDuplicates()
-			let locSeq = self.locationManagerClient.locationStream()
-			for try await(places, locs) in combineLatest(placesSeq, locSeq) {
-				self.transformTask?.cancel()
-				self.transformTask = Task.detached {
-				  let sortedItems = sortItesmByNearest(
-						locs,
-						places: places
-					)
-					await MainActor.run {
-						self.items = sortedItems
-					}
-				}
-			}
-		}
-	}
+  func searchTextChanged() {
+    self.searchTask?.cancel()
+    self.searchTask = Task {
+      try await Task.sleep(nanoseconds: 300_000_000)
+      self.observeLocalData()
+    }
+  }
 
-	func searchTextChanged() {
-		self.searchTask?.cancel()
-		self.searchTask = Task {
-			try await Task.sleep(nanoseconds: 300_000_000)
-			self.observeLocalData()
-		}
-	}
-
-
-	func handleOnTap(_ tap: Tap) {}
-
+  func handleOnTap(_ tap: Tap) {}
 }
 
 public func haversine(
@@ -69,42 +64,42 @@ public func haversine(
 }
 
 public func sortItesmByNearest(
-	_ locs : [CLLocation],
-	places : [Place]
+  _ locs: [CLLocation],
+  places: [Place]
 ) -> [Item] {
-	let sortedItems = places.map({ place in
-		guard let userLoc = locs.last else {
-			return Item(
-				id: place.id,
-				name: place.name,
-				image: Item.parseImage(place),
-				service: Item.parseService(place),
-				address: place.address,
-				distance: nil
-			)
-		}
-		let distance = haversine(
-			lat1: userLoc.coordinate.latitude,
-			lon1: userLoc.coordinate.longitude,
-			lat2: place.latitude,
-			lon2: place.longitude
-		)
-		return Item(
-			id: place.id,
-			name: place.name,
-			image: Item.parseImage(place),
-			service: Item.parseService(place),
-			address: place.address,
-			distance: distance
-		)
-	})
-	.sorted { item1, item2 in
-		guard let distance1 = item1.distance,
-					let distance2 = item2.distance
-		else {
-			return false
-		}
-		return distance1 < distance2
-	}
-	return sortedItems
+  let sortedItems = places.map({ place in
+    guard let userLoc = locs.last else {
+      return Item(
+        id: place.id,
+        name: place.name,
+        image: Item.parseImage(place),
+        service: Item.parseService(place),
+        address: place.address,
+        distance: nil
+      )
+    }
+    let distance = haversine(
+      lat1: userLoc.coordinate.latitude,
+      lon1: userLoc.coordinate.longitude,
+      lat2: place.latitude,
+      lon2: place.longitude
+    )
+    return Item(
+      id: place.id,
+      name: place.name,
+      image: Item.parseImage(place),
+      service: Item.parseService(place),
+      address: place.address,
+      distance: distance
+    )
+  })
+  .sorted { item1, item2 in
+    guard let distance1 = item1.distance,
+          let distance2 = item2.distance
+    else {
+      return false
+    }
+    return distance1 < distance2
+  }
+  return sortedItems
 }

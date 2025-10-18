@@ -15,7 +15,7 @@ public struct PlaceFilterRecord: Codable, FetchableRecord, PersistableRecord {
   public let showPatchTireStations: Bool
 }
 
-func getPlaceFilter(db: Database) throws -> PlaceFilter {
+func fetchPlaceFilter(db: Database) throws -> PlaceFilter {
   func toPlaceFilter(_ r: PlaceFilterRecord) -> PlaceFilter {
     PlaceFilter(
       showCarGarage: r.showCarGarage,

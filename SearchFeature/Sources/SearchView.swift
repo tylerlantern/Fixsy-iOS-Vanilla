@@ -3,34 +3,35 @@ import DatabaseClient
 import LocationManagerClient
 import MapKit
 import Models
-import SwiftUI
 import PlaceStore
+import SwiftUI
 
 public struct SearchView: View {
-	
   @State private var isFocused: Bool = false
   @FocusState private var focusedField: Field?
   @Binding var detent: PresentationDetent
 
-	@State var filter: PlaceFilter = .identity
-	@State var items: [Item] = []
-	@State var searchText: String = ""
-	@Environment(PlaceStore.self) private var placeStore
-	
+  @State var items: [Item] = []
+  @State var searchText: String = ""
+  @State var filter: PlaceFilter = .identity
+
+  @Environment(PlaceStore.self) private var placeStore
+
   enum Field { case search }
 
   private let onFocusSearch: () -> ()
   private let onTapItemById: (Int) -> ()
 
-	@State var observePlacesTask: Task<(), Error>?
-	@State var observeFilterTask: Task<(), Error>?
-	@State var transformTask: Task<(), Error>?
-	@State var searchTask: Task<(), Error>?
-	@State var locTask: Task<(), Error>?
-	
-	@Environment(\.databaseClient) var databaseClient
-	@Environment(\.locationManagerClient) var locationManagerClient
-	
+  @State var observeFilterTask: Task<(), Error>?
+  @State var observePlaceTask: Task<(), Error>?
+
+  @State var transformTask: Task<(), Error>?
+  @State var searchTask: Task<(), Error>?
+  @State var locTask: Task<(), Error>?
+
+  @Environment(\.databaseClient) var databaseClient
+  @Environment(\.locationManagerClient) var locationManagerClient
+
   public init(
     detent: Binding<PresentationDetent>,
     onFocusSearch: @escaping () -> (),
@@ -40,16 +41,12 @@ public struct SearchView: View {
     self.onFocusSearch = onFocusSearch
     self.onTapItemById = onTapItemById
   }
-	
+
   public var body: some View {
-		@Bindable var placeStore = self.placeStore
+    @Bindable var placeStore = self.placeStore
     ScrollView(.vertical) {
       VStack {
-        SearchFilterView(
-					filter: $placeStore.filter
-				) { tap in
-//          self.store.handleOnTap(tap)
-        }
+        SearchFilterView()
         if self.detent == BottomSheetDetents.expanded {
           ForEach(self.items) { item in
             ItemView(item: item) { id in self.onTapItemById(id) }
@@ -57,11 +54,12 @@ public struct SearchView: View {
         }
       }
     }
-		.onDisappear(perform: {
-			self.observePlacesTask?.cancel()
-			self.observeFilterTask?.cancel()
-			self.transformTask?.cancel()
-		})
+    .animation(.snappy(duration: 0.25), value: self.items)
+    .onDisappear(perform: {
+      self.observePlaceTask?.cancel()
+      self.observeFilterTask?.cancel()
+      self.transformTask?.cancel()
+    })
     .safeAreaInset(edge: .top, spacing: 0) {
       HStack(spacing: 10) {
         TextField("Search…", text: self.$searchText)
@@ -118,11 +116,7 @@ public struct SearchView: View {
         }
       }
     )
-    .task(id: self.searchText) {
-      self.observeLocalData()
-    }
     .task {
-      self.observePlaceFilter()
       self.observeLocalData()
     }
   }

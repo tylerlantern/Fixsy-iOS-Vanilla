@@ -1,11 +1,11 @@
 import Combine
 import MapKit
 import Models
-import UIKit
 import PlaceStore
+import UIKit
 
 public class MapVisualViewController: UINavigationController {
-	public let channel: MapVisualChannel
+  public let channel: MapVisualChannel
 
   init(channel: MapVisualChannel) {
     self.channel = channel
@@ -97,7 +97,7 @@ public class MapVisualViewController: UINavigationController {
     self.layoutUI()
     self.task = Task { [weak self] in
       guard let self else { return }
-			for await event in self.channel.eventStream {
+      for await event in self.channel.eventStream {
         if Task.isCancelled { break }
         switch event {
         case let .places(array):
@@ -164,9 +164,9 @@ public class MapVisualViewController: UINavigationController {
   }
 
   func showDetail(id: Int) {
-		self.channel.sendAction(
-			.didSelect(id)
-		)
+    self.channel.sendAction(
+      .didSelect(id)
+    )
   }
 
   static func mapToAnnotation(place: Place) -> MKAnnotation {

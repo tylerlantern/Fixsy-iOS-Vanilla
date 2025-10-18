@@ -1,10 +1,10 @@
-//import AsyncAlgorithms
-//import MapKit
-//import Models
-//import SwiftUI
+// import AsyncAlgorithms
+// import MapKit
+// import Models
+// import SwiftUI
 //
-//@MainActor
-//public class SearchStore: ObservableObject {
+// @MainActor
+// public class SearchStore: ObservableObject {
 //  enum Tap {
 //    case motorcycle
 //    case car
@@ -97,7 +97,7 @@
 //    }
 //  }
 //
-//	
+//
 //  deinit {
 //    self.observePlacesTask?.cancel()
 //    self.observeFilterTask?.cancel()
@@ -105,14 +105,14 @@
 //  }
 //
 //  func handleOnTap(_ tap: Tap) {}
-//}
+// }
 //
-//func haversine(
+// func haversine(
 //  lat1: Double,
 //  lon1: Double,
 //  lat2: Double,
 //  lon2: Double
-//) -> Double {
+// ) -> Double {
 //  let radius: Double = 6_371
 //  let latDelta = (lat2 - lat1) * .pi / 180
 //  let lonDelta = (lon2 - lon1) * .pi / 180
@@ -123,4 +123,4 @@
 //
 //  let c = 2 * atan2(sqrt(a), sqrt(1 - a))
 //  return radius * c
-//}
+// }

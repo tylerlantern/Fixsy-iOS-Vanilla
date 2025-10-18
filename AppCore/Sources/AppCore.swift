@@ -8,11 +8,10 @@ import DatabaseClient
 import DatabaseClientLive
 import LocationManagerClient
 import LocationManagerClientLive
+import PlaceStore
 import Router
 import RouterLive
 import SwiftUI
-import PlaceStore
-import PlaceStore
 
 @main
 struct AppCore: App {
@@ -22,28 +21,27 @@ struct AppCore: App {
   @State var databaseClient: DatabaseClient
   @State var locationManagerClient: LocationManagerClient
 
-	@State var placeStore : PlaceStore
-	
+  @State var placeStore: PlaceStore
+
   public init() {
     self.router = .liveValue
     self.accessTokenClient = .liveValue
-		let apiClientLive = APIClient.live(
-			url: Configs.live.mobileAPI.hostName,
-			getToken: AccessTokenClient.liveValue.accessToken,
-			updateToken: AccessTokenClient.liveValue.updateAccessToken
-		)
+    let apiClientLive = APIClient.live(
+      url: Configs.live.mobileAPI.hostName,
+      getToken: AccessTokenClient.liveValue.accessToken,
+      updateToken: AccessTokenClient.liveValue.updateAccessToken
+    )
     self.apiClient = apiClientLive
     self.databaseClient = .liveValue
     self.locationManagerClient = .liveValue
-    
-		self.placeStore = PlaceStore(
-			apiClient: apiClientLive,
-			locationStreamCallback: LocationManagerClient.liveValue.locationStream,
-			syncLocalCallback: DatabaseClient.liveValue.syncPlaces
-		)
-		
-		_ = self.databaseClient.migrate()
-		
+
+    self.placeStore = PlaceStore(
+      apiClient: apiClientLive,
+      locationStreamCallback: LocationManagerClient.liveValue.locationStream,
+      syncLocalCallback: DatabaseClient.liveValue.syncPlaces
+    )
+
+    _ = self.databaseClient.migrate()
   }
 
   var body: some Scene {
@@ -54,8 +52,7 @@ struct AppCore: App {
         .environment(\.accessTokenClient, self.accessTokenClient)
         .environment(\.databaseClient, self.databaseClient)
         .environment(\.locationManagerClient, self.locationManagerClient)
-				.environment(placeStore)
+        .environment(self.placeStore)
     }
   }
 }
-

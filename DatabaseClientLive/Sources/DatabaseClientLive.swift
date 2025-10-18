@@ -98,7 +98,7 @@ extension DatabaseClient {
           let holder = Holder()
           let startTask = Task { @MainActor in
             holder.dbCancellable = ValueObservation.tracking { db in
-              try getPlaceFilter(db: db)
+              try fetchPlaceFilter(db: db)
             }
             .start(
               in: cache,
@@ -111,7 +111,6 @@ extension DatabaseClient {
               }
             )
           }
-
           continuation.onTermination = { @Sendable _ in
             Task { @MainActor in
               startTask.cancel()
@@ -120,6 +119,12 @@ extension DatabaseClient {
             }
           }
         }
+      },
+      getPlaceFilter: {
+        try await cache.read { db in
+          try fetchPlaceFilter(db: db)
+        }
+
       },
       syncPlaceFilter: { filter in
         try await cache.write({ db in

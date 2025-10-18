@@ -1,26 +1,21 @@
 import Models
+import PlaceStore
 import SwiftUI
 
 struct SearchFilterView: View {
-  @Binding var filter: PlaceFilter
-  let onTap: @Sendable (Tap) -> ()
+  @State private var observeFilterTask: Task<(), Error>?
 
-	private var observePlacesTask: Task<(), Error>?
-	private var observeFilterTask: Task<(), Error>?
-	private var transformTask: Task<(), Error>?
-	
-	public init(
-		filter: Binding<PlaceFilter>,
-		onTap: @Sendable @escaping (Tap) -> ()
-	) {
-		self._filter = filter
-		self.onTap = onTap
-	}
-	
+  @Environment(\.databaseClient) var databaseClient
+  @Environment(PlaceStore.self) private var placeStore
+  @State var filter: PlaceFilter = .identity
+
   var body: some View {
     HStack(spacing: 24) {
       Button {
-        self.onTap(.motorcycle)
+        self.filter.showMotorcycleGarages.toggle()
+        Task {
+          try await self.databaseClient.syncPlaceFilter(self.filter)
+        }
       } label: {
         SearchFeatureAsset.Images.motorcycleIcon.swiftUIImage
           .resizable()
@@ -36,7 +31,10 @@ struct SearchFilterView: View {
       .clipShape(Capsule())
 
       Button {
-        self.onTap(.car)
+        self.filter.showCarGarage.toggle()
+        Task {
+          try await self.databaseClient.syncPlaceFilter(self.filter)
+        }
       } label: {
         SearchFeatureAsset.Images.carIcon.swiftUIImage
           .resizable()
@@ -52,7 +50,10 @@ struct SearchFilterView: View {
       .clipShape(Capsule())
 
       Button {
-        self.onTap(.inflationPoint)
+        self.filter.showInflationPoints.toggle()
+        Task {
+          try await self.databaseClient.syncPlaceFilter(self.filter)
+        }
       } label: {
         SearchFeatureAsset.Images.psiIcon.swiftUIImage
           .resizable()
@@ -68,7 +69,10 @@ struct SearchFilterView: View {
       .clipShape(Capsule())
 
       Button {
-        self.onTap(.washStation)
+        self.filter.showWashStations.toggle()
+        Task {
+          try await self.databaseClient.syncPlaceFilter(self.filter)
+        }
       } label: {
         SearchFeatureAsset.Images.waterDropIcon.swiftUIImage
           .resizable()
@@ -84,7 +88,10 @@ struct SearchFilterView: View {
       .clipShape(Capsule())
 
       Button {
-        self.onTap(.patchTire)
+        self.filter.showPatchTireStations.toggle()
+        Task {
+          try await self.databaseClient.syncPlaceFilter(self.filter)
+        }
       } label: {
         SearchFeatureAsset.Images.patchTireIcon.swiftUIImage
           .resizable()
@@ -93,7 +100,7 @@ struct SearchFilterView: View {
           .padding(8)
       }
       .background(
-        self.filter.showWashStations
+        self.filter.showPatchTireStations
           ? SearchFeatureAsset.Colors.patchTireStation.swiftUIColor
           : Color(.systemGray4)
       )
@@ -101,17 +108,24 @@ struct SearchFilterView: View {
     }
     .padding(.horizontal, 24)
     .padding(.vertical, 16)
-    .task {}
+    .task {
+      Task {
+        self.filter = try await self.databaseClient.getPlaceFilter()
+      }
+    }
+  }
+
+  func updateLocalPlaceFilter(_ value: PlaceFilter) async throws {
+    try await self.databaseClient.syncPlaceFilter(
+      value
+    )
   }
 }
 
 #if DEBUG
 
   #Preview("Identity") {
-		SearchFilterView(
-			filter: .constant(.identity),
-			onTap: { _ in }
-		)
+    SearchFilterView()
   }
 
 #endif

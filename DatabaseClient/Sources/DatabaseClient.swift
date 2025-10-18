@@ -16,6 +16,7 @@ public struct DatabaseClient {
     deleteAll: @escaping () async throws -> (),
     observePlaceDetail: @escaping (Int) -> AsyncThrowingStream<Place?, Error>,
     observePlaceFilter: @escaping @Sendable () -> AsyncThrowingStream<PlaceFilter, Error>,
+    getPlaceFilter: @escaping @Sendable () async throws -> PlaceFilter,
     syncPlaceFilter: @escaping (PlaceFilter) async throws -> (),
     reviewDB: ReviewDB
   ) {
@@ -28,6 +29,7 @@ public struct DatabaseClient {
     self.deleteAll = deleteAll
     self.observePlaceDetail = observePlaceDetail
     self.observePlaceFilter = observePlaceFilter
+    self.getPlaceFilter = getPlaceFilter
     self.syncPlaceFilter = syncPlaceFilter
     self.reviewDB = reviewDB
   }
@@ -41,6 +43,7 @@ public struct DatabaseClient {
   public var deleteAll: () async throws -> ()
   public var observePlaceDetail: (Int) -> AsyncThrowingStream<Place?, Error>
   public var observePlaceFilter: @Sendable () -> AsyncThrowingStream<PlaceFilter, Error>
+  public var getPlaceFilter: @Sendable () async throws -> PlaceFilter
   public var syncPlaceFilter: (PlaceFilter) async throws -> ()
   public var reviewDB: ReviewDB
 }
@@ -59,6 +62,7 @@ extension DatabaseClient: EnvironmentKey {
       deleteAll: { fatalError("\(Self.self).deleteAll is unimplemented") },
       observePlaceDetail: { _ in fatalError("\(Self.self).observePlaceDetail is unimplemented") },
       observePlaceFilter: { fatalError("\(Self.self).observePlaceFilter is unimplemente") },
+      getPlaceFilter: { fatalError("\(Self.self).getPlaceFilter is unimplemente") },
       syncPlaceFilter: { _ in fatalError("\(Self.self).syncPlaceFilter is unimplemented") },
       reviewDB: .test
     )

@@ -1,7 +1,7 @@
 import Models
 import SwiftUI
 
-public struct Item: Identifiable {
+public struct Item: Identifiable, Equatable {
   static func parseService(
     _ place: Place
   ) -> Service {
