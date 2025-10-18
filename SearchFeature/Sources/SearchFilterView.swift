@@ -3,8 +3,20 @@ import SwiftUI
 
 struct SearchFilterView: View {
   @Binding var filter: PlaceFilter
-  let onTap: (SearchStore.Tap) -> ()
+  let onTap: @Sendable (Tap) -> ()
 
+	private var observePlacesTask: Task<(), Error>?
+	private var observeFilterTask: Task<(), Error>?
+	private var transformTask: Task<(), Error>?
+	
+	public init(
+		filter: Binding<PlaceFilter>,
+		onTap: @Sendable @escaping (Tap) -> ()
+	) {
+		self._filter = filter
+		self.onTap = onTap
+	}
+	
   var body: some View {
     HStack(spacing: 24) {
       Button {
@@ -95,21 +107,11 @@ struct SearchFilterView: View {
 
 #if DEBUG
 
-  #Preview("All Off") {
-    SearchFilterView(
-      filter: .constant(.init(
-        showCarGarage: false,
-        showMotorcycleGarages: false,
-        showInflationPoints: false,
-        showWashStations: false,
-        showPatchTireStations: false
-      )),
-      onTap: { _ in }
-    )
-  }
-
   #Preview("Identity") {
-    SearchFilterView(filter: .constant(.identity), onTap: { _ in })
+		SearchFilterView(
+			filter: .constant(.identity),
+			onTap: { _ in }
+		)
   }
 
 #endif

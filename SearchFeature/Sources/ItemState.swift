@@ -1,7 +1,7 @@
 import Models
 import SwiftUI
 
-struct Item: Identifiable {
+public struct Item: Identifiable {
   static func parseService(
     _ place: Place
   ) -> Service {
@@ -38,7 +38,7 @@ struct Item: Identifiable {
     }
   }
 
-  enum Service {
+  public enum Service {
     case car
     case motorcycle
     case patchTire
@@ -47,12 +47,12 @@ struct Item: Identifiable {
     case none
   }
 
-  let id: Int
-  let name: String
-  let image: SwiftUI.Image
-  let service: Service
-  let address: String
-  let distance: Double?
+  public let id: Int
+  public let name: String
+  public let image: SwiftUI.Image
+  public let service: Service
+  public let address: String
+  public let distance: Double?
 
   var displayKmAways: String? {
     guard let distance = distance else {

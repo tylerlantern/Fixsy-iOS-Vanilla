@@ -4,54 +4,75 @@ import LocationManagerClient
 import MapKit
 import Models
 import SwiftUI
+import PlaceStore
 
 public struct SearchView: View {
+	
   @State private var isFocused: Bool = false
   @FocusState private var focusedField: Field?
   @Binding var detent: PresentationDetent
 
+	@State var filter: PlaceFilter = .identity
+	@State var items: [Item] = []
+	@State var searchText: String = ""
+	@Environment(PlaceStore.self) private var placeStore
+	
   enum Field { case search }
 
-  @StateObject var store: SearchStore
   private let onFocusSearch: () -> ()
   private let onTapItemById: (Int) -> ()
 
+	@State var observePlacesTask: Task<(), Error>?
+	@State var observeFilterTask: Task<(), Error>?
+	@State var transformTask: Task<(), Error>?
+	@State var searchTask: Task<(), Error>?
+	@State var locTask: Task<(), Error>?
+	
+	@Environment(\.databaseClient) var databaseClient
+	@Environment(\.locationManagerClient) var locationManagerClient
+	
   public init(
-    store: SearchStore,
     detent: Binding<PresentationDetent>,
     onFocusSearch: @escaping () -> (),
     onTapItemById: @escaping (Int) -> ()
   ) {
-    self._store = .init(wrappedValue: store)
     self._detent = detent
     self.onFocusSearch = onFocusSearch
     self.onTapItemById = onTapItemById
   }
-
+	
   public var body: some View {
+		@Bindable var placeStore = self.placeStore
     ScrollView(.vertical) {
       VStack {
-        SearchFilterView(filter: self.$store.filter) { tap in
-          self.store.handleOnTap(tap)
+        SearchFilterView(
+					filter: $placeStore.filter
+				) { tap in
+//          self.store.handleOnTap(tap)
         }
         if self.detent == BottomSheetDetents.expanded {
-          ForEach(self.store.items) { item in
+          ForEach(self.items) { item in
             ItemView(item: item) { id in self.onTapItemById(id) }
           }
         }
       }
     }
+		.onDisappear(perform: {
+			self.observePlacesTask?.cancel()
+			self.observeFilterTask?.cancel()
+			self.transformTask?.cancel()
+		})
     .safeAreaInset(edge: .top, spacing: 0) {
       HStack(spacing: 10) {
-        TextField("Search…", text: self.$store.searchText)
+        TextField("Search…", text: self.$searchText)
           .padding(.horizontal, 20)
           .padding(.vertical, 12)
           .background(.gray.opacity(0.25), in: .capsule)
           .focused(self.$focusedField, equals: .search)
           .submitLabel(.search)
-          .onSubmit { self.store.observeLocalData() }
-          .onChange(of: self.store.searchText) { _, _ in
-            self.store.observeLocalData()
+          .onSubmit { self.observeLocalData() }
+          .onChange(of: self.searchText) { _, _ in
+            self.observeLocalData()
           }
 
         Button {
@@ -97,12 +118,12 @@ public struct SearchView: View {
         }
       }
     )
-    .task(id: self.store.searchText) {
-      self.store.observeLocalData()
+    .task(id: self.searchText) {
+      self.observeLocalData()
     }
     .task {
-      self.store.observePlaceFilter()
-      self.store.observeLocalData()
+      self.observePlaceFilter()
+      self.observeLocalData()
     }
   }
 }
@@ -110,15 +131,6 @@ public struct SearchView: View {
 #if DEBUG
   #Preview {
     SearchView(
-      store: .init(
-        placeCallback: { _, _ in
-          AsyncThrowingStream<[Place], Error> { _ in }
-        },
-        filterCallback: {
-          AsyncThrowingStream<PlaceFilter, Error> { _ in }
-        },
-        locationCallback: { .init(unfolding: { nil }) },
-      ),
       detent: .constant(.large),
       onFocusSearch: {},
       onTapItemById: { _ in }

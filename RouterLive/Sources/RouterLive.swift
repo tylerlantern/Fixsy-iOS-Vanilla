@@ -29,12 +29,7 @@ struct RouteView: View {
     case .tabContainer:
       TabContainerView()
     case .home(.root):
-      HomeView(
-        placeStore: .init(
-          observeLocalDataCallback: self.databaseClient.observeMapData,
-          syncLocalCallback: self.databaseClient.syncPlaces
-        )
-      )
+      HomeView()
     case let .home(
       .detail(.root(navPath, title))
     ):
@@ -47,11 +42,6 @@ struct RouteView: View {
       )
     ):
       SearchView(
-        store: .init(
-          placeCallback: self.databaseClient.observeMapData,
-          filterCallback: self.databaseClient.observePlaceFilter,
-          locationCallback: self.locationManagerClient.locationStream
-        ),
         detent: detent,
         onFocusSearch: onFocusSearch,
         onTapItemById: onTapItemById

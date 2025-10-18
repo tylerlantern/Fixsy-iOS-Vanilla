@@ -1,10 +1,13 @@
 import SwiftUI
 import UIKit
+import PlaceStore
 
 public struct MapVisualKitView: UIViewControllerRepresentable {
-  let channel: MapChannel
+  let channel: MapVisualChannel
 
-  public init(channel: MapChannel) {
+  public init(
+		channel: MapVisualChannel
+	) {
     self.channel = channel
   }
 

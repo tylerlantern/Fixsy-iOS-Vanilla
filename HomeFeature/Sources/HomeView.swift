@@ -6,8 +6,31 @@ import MapKit
 import Models
 import Router
 import SwiftUI
+import PlaceStore
+import PlaceStore
 
 public struct HomeView: View {
+	
+	public enum SheetDisplay {
+		case search,
+		detail
+	}
+	
+ @State	public var mapVisualChannel : MapVisualChannel
+	
+	public init(){
+		let event = AsyncStream<MapVisualChannel.Event>.makeStream()
+		let action = AsyncStream<MapVisualChannel.Action>.makeStream()
+		self.mapVisualChannel = .init(
+			eventStream: event.stream,
+			eventCont: event.continuation,
+			actionStream: action.stream,
+			actionCon: action.continuation
+		)
+	}
+	
+	@Environment(PlaceStore.self) private var placeStore
+	
   enum Destination: Hashable { case detail }
   @State private var detent: PresentationDetent = BottomSheetDetents.collapsed
   @Environment(\.router) var router
@@ -16,31 +39,18 @@ public struct HomeView: View {
   @Environment(\.locationManagerClient) var locationManagerClient
 
   @State private var showBottomSheet = false
-
   @State var navPath = NavigationPath()
-  @State var mapChannel: MapChannel
-  @State var hasFocusRegionFirstTime: Bool = false
-  @StateObject var placeStore: PlaceStore
 
-  public init(
-    placeStore: PlaceStore
-  ) {
-    let mapChannelEvent =
-      AsyncStream.makeStream(of: MapChannel.Event.self)
-    let mapChannelAction =
-      AsyncStream.makeStream(of: MapChannel.Action.self)
-    self.mapChannel = .init(
-      eventChannel: mapChannelEvent,
-      actions: mapChannelAction.continuation
-    )
-    _placeStore = StateObject(wrappedValue: placeStore)
-  }
-
+	@State var observeTask : Task<(), Error>?
+	@State var fetchTask : Task<(), Error>?
+	
+	@State var hasFocusRegionFirstTime: Bool = false
+	
   public var body: some View {
     NavigationStack(path: self.$navPath) {
       VStack {
         MapVisualKitView(
-          channel: self.mapChannel
+					channel: self.mapVisualChannel
         )
       }
       .ignoresSafeArea()
@@ -52,45 +62,42 @@ public struct HomeView: View {
         self.router.route(route)
       }
       .task {
-        Task {
-          for await event in self.placeStore.eventChannel.stream {
-            switch event {
-            case let .places(places):
-              self.mapChannel.sendEvent(
-                .places(places)
-              )
-            }
-          }
-        }
-        Task {
-          for await event in self.locationManagerClient.delegate() {
-            switch event {
-            case let .didUpdateLocations(locations):
-              guard !self.hasFocusRegionFirstTime, let loc = locations.first else { continue }
-              self.hasFocusRegionFirstTime = true
-              let region = MKCoordinateRegion(
-                center: loc.coordinate,
-                latitudinalMeters: 750,
-                longitudinalMeters: 750
-              )
-              self.mapChannel.sendEvent(
-                .userRegion(region)
-              )
-            case .didFailWithError:
-              break
-            case .didChangeAuthorization:
-              break
-            }
-          }
-        }
+				observeTask?.cancel()
+				fetchTask?.cancel()
         self.handleLocationAuthorizationStatus()
-        self.placeStore.observeLocalData()
-        await self.placeStore.fetchRemote {
-          try await self.apiClient.call(
-            route: .mapData,
-            as: MapResponse.self
-          )
-        }
+				fetchTask = Task {
+					do {
+						try await self.placeStore.fetchRemote()
+					}catch {
+						//TODO: Show tosat error
+					}
+				}
+				
+				Task {
+					//TODO: Mapvisual no need to filter according to keyword
+					for try await localPlaces in self.databaseClient.observeMapData(
+						self.placeStore.filter, ""
+					) {
+						self.mapVisualChannel.sendEvent(
+							.places(localPlaces)
+						)
+					}
+				}
+				
+				Task {
+					for await locs in self.locationManagerClient.locationStream() {
+						guard !self.hasFocusRegionFirstTime, let loc = locs.first else { continue }
+						self.hasFocusRegionFirstTime = true
+						let region = MKCoordinateRegion(
+							center: loc.coordinate,
+							latitudinalMeters: 750,
+							longitudinalMeters: 750
+						)
+						self.mapVisualChannel.sendEvent(
+							.userRegion(region)
+						)
+					}
+				}
       }
     }
     .bottomSheet(
@@ -109,16 +116,9 @@ public struct HomeView: View {
   }
 }
 
+#if DEBUG
 #Preview {
-  HomeView(
-    placeStore: .init(
-      observeLocalDataCallback: { _, _ in
-        AsyncThrowingStream {
-          nil
-        }
-      }, syncLocalCallback: { _ in
-        1
-      }
-    )
-  )
+  HomeView()
 }
+#endif
+

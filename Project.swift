@@ -1,7 +1,7 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let prefixBundleId = "io.tuist."
+let prefixBundleId = "com.to.fixsy."
 
 let homeDemoScheme = Scheme.scheme(
   name: "HomeFeatureApp",
@@ -16,13 +16,13 @@ let bottomSheetModuleScheme = Scheme.scheme(
 )
 
 let project = Project(
-  name: "iOSApp",
+  name: "Fixsy",
   targets: [
     .target(
       name: "AppCore",
       destinations: .iOS,
       product: .app,
-      bundleId: "\(prefixBundleId).appcore",
+      bundleId: "com.to.fixsy",
       infoPlist: .appInfoPlist,
       sources: ["AppCore/Sources/**"],
       resources: ["AppCore/Resources/**"],
@@ -35,6 +35,10 @@ let project = Project(
         .target(name: "Router"),
         .target(name: "RouterLive"),
 
+				// Start Store
+				.target(name: "PlaceStore"),
+				// End Store
+				
         // Start Clients
         .target(name: "AccessTokenClient"),
         .target(name: "AccessTokenClientLive"),
@@ -49,21 +53,22 @@ let project = Project(
       ],
       settings: .settings(
         base: [
-          "PRODUCT_NAME": "DuckHorde"
+          "PRODUCT_NAME": "Fixsy"
         ]
       )
     ),
-    // TEST Example
-    //		.target(
-    //			name: "iOSTests",
-    //			destinations: .iOS,
-    //			product: .unitTests,
-    //			bundleId: "io.tuist.iOSTests",
-    //			infoPlist: .default,
-    //			sources: ["iOS/Tests/**"],
-    //			resources: [],
-    //			dependencies: [.target(name: "iOS")]
-    //		)
+//		.target(
+//			name: "iOSTests",
+//			destinations: .iOS,
+//			product: .unitTests,
+//			bundleId: "com.to.fixsy.iOSTests",
+//			infoPlist: .default,
+//			sources: ["Tests/**"],
+//			resources: [],
+//			dependencies: [
+//				.target(name: "AppCore"),
+//			]
+//		),
     .target(
       name: "Router",
       destinations: .iOS,
@@ -120,7 +125,17 @@ let project = Project(
       name: "TokenModel"
     ),
     // End Model
-
+		// Start Store
+		.framework(
+			name: "PlaceStore",
+			dependencies: [
+				.target(name: "Models"),
+				.target(name: "DatabaseClient"),
+				.target(name: "APIClient")
+			]
+		),
+		// End Stores
+		
     // Start Modules
     .framework(
       name: "BottomSheetModule",
@@ -213,7 +228,8 @@ let project = Project(
         .target(name: "APIClient"),
         .target(name: "DatabaseClient"),
         .target(name: "LocationManagerClient"),
-        .target(name: "BottomSheetModule")
+        .target(name: "BottomSheetModule"),
+				.target(name: "PlaceStore")
       ]
     ),
     .demoApp(
@@ -265,16 +281,40 @@ let project = Project(
         .target(name: "Models"),
         .target(name: "DatabaseClient"),
         .target(name: "LocationManagerClient"),
-        .target(name: "BottomSheetModule")
+        .target(name: "BottomSheetModule"),
+				.target(name: "PlaceStore")
       ]
     ),
+		.target(
+			name: "SearchFeatureTests",
+			destinations: .iOS,
+			product: .unitTests,
+			bundleId: "\(prefixBundleId)SearchFeatureTests",
+			infoPlist: .default,
+			// 👇 This is the folder shape you asked for
+			sources: ["Tests/SearchFeatureTests/**"],
+			resources: [],
+			dependencies: [
+				.target(name: "SearchFeature")
+			]
+		),
     .demoApp(
       "SearchFeature",
       deps: []
     )
     // End Features
   ],
-  schemes: []
+  schemes: [
+		.scheme(
+			name: "Fixsy",
+			shared: true,
+			buildAction: .buildAction(targets: [.target("AppCore")]),
+			testAction: .targets([
+				.testableTarget(target: "APIClientTests"),
+				.testableTarget(target: "SearchFeatureTests")
+			]),
+		),
+	]
 )
 
 public extension Target {
