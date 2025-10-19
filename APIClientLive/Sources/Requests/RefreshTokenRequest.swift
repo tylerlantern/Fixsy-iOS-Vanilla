@@ -1,5 +1,4 @@
 import Foundation
-import Models
 
 public struct RefreshTokenRequest: Codable {
   public let accessToken: String

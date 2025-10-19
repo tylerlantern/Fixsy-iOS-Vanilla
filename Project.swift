@@ -3,12 +3,6 @@ import ProjectDescriptionHelpers
 
 let prefixBundleId = "com.to.fixsy."
 
-let homeDemoScheme = Scheme.scheme(
-  name: "HomeFeatureApp",
-  buildAction: .buildAction(targets: [.target("HomeFeatureApp")]),
-  runAction: .runAction(configuration: .debug)
-)
-
 let bottomSheetModuleScheme = Scheme.scheme(
   name: "BottomSheetModuleApp",
   buildAction: .buildAction(targets: [.target("BottomSheetModule")]),
@@ -75,7 +69,9 @@ let project = Project(
       bundleId: "\(prefixBundleId)Router",
       infoPlist: .default,
       sources: ["Router/Sources/**"],
-      dependencies: []
+      dependencies: [
+        .target(name: "Models")
+      ]
     ),
     .target(
       name: "RouterLive",
@@ -237,9 +233,17 @@ let project = Project(
     ),
     .framework(
       name: "DetailFeature",
+      hasResource: true,
       dependencies: [
-        .target(name: "Router")
+        .target(name: "Router"),
+        .target(name: "Models"),
+        .target(name: "APIClient"),
+        .target(name: "DatabaseClient")
       ]
+    ),
+    .demoApp(
+      "DetailFeature",
+      deps: []
     ),
     .framework(
       name: "CommentFeature",

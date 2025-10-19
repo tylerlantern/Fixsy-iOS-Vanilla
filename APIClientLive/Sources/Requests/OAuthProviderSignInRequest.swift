@@ -1,22 +1,7 @@
-import Models
-
 public enum OAuthProvider: Int, Codable, Equatable {
   case facebook = 1
   case google = 2
   case apple = 3
-}
-
-public extension Provider {
-  var oauathProvider: OAuthProvider {
-    switch self {
-    case .facebook:
-      return .facebook
-    case .google:
-      return .google
-    case .apple:
-      return .apple
-    }
-  }
 }
 
 public struct OAuthProviderSignInRequest: Codable {

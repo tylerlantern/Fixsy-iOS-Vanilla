@@ -31,7 +31,7 @@ struct RouteView: View {
     case .home(.root):
       HomeView()
     case let .home(
-      .detail(.root(navPath, title))
+      .detail(.root(placeId))
     ):
       DetailView(navPath: navPath, title: title)
     case let .home(

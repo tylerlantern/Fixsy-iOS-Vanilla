@@ -19,10 +19,7 @@ public enum Route {
       DetailRoute
     )
     public enum DetailRoute {
-      case root(
-        Binding<NavigationPath>,
-        String
-      )
+      case root(_ placeId: Int)
       case comment(CommentRoute)
 
       public enum CommentRoute {

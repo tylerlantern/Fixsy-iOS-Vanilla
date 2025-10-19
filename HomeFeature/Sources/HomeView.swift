@@ -46,6 +46,8 @@ public struct HomeView: View {
 
   @State var hasFocusRegionFirstTime: Bool = false
 
+  @State var sheetDisplay: SheetDisplay = .search
+
   public var body: some View {
     NavigationStack(path: self.$navPath) {
       VStack {
@@ -54,13 +56,6 @@ public struct HomeView: View {
         )
       }
       .ignoresSafeArea()
-      .navigationDestination(for: Destination.self) { destination in
-        let route = switch destination {
-        case .detail:
-          Route.home(.detail(.root(self.$navPath, "DAMN TAKE")))
-        }
-        self.router.route(route)
-      }
       .task {
         self.observeTask?.cancel()
         self.fetchTask?.cancel()
@@ -107,20 +102,33 @@ public struct HomeView: View {
             )
           }
         }
+
+        Task {
+          for await action in self.mapVisualChannel.actionStream {
+            handlePlaceStoreChannelAction(action: action)
+          }
+        }
       }
     }
     .bottomSheet(
       detent: self.$detent
     ) {
-      self.router.route(
-        .home(
-          .search(
-            detent: self.$detent,
-            onFocusSearch: {},
-            onTapItemById: { _ in }
+      switch self.sheetDisplay {
+      case .search:
+        self.router.route(
+          .home(
+            .search(
+              detent: self.$detent,
+              onFocusSearch: {},
+              onTapItemById: { _ in
+                self.sheetDisplay = .detail
+              }
+            )
           )
         )
-      )
+      case .detail:
+        Text("Detail")
+      }
     }
   }
 }

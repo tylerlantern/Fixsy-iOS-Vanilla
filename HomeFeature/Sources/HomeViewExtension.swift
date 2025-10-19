@@ -28,8 +28,7 @@ extension HomeView {
     case .viewDidLoad:
       break
     case let .didSelect(placeId):
-
-      break
+      self.sheetDisplay = .detail
     case let .zoom(to):
       break
     case let .regionChanged(mKCoordinateRegion):
