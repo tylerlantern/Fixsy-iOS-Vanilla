@@ -12,7 +12,7 @@ import SwiftUI
 public struct HomeView: View {
   public enum SheetDisplay {
     case search,
-         detail
+				 detail(_ placeId : Int)
   }
 
   @State public var mapVisualChannel: MapVisualChannel
@@ -31,7 +31,7 @@ public struct HomeView: View {
   @Environment(PlaceStore.self) private var placeStore
 
   enum Destination: Hashable { case detail }
-  @State private var detent: PresentationDetent = BottomSheetDetents.collapsed
+  @State var detent: PresentationDetent = BottomSheetDetents.collapsed
   @Environment(\.router) var router
   @Environment(\.apiClient) var apiClient
   @Environment(\.databaseClient) var databaseClient
@@ -119,15 +119,32 @@ public struct HomeView: View {
           .home(
             .search(
               detent: self.$detent,
-              onFocusSearch: {},
-              onTapItemById: { _ in
-                self.sheetDisplay = .detail
+              onFocusSearch: {
+								
+							},
+              onTapItemById: { id in
+                self.sheetDisplay = .detail(id)
               }
             )
           )
         )
-      case .detail:
-        Text("Detail")
+      case let .detail(placeId):
+				self.router.route(
+					.home(
+						.detail(
+							.root(
+								placeId,
+								{
+									self.sheetDisplay = .search
+									self.detent = BottomSheetDetents.collapsed
+								},
+								{
+									//TODO:Open review form
+								}
+							)
+						)
+					)
+				)
       }
     }
   }
