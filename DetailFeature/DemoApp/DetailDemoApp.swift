@@ -4,14 +4,13 @@ import SwiftUI
 
 @main
 struct DetailDemoApp: App {
-	@State var showSheet: Bool = false
-	
-	var body: some Scene {
-		WindowGroup {
-			DetailComponentView(
-				place: Place.mock()
-			)
-			
-		}
-	}
+  @State var showSheet: Bool = false
+
+  var body: some Scene {
+    WindowGroup {
+      DetailComponentView(
+        place: Place.mock()
+      )
+    }
+  }
 }

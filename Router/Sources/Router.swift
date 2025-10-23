@@ -1,5 +1,5 @@
-import SwiftUI
 import Models
+import SwiftUI
 
 public enum Route {
   case tabContainer
@@ -20,12 +20,13 @@ public enum Route {
       DetailRoute
     )
     public enum DetailRoute {
-			case root(
-				_ placeId : Int,
-				_ dismiss : () -> (),
-				_ onTapReviewButton : () -> ()
-			)
+      case root(
+        _ placeId: Int,
+        _ dismiss: () -> (),
+        _ onTapReviewButton: () -> ()
+      )
       case comment(CommentRoute)
+      case imagesInsepcter(ImageInspectorRoute)
 
       public enum CommentRoute {
         case root(Binding<NavigationPath>)
@@ -35,6 +36,10 @@ public enum Route {
         }
       }
     }
+  }
+
+  public enum ImageInspectorRoute {
+    case root([URL], _ index: Int)
   }
 
   public enum ExploreRoute {

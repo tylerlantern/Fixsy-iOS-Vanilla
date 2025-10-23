@@ -93,19 +93,20 @@ let project = Project(
         .target(name: "ExpandedCommentFeature"),
         .target(name: "SearchFeature"),
         .target(name: "LocationManagerClient"),
-        .target(name: "DatabaseClient")
+        .target(name: "DatabaseClient"),
+        .target(name: "ImagesInspectorFeature")
       ]
     ),
 
-		// Start Components
-		.component(
-			name: "CapsulesStackComponent"
-		),
-		.component(
-			name: "CarBrandComponent"
-		),
-		// End Components
-		
+    // Start Components
+    .component(
+      name: "CapsulesStackComponent"
+    ),
+    .component(
+      name: "CarBrandComponent"
+    ),
+    // End Components
+
     // Start Config
     .framework(
       name: "Configs"
@@ -227,7 +228,7 @@ let project = Project(
       name: "HomeFeature",
       hasResource: true,
       dependencies: [
-				.external(name: "AsyncAlgorithms"),
+        .external(name: "AsyncAlgorithms"),
         .target(name: "Router"),
         .target(name: "Models"),
         .target(name: "APIClient"),
@@ -249,8 +250,8 @@ let project = Project(
         .target(name: "Models"),
         .target(name: "APIClient"),
         .target(name: "DatabaseClient"),
-				.target(name: "CapsulesStackComponent"),
-				.target(name: "CarBrandComponent")
+        .target(name: "CapsulesStackComponent"),
+        .target(name: "CarBrandComponent")
       ]
     ),
     .demoApp(
@@ -299,6 +300,10 @@ let project = Project(
         .target(name: "BottomSheetModule"),
         .target(name: "PlaceStore")
       ]
+    ),
+    .framework(
+      name: "ImagesInspectorFeature",
+      dependencies: []
     ),
     .target(
       name: "SearchFeatureTests",
@@ -350,23 +355,23 @@ public extension Target {
     )
   }
 
-	static func component(
-		name: String,
-		hasResource: Bool = false,
-		dependencies: [TargetDependency] = []
-	) -> Target {
-		.target(
-			name: name,
-			destinations: .iOS,
-			product: .framework,
-			bundleId: "\(prefixBundleId)\(name)",
-			infoPlist: .default,
-			sources: ["Components/\(name)/Sources/**"],
-			resources: hasResource ? ["Components/\(name)/Resources/**"] : nil,
-			dependencies: dependencies
-		)
-	}
-	
+  static func component(
+    name: String,
+    hasResource: Bool = false,
+    dependencies: [TargetDependency] = []
+  ) -> Target {
+    .target(
+      name: name,
+      destinations: .iOS,
+      product: .framework,
+      bundleId: "\(prefixBundleId)\(name)",
+      infoPlist: .default,
+      sources: ["Components/\(name)/Sources/**"],
+      resources: hasResource ? ["Components/\(name)/Resources/**"] : nil,
+      dependencies: dependencies
+    )
+  }
+
   static func demoApp(_ prefix: String, deps: [TargetDependency] = []) -> Target {
     .target(
       name: "\(prefix)App",

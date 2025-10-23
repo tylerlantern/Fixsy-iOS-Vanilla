@@ -1,7 +1,7 @@
+import BottomSheetModule
 import MapKit
 import PlaceStore
 import SwiftUI
-import BottomSheetModule
 
 extension HomeView {
   func handleLocationAuthorizationStatus() {
@@ -29,7 +29,7 @@ extension HomeView {
     case .viewDidLoad:
       break
     case let .didSelect(placeId):
-			self.detent = BottomSheetDetents.medium
+      self.detent = BottomSheetDetents.medium
       self.sheetDisplay = .detail(placeId)
     case let .zoom(to):
       break

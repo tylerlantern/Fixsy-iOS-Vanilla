@@ -12,7 +12,7 @@ import SwiftUI
 public struct HomeView: View {
   public enum SheetDisplay {
     case search,
-				 detail(_ placeId : Int)
+         detail(_ placeId: Int)
   }
 
   @State public var mapVisualChannel: MapVisualChannel
@@ -119,9 +119,7 @@ public struct HomeView: View {
           .home(
             .search(
               detent: self.$detent,
-              onFocusSearch: {
-								
-							},
+              onFocusSearch: {},
               onTapItemById: { id in
                 self.sheetDisplay = .detail(id)
               }
@@ -129,22 +127,22 @@ public struct HomeView: View {
           )
         )
       case let .detail(placeId):
-				self.router.route(
-					.home(
-						.detail(
-							.root(
-								placeId,
-								{
-									self.sheetDisplay = .search
-									self.detent = BottomSheetDetents.collapsed
-								},
-								{
-									//TODO:Open review form
-								}
-							)
-						)
-					)
-				)
+        self.router.route(
+          .home(
+            .detail(
+              .root(
+                placeId,
+                {
+                  self.sheetDisplay = .search
+                  self.detent = BottomSheetDetents.collapsed
+                },
+                {
+                  // TODO: Open review form
+                }
+              )
+            )
+          )
+        )
       }
     }
   }
