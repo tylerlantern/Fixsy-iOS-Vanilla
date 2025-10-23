@@ -153,8 +153,6 @@ public struct InfoView: View {
           )
         )
       )
-      //			.tag(self.selectedIndex)
-      .id(UUID().uuidString)
     }
   }
 }
