@@ -113,19 +113,21 @@ public struct HomeView: View {
     .bottomSheet(
       detent: self.$detent
     ) {
-      switch self.sheetDisplay {
-      case .search:
-        self.router.route(
-          .home(
-            .search(
-              detent: self.$detent,
-              onFocusSearch: {},
-              onTapItemById: { id in
-                self.sheetDisplay = .detail(id)
-              }
-            )
-          )
-        )
+			switch self.sheetDisplay {
+			case .search:
+				self.router.route(
+					.home(
+						.search(
+							.root(
+								detent: self.$detent,
+								onFocusSearch: {},
+								onTapItemById: { id in
+									self.sheetDisplay = .detail(id)
+								}
+							)
+						)
+					)
+				)
       case let .detail(placeId):
         self.router.route(
           .home(

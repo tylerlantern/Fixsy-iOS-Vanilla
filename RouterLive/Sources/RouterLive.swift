@@ -13,6 +13,7 @@ import Router
 import SearchFeature
 import SwiftUI
 import TabContainerFeature
+import SocialSignInFeature
 
 extension Router {
   public static let liveValue: Router = .init { route in
@@ -36,13 +37,23 @@ struct RouteView: View {
       case .root:
         HomeView()
 
-      case let .search(detent, onFocusSearch, onTapItemById):
-        SearchView(
-          detent: detent,
-          onFocusSearch: onFocusSearch,
-          onTapItemById: onTapItemById
-        )
-
+      case let .search(searchRoute):
+				switch searchRoute {
+				case let .root(
+					detent: detent,
+					onFocusSearch: onFocusSearch,
+					onTapItemById: onTapItemById
+				):
+					SearchView(
+						detent: detent,
+						onFocusSearch: onFocusSearch,
+						onTapItemById: onTapItemById
+					)
+				case .socialSignIn:
+					SocialSignInView()
+				case .userProfile:
+					Text("User Profile Screen")
+				}
       case let .detail(detailRoute):
         switch detailRoute {
         case let .root(placeId, dismiss, onTapReviewButton):

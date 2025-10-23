@@ -20,6 +20,7 @@ let project = Project(
       infoPlist: .appInfoPlist,
       sources: ["AppCore/Sources/**"],
       resources: ["AppCore/Resources/**"],
+			entitlements: .entitlements,
       dependencies: [
         // Start Config
         .target(name: "Configs"),
@@ -94,7 +95,8 @@ let project = Project(
         .target(name: "SearchFeature"),
         .target(name: "LocationManagerClient"),
         .target(name: "DatabaseClient"),
-        .target(name: "ImagesInspectorFeature")
+        .target(name: "ImagesInspectorFeature"),
+				.target(name: "SocialSignInFeature")
       ]
     ),
 
@@ -105,6 +107,9 @@ let project = Project(
     .component(
       name: "CarBrandComponent"
     ),
+		.component(
+			name: "BannerToastComponent"
+		),
     // End Components
 
     // Start Config
@@ -215,6 +220,17 @@ let project = Project(
         .target(name: "LocationManagerClient")
       ]
     ),
+		.framework(
+			name: "AuthProvidersClient",
+			dependencies: []
+		),
+		.framework(
+			name: "AuthProvidersClientLive",
+			dependencies: [
+				.external(name: "GoogleSignIn"),
+				.target(name: "AuthProvidersClient")
+			]
+		),
     // End Client
 
     // Start Features
@@ -298,9 +314,15 @@ let project = Project(
         .target(name: "DatabaseClient"),
         .target(name: "LocationManagerClient"),
         .target(name: "BottomSheetModule"),
-        .target(name: "PlaceStore")
+        .target(name: "PlaceStore"),
+				.target(name: "APIClient"),
+				.target(name: "AccessTokenClient")
       ]
     ),
+		.demoApp(
+			"SearchFeature",
+			deps: []
+		),
     .framework(
       name: "ImagesInspectorFeature",
       dependencies: []
@@ -318,10 +340,21 @@ let project = Project(
         .target(name: "SearchFeature")
       ]
     ),
-    .demoApp(
-      "SearchFeature",
-      deps: []
-    )
+		.framework(
+			name: "SocialSignInFeature",
+			hasResource : true,
+			dependencies: [
+				.target(name: "AccessTokenClient"),
+				.target(name: "APIClient"),
+				.target(name: "DatabaseClient"),
+				.target(name: "AuthProvidersClient"),
+				.target(name: "BannerToastComponent")
+			]
+		),
+		.demoApp(
+			"SocialSignInFeature",
+			deps: []
+		),
     // End Features
   ],
   schemes: [

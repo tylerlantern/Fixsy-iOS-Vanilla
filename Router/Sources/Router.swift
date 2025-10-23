@@ -12,32 +12,42 @@ public enum Route {
   public enum HomeRoute {
     case root
     case search(
-      detent: Binding<PresentationDetent>,
-      onFocusSearch: () -> (),
-      onTapItemById: (Int) -> ()
+			SearchRoute
     )
     case detail(
       DetailRoute
     )
-    public enum DetailRoute {
-      case root(
-        _ placeId: Int,
-        _ dismiss: () -> (),
-        _ onTapReviewButton: () -> ()
-      )
-      case comment(CommentRoute)
-      case imagesInsepcter(ImagesInspectorRoute)
-
-      public enum CommentRoute {
-        case root(Binding<NavigationPath>)
-        case expandedComment(ExpandedCommentRout)
-        public enum ExpandedCommentRout {
-          case root(Binding<NavigationPath>)
-        }
-      }
-    }
+		
   }
 
+	public enum SearchRoute {
+		case root(
+			detent: Binding<PresentationDetent>,
+			onFocusSearch: () -> (),
+			onTapItemById: (Int) -> (),
+		)
+		case socialSignIn
+		case userProfile
+	}
+	
+	public enum DetailRoute {
+		case root(
+			_ placeId: Int,
+			_ dismiss: () -> (),
+			_ onTapReviewButton: () -> ()
+		)
+		case comment(CommentRoute)
+		case imagesInsepcter(ImagesInspectorRoute)
+
+		public enum CommentRoute {
+			case root(Binding<NavigationPath>)
+			case expandedComment(ExpandedCommentRout)
+			public enum ExpandedCommentRout {
+				case root(Binding<NavigationPath>)
+			}
+		}
+	}
+	
   public enum ImagesInspectorRoute {
     case root([URL], _ index: Binding<Int>)
   }

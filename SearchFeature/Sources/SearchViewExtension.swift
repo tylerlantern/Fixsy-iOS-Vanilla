@@ -34,6 +34,17 @@ extension SearchView {
     }
   }
 
+	func observeUserProfile(){
+		observeLocalUserTask?.cancel()
+		observeLocalUserTask = Task {
+			for try await user in self.databaseClient.userProfileDB.observeUserProfile()
+			{
+				self.profileURL = user?.pictureURL
+			}
+		
+		}
+	}
+	
   func searchTextChanged() {
     self.searchTask?.cancel()
     self.searchTask = Task {
@@ -42,7 +53,28 @@ extension SearchView {
     }
   }
 
-  func handleOnTap(_ tap: Tap) {}
+	func onTapAvartarProfile(){
+		print("onTapAvartarProfile")
+		fetchLocalToken?.cancel()
+		fetchLocalToken = Task {
+			do {
+				guard let token = try await self.accessTokenClient.accessToken()
+				else {
+					print("FAILLING TO THIS")
+					self.presentedSocialSignInScreen = true
+					return
+				}
+				print("Having token")
+				//TODO: Show user profile
+			}catch(let error) {
+				print("error",error)
+			}
+		
+		}
+	}
+	
+	
+	
 }
 
 public func haversine(
