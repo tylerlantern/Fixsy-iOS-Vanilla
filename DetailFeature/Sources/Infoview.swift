@@ -147,12 +147,14 @@ public struct InfoView: View {
             .imagesInsepcter(
               .root(
                 self.place.images.map(\.url),
-                self.selectedIndex
+                self.$selectedIndex
               )
             )
           )
         )
       )
+      //			.tag(self.selectedIndex)
+      .id(UUID().uuidString)
     }
   }
 }

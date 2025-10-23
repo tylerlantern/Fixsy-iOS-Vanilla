@@ -26,7 +26,7 @@ public enum Route {
         _ onTapReviewButton: () -> ()
       )
       case comment(CommentRoute)
-      case imagesInsepcter(ImageInspectorRoute)
+      case imagesInsepcter(ImagesInspectorRoute)
 
       public enum CommentRoute {
         case root(Binding<NavigationPath>)
@@ -38,8 +38,8 @@ public enum Route {
     }
   }
 
-  public enum ImageInspectorRoute {
-    case root([URL], _ index: Int)
+  public enum ImagesInspectorRoute {
+    case root([URL], _ index: Binding<Int>)
   }
 
   public enum ExploreRoute {

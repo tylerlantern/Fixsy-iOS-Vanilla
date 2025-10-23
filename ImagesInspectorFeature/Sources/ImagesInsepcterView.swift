@@ -3,24 +3,21 @@ import SwiftUI
 public struct ImagesInspectorView: View {
   public let urls: [URL]
 
-  @State private var index: Int
+  @Binding private var index: Int
 
   @Environment(\.dismiss) var dismiss
 
   public init(
     urls: [URL],
-    initialIndex: Int
+    initialIndex: Binding<Int>
   ) {
     self.urls = urls
-    self._index = State(
-      initialValue: initialIndex
-    )
+    self._index = initialIndex
   }
 
   public var body: some View {
     ZStack {
       Color.black.ignoresSafeArea()
-
       TabView(selection: self.$index) {
         ForEach(self.urls.indices, id: \.self) { i in
           ZoomableAsyncImage(url: self.urls[i])
