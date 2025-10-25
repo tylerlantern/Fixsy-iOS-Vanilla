@@ -25,7 +25,6 @@ public struct SocialSignInView: View {
 	@StateObject var banners = BannerCenter()
 	
 	public var body: some View {
-		NavigationStack {
 			VStack(spacing: 24) {
 				SocialSignInFeatureAsset.Images.fixsyIcon.swiftUIImage
 					.resizable()
@@ -35,7 +34,6 @@ public struct SocialSignInView: View {
 						SocialSignInFeatureAsset.Colors.primary.swiftUIColor
 					)
 					.cornerRadius(100)
-					.padding(.top, 64)
 				VStack(spacing: 16) {
 					Button(
 						action: {
@@ -98,8 +96,6 @@ public struct SocialSignInView: View {
 			.background(
 				SocialSignInFeatureAsset.Colors.primary.swiftUIColor
 			)
-			.ignoresSafeArea()
-		}
 		.bannerHost(banners)
 		.accentColor(.white)
 	}

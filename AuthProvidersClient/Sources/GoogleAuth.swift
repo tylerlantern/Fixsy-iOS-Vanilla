@@ -2,11 +2,11 @@ import Foundation
 import UIKit
 
 public struct GoogleAuth {
-  public var signIn: () async -> Result<SocialAccount, SocialSignInError>
+  public var signIn: @Sendable () async throws -> Result<SocialAccount, SocialSignInError>
   public var handleURL: (URL) -> ()
   public var logout: () -> ()
   public init(
-    signIn: @escaping () async -> Result<SocialAccount, SocialSignInError>,
+    signIn: @escaping @Sendable () async throws -> Result<SocialAccount, SocialSignInError>,
     handleURL: @escaping (URL) -> (),
     logout: @escaping () -> ()
   ) {

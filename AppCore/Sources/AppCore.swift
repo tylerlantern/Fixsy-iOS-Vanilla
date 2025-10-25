@@ -12,26 +12,39 @@ import PlaceStore
 import Router
 import RouterLive
 import SwiftUI
+import AuthProvidersClient
+import AuthProvidersClientLive
 
 @main
 struct AppCore: App {
+	
+	@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+	
   @State var router: Router
   @State var apiClient: APIClient
   @State var accessTokenClient: AccessTokenClient
   @State var databaseClient: DatabaseClient
   @State var locationManagerClient: LocationManagerClient
-
+	@State var authProvidersClient : AuthProvidersClient
+	
   @State var placeStore: PlaceStore
 
   public init() {
     self.router = .liveValue
-    self.accessTokenClient = .liveValue
+		let accessTokenClient = AccessTokenClient.live(
+			accessGroup: Configs.live.appGroup.accessGroup,
+			service: Configs.live.appGroup.identifier
+		)
+    self.accessTokenClient = accessTokenClient
     let apiClientLive = APIClient.live(
       url: Configs.live.mobileAPI.hostName,
-      getToken: AccessTokenClient.liveValue.accessToken,
-      updateToken: AccessTokenClient.liveValue.updateAccessToken
+			getToken: accessTokenClient.accessToken,
+			updateToken: accessTokenClient.updateAccessToken
     )
     self.apiClient = apiClientLive
+		self.authProvidersClient = AuthProvidersClient.live(
+			googleOAuthClientId: Configs.live.googleOAuthClientId
+		)
     self.databaseClient = .liveValue
     self.locationManagerClient = .liveValue
 
@@ -40,7 +53,7 @@ struct AppCore: App {
       locationStreamCallback: LocationManagerClient.liveValue.locationStream,
       syncLocalCallback: DatabaseClient.liveValue.syncPlaces
     )
-
+		self.appDelegate.authProvidersClient = self.authProvidersClient
     _ = self.databaseClient.migrate()
   }
 
@@ -48,11 +61,15 @@ struct AppCore: App {
     WindowGroup {
       Router.liveValue.route(.home(.root))
         .environment(\.router, self.router)
+				.environment(\.authProvidersClient, self.authProvidersClient)
         .environment(\.apiClient, self.apiClient)
         .environment(\.accessTokenClient, self.accessTokenClient)
         .environment(\.databaseClient, self.databaseClient)
         .environment(\.locationManagerClient, self.locationManagerClient)
         .environment(self.placeStore)
+				.onOpenURL { url in
+					self.authProvidersClient.googleAuth.handleURL(url)
+				 }
     }
   }
 }

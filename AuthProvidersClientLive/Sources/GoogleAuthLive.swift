@@ -1,11 +1,12 @@
 import Combine
-import Configs
 import Foundation
 import AuthProvidersClient
 import UIKit
 import GoogleSignIn
 
 public extension GoogleAuth {
+	
+	@MainActor
 	static func live(googleOAuthClientId: String) -> GoogleAuth {
 		let gidSignIn = GIDSignIn.sharedInstance
 		let gidConfiguration = GIDConfiguration(
@@ -13,47 +14,38 @@ public extension GoogleAuth {
 		)
 		gidSignIn.configuration = gidConfiguration
 		return Self(
-			signIn: {
-				guard let viewController = await UIApplication.shared.windows.first?.rootViewController
-				else {
+			signIn: { @MainActor in
+				let viewController = await MainActor.run {
+					UIApplication.shared
+						.connectedScenes
+						.first(where: { $0 is UIWindowScene })
+						.flatMap({ $0 as? UIWindowScene })?
+						.windows
+						.first(where: \.isKeyWindow)?
+						.rootViewController
+				}
+				guard let viewController else {
 					return Result.failure(SocialSignInError.noViewController)
 				}
-				return await withCheckedContinuation { continuation in
-					gidSignIn.signIn(withPresenting: viewController) { (
-						result: GIDSignInResult?,
-						error: Error?
-					) in
-						if let error = error {
-							let socialSigninError: SocialSignInError = isSignInCancelled(error: error)
-							? .cancelFlow
-							: .error(error as NSError)
-							continuation.resume(returning: .failure(socialSigninError))
-							return
-						}
-						guard let user = result?.user else {
-							return
-						}
-						let image: URL? = (user.profile?.hasImage ?? false)
-						? user.profile?.imageURL(withDimension: 100)
-						: nil
-						guard let idToken = user.idToken?.tokenString,
-									let userId = user.userID else {
-							continuation.resume(returning: .failure(.accountInvalid))
-							return
-						}
-						let account = 	SocialAccount(
-							provider: .google,
-							token: idToken,
-							userId: userId,
-							email: user.profile?.email,
-							firstName: user.profile?.givenName,
-							lastName: user.profile?.familyName,
-							picture: user.profile?.imageURL(withDimension: 300)
-						)
-						continuation.resume(returning: .success(account))
-					}
+				let result: GIDSignInResult = try await GIDSignIn.sharedInstance
+					.signIn(withPresenting: viewController)
+				let user: GIDGoogleUser = try await result.user.refreshTokensIfNeeded()
+				guard let idToken = user.idToken?.tokenString,
+							let userId = user.userID
+				else {
+					return .failure(.accountInvalid)
 				}
-				
+				return .success(
+					SocialAccount(
+						provider: .google,
+						token: idToken,
+						userId: userId,
+						email: user.profile?.email,
+						firstName: user.profile?.givenName,
+						lastName: user.profile?.familyName,
+						picture: user.profile?.imageURL(withDimension: 300)
+					)
+				)
 			},
 			handleURL: { gidSignIn.handle($0) },
 			logout: { gidSignIn.signOut() }

@@ -8,10 +8,9 @@ import SwiftUI
 import APIClient
 import AccessTokenClient
 import Router
+import ContentHeightSheetComponent
 
 public struct SearchView: View {
-	
-	@State var socialSignInSheetHeight : CGFloat = .zero
 	@State var presentedSocialSignInScreen : Bool = false
 	@State var presentedUserProfileScreen : Bool = false
 	
@@ -152,7 +151,7 @@ public struct SearchView: View {
 					)
 				)
 			)
-			.presentationDetents([.height(250)])
+			.adjustSheetHeightToContent()
 		}
 	}
 }
@@ -173,7 +172,8 @@ private struct ProfileAvatar: View {
 					case .success(let image):
 						image
 							.resizable()
-							.scaledToFill()
+						 .scaledToFill()
+						 .frame(width: 44, height: 44)
 					case .failure:
 						personCircle()
 					@unknown default:

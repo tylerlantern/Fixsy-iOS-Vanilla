@@ -2,6 +2,7 @@ import SwiftUI
 import APIClient
 import BannerToastComponent
 import AuthProvidersClient
+import os
 
 extension SocialSignInView {
 	
@@ -12,7 +13,7 @@ extension SocialSignInView {
 			let result = await (
 				tap == .apple
 				? self.authProvidersClient.appleAuth.signIn()
-				: self.authProvidersClient.googleAuth.signIn()
+				: try self.authProvidersClient.googleAuth.signIn()
 			)
 			guard case let  .success(socialAccount) = result else {
 				banners.show(.error, String(localized: "Provider Authentication failed."))
@@ -29,8 +30,6 @@ extension SocialSignInView {
 				_ = try await self.accessTokenClient.updateAccessToken(
 					.init(accessToken: tokenRes.accessToken, refreshToken: tokenRes.refreshToken)
 				)
-				banners.show(.success, String(localized: "Successfully login."))
-				self.dismiss()
 			}
 			catch(let error) {
 				if let apiError = error as? APIError,
@@ -43,25 +42,27 @@ extension SocialSignInView {
 				banners.show(.error,  String(localized: "Something went wrong."))
 				return;
 			}
+			//Fetch user Profile and saved to local database.
 			var user : UserProfileResponse
 			do {
 				user =	try await self.apiClient.call(
 					route: .userProfile, as: UserProfileResponse.self
 				)
-			}catch(let error) {
+				try await self.databaseClient.userProfileDB.saveUserProfile(
+					.init(id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, pictureURL: user.pictureUrl, point: user.point)
+				)
+				banners.show(.success,  String(localized: "Successfully login."))
+				self.dismiss()
+			} catch(let error) {
 				if let apiError = error as? APIError
 				{
-					banners.show(.error, error.localizedDescription)
+				
+					banners.show(.error, apiError.localizedDescription)
 					return
 				}
 				banners.show(.error,  String(localized: "Something went wrong."))
 				return
 			}
-			
-			try await self.databaseClient.userProfileDB.saveUserProfile(
-				.init(id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, pictureURL: user.pictureUrl, point: user.point)
-			)
-			
 		}
 		
 	}

@@ -33,6 +33,10 @@ public struct AppGroupConfigs {
   public let identifier: String
   public let teamId: String
 
+	public var accessGroup  : String {
+		return "\(identifier)"
+	}
+	
   public init(identifier: String, teamId: String) {
     self.identifier = identifier
     self.teamId = teamId

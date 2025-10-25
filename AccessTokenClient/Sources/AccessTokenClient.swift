@@ -3,6 +3,7 @@ import SwiftUI
 import TokenModel
 
 public struct AccessTokenClient: Sendable {
+	
   public var initialize: @Sendable () async throws -> Token?
   public var accessToken: @Sendable () async throws -> Token?
   public var updateAccessToken: @Sendable (Token?) async throws -> Token?

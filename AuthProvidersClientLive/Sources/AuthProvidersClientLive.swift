@@ -1,9 +1,10 @@
 import AuthProvidersClient
 
-extension AuthProvidersClient {	
+public extension AuthProvidersClient {
 	@MainActor
 	static func live( googleOAuthClientId : String ) -> Self {
-		return AuthProvidersClient.init(
+		print("INIT LIVE")
+		return AuthProvidersClient(
 			googleAuth: .live(googleOAuthClientId: googleOAuthClientId),
 			appleAuth: .live
 		)

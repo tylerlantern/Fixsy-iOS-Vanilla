@@ -106,16 +106,16 @@ public extension InfoPlist {
 
         // MARK: - Google Sign In
 
-        "GIDClientID": .string("$(GOOGLE_OAUTH_CLIENT_ID)"),
+        "GIDClientID": .string("$(GOOGLE_OAUTH_CLIENT_ID).apps.googleusercontent.com"),
         "GIDServerClientID": .string("$(GOOGLE_WEB_CLIENT_ID)"),
         "GOOGLE_OAUTH_CLIENT_ID": .string("$(GOOGLE_OAUTH_CLIENT_ID)"),
-
+				
         // MARK: - URL Types
 
         "CFBundleURLTypes": [
           [
             "CFBundleTypeRole": "Editor",
-            "CFBundleURLSchemes": ["com.messagespring"]
+            "CFBundleURLSchemes": ["com.fixsy"]
           ],
           [
             "CFBundleTypeRole": "Editor",

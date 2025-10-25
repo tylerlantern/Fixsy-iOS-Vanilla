@@ -10,47 +10,56 @@ let logger = Logger(
   category: String(describing: AccessTokenClient.self)
 )
 
-extension AccessTokenClient {
-  @MainActor
-  public static let liveValue: Self = {
-    let accessTokenStore = AccessTokenStore()
-    return AccessTokenClient(
-      initialize: { @MainActor in
-        try await accessTokenStore.initialize()
-      },
-      accessToken: { @MainActor in
-        try await accessTokenStore.getAuthCredential()
-      },
-      updateAccessToken: { @MainActor token in
-        try await accessTokenStore.updateToken(token: token)
-      }
-    )
-  }()
+public extension AccessTokenClient {
+	static func live(
+		accessGroup : String,
+		service : String,
+	) -> Self {
+		let accessTokenStore = AccessTokenStore(
+			accessGroup: accessGroup,
+			service: service
+		)
+		return AccessTokenClient(
+			initialize: { @MainActor in
+				try await accessTokenStore.initialize()
+			},
+			accessToken: { @MainActor in
+				try await accessTokenStore.getAuthCredential()
+			},
+			updateAccessToken: { @MainActor token in
+				try await accessTokenStore.updateToken(token: token)
+			}
+		)
+	}
 }
 
 public actor AccessTokenStore {
-  static let service = "com.to.fixsy"
-  static var accessTokenKey: String { "\(service).accessToken" }
-  static var refreshTokenKey: String { "\(service).refreshToken" }
+	private let accessTokenKey: String
+  private let refreshTokenKey: String
 
   let keychain: Keychain
-
-  public init() {
+	public init(
+		accessGroup : String,
+		service : String
+	) {
+		self.accessTokenKey = "\(service).accessToken"
+		self.refreshTokenKey = "\(service).refreshToken"
     self.keychain = Keychain(
-      service: Self.service,
-      accessGroup: "92XK5S268V.com.iyc.notifyme" // gitleaks:allow
+      service: service,
+      accessGroup: accessGroup
     )
     .accessibility(.afterFirstUnlock)
+		
   }
 
   public func initialize() throws -> Token? {
     try self.getAuthCredential()
   }
-
+	
   public func getAuthCredential() throws -> Token? {
     guard
-      let accessToken = try self.keychain.get(Self.accessTokenKey),
-      let refreshToken = try self.keychain.get(Self.refreshTokenKey)
+      let accessToken = try self.keychain.get(self.accessTokenKey),
+      let refreshToken = try self.keychain.get(self.refreshTokenKey)
     else {
       return nil
     }
@@ -63,9 +72,11 @@ public actor AccessTokenStore {
   @discardableResult
   func updateToken(token: Token?) throws -> Token? {
     if let token {
-      try self.keychain.set(token.accessToken, key: Self.accessTokenKey)
+      try self.keychain.set(token.accessToken, key: self.accessTokenKey)
+			try self.keychain.set(token.refreshToken, key: self.refreshTokenKey)
     } else {
-      try self.keychain.remove(Self.accessTokenKey)
+      try self.keychain.remove(self.accessTokenKey)
+			try self.keychain.remove(self.refreshTokenKey)
     }
     return token
   }

@@ -54,20 +54,17 @@ extension SearchView {
   }
 
 	func onTapAvartarProfile(){
-		print("onTapAvartarProfile")
 		fetchLocalToken?.cancel()
 		fetchLocalToken = Task {
 			do {
 				guard let token = try await self.accessTokenClient.accessToken()
 				else {
-					print("FAILLING TO THIS")
 					self.presentedSocialSignInScreen = true
 					return
 				}
-				print("Having token")
 				//TODO: Show user profile
 			}catch(let error) {
-				print("error",error)
+				
 			}
 		
 		}
