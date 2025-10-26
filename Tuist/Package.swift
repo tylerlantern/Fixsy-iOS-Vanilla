@@ -29,9 +29,9 @@ let package = Package(
       url: "https://github.com/apple/swift-async-algorithms",
       from: "1.0.4"
     ),
-		.package(
-			url: "https://github.com/google/GoogleSignIn-iOS.git",
-			from: "9.0.0"
-		)
+    .package(
+      url: "https://github.com/google/GoogleSignIn-iOS.git",
+      from: "9.0.0"
+    )
   ]
 )

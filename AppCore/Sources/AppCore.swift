@@ -2,6 +2,10 @@ import AccessTokenClient
 import AccessTokenClientLive
 import APIClient
 import APIClientLive
+import AuthProvidersClient
+import AuthProvidersClientLive
+import BannerCenterModule
+import BannerToastComponent
 import Configs
 import ConfigsLive
 import DatabaseClient
@@ -12,39 +16,39 @@ import PlaceStore
 import Router
 import RouterLive
 import SwiftUI
-import AuthProvidersClient
-import AuthProvidersClientLive
 
 @main
 struct AppCore: App {
-	
-	@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-	
+  @Environment(\.scenePhase) private var scenePhase
+  @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
   @State var router: Router
   @State var apiClient: APIClient
   @State var accessTokenClient: AccessTokenClient
   @State var databaseClient: DatabaseClient
   @State var locationManagerClient: LocationManagerClient
-	@State var authProvidersClient : AuthProvidersClient
-	
+  @State var authProvidersClient: AuthProvidersClient
+
   @State var placeStore: PlaceStore
+
+  @StateObject var bannerCenter = BannerCenter()
 
   public init() {
     self.router = .liveValue
-		let accessTokenClient = AccessTokenClient.live(
-			accessGroup: Configs.live.appGroup.accessGroup,
-			service: Configs.live.appGroup.identifier
-		)
+    let accessTokenClient = AccessTokenClient.live(
+      accessGroup: Configs.live.appGroup.accessGroup,
+      service: Configs.live.appGroup.identifier
+    )
     self.accessTokenClient = accessTokenClient
     let apiClientLive = APIClient.live(
       url: Configs.live.mobileAPI.hostName,
-			getToken: accessTokenClient.accessToken,
-			updateToken: accessTokenClient.updateAccessToken
+      getToken: accessTokenClient.accessToken,
+      updateToken: accessTokenClient.updateAccessToken
     )
     self.apiClient = apiClientLive
-		self.authProvidersClient = AuthProvidersClient.live(
-			googleOAuthClientId: Configs.live.googleOAuthClientId
-		)
+    self.authProvidersClient = AuthProvidersClient.live(
+      googleOAuthClientId: Configs.live.googleOAuthClientId
+    )
     self.databaseClient = .liveValue
     self.locationManagerClient = .liveValue
 
@@ -53,23 +57,29 @@ struct AppCore: App {
       locationStreamCallback: LocationManagerClient.liveValue.locationStream,
       syncLocalCallback: DatabaseClient.liveValue.syncPlaces
     )
-		self.appDelegate.authProvidersClient = self.authProvidersClient
+    self.appDelegate.authProvidersClient = self.authProvidersClient
     _ = self.databaseClient.migrate()
   }
 
   var body: some Scene {
     WindowGroup {
-      Router.liveValue.route(.home(.root))
+      Router.liveValue.route(.app(.root))
+        .environmentObject(self.bannerCenter)
         .environment(\.router, self.router)
-				.environment(\.authProvidersClient, self.authProvidersClient)
+        .environment(\.authProvidersClient, self.authProvidersClient)
         .environment(\.apiClient, self.apiClient)
         .environment(\.accessTokenClient, self.accessTokenClient)
         .environment(\.databaseClient, self.databaseClient)
         .environment(\.locationManagerClient, self.locationManagerClient)
         .environment(self.placeStore)
-				.onOpenURL { url in
-					self.authProvidersClient.googleAuth.handleURL(url)
-				 }
+        .onOpenURL { url in
+          self.authProvidersClient.googleAuth.handleURL(url)
+        }
+        .onChange(of: self.scenePhase) { _, phase in
+          if phase == .active {
+            BannerOverlay.shared.install(center: self.bannerCenter)
+          }
+        }
     }
   }
 }

@@ -18,36 +18,12 @@ public struct TabContainerView: View {
     TabView(
       selection: self.$currentTab
     ) {
-      self.router.route(.home(.root))
+      self.router.route(.app(.root))
         .navigationViewStyle(.stack)
         .navigationBarHidden(true)
         .tag(Tab.home)
         .tabItem {
           Label("Home", systemImage: "house.fill")
-        }
-
-      self.router.route(.explore(.root))
-        .navigationViewStyle(.stack)
-        .navigationBarHidden(true)
-        .tag(Tab.explore)
-        .tabItem {
-          Label("Explore", systemImage: "magnifyingglass")
-        }
-
-      self.router.route(.chat(.root))
-        .navigationViewStyle(.stack)
-        .navigationBarHidden(true)
-        .tag(Tab.chatList)
-        .tabItem {
-          Label("Chat", systemImage: "bubble.left.and.bubble.right.fill")
-        }
-
-      self.router.route(.profile(.root))
-        .navigationViewStyle(.stack)
-        .navigationBarHidden(true)
-        .tag(Tab.profile)
-        .tabItem {
-          Label("Profile", systemImage: "person.crop.circle.fill")
         }
     }
   }

@@ -4,66 +4,53 @@ import SwiftUI
 public enum Route {
   case tabContainer
 
-  case home(HomeRoute)
-  case explore(ExploreRoute)
-  case chat(ChatRoute)
-  case profile(ProfileRoute)
+  case app(HomeRoute)
 
   public enum HomeRoute {
     case root
     case search(
-			SearchRoute
+      SearchRoute
     )
     case detail(
       DetailRoute
     )
-		
   }
 
-	public enum SearchRoute {
-		case root(
-			detent: Binding<PresentationDetent>,
-			onFocusSearch: () -> (),
-			onTapItemById: (Int) -> (),
-		)
-		case socialSignIn
-		case userProfile
-	}
-	
-	public enum DetailRoute {
-		case root(
-			_ placeId: Int,
-			_ dismiss: () -> (),
-			_ onTapReviewButton: () -> ()
-		)
-		case comment(CommentRoute)
-		case imagesInsepcter(ImagesInspectorRoute)
+  public enum SearchRoute {
+    case root(
+      detent: Binding<PresentationDetent>,
+      onFocusSearch: () -> (),
+      onTapItemById: (Int) -> ()
+    )
+    case socialSignIn
+    case userProfile(UserProfile)
+  }
 
-		public enum CommentRoute {
-			case root(Binding<NavigationPath>)
-			case expandedComment(ExpandedCommentRout)
-			public enum ExpandedCommentRout {
-				case root(Binding<NavigationPath>)
-			}
-		}
-	}
-	
+  public enum UserProfile {
+    case root
+    case editingName(_ firstName: String, _ lastName: String)
+  }
+
+  public enum DetailRoute {
+    case root(
+      _ placeId: Int,
+      _ dismiss: () -> (),
+      _ onTapReviewButton: () -> ()
+    )
+    case comment(CommentRoute)
+    case imagesInsepcter(ImagesInspectorRoute)
+
+    public enum CommentRoute {
+      case root(Binding<NavigationPath>)
+      case expandedComment(ExpandedCommentRout)
+      public enum ExpandedCommentRout {
+        case root(Binding<NavigationPath>)
+      }
+    }
+  }
+
   public enum ImagesInspectorRoute {
     case root([URL], _ index: Binding<Int>)
-  }
-
-  public enum ExploreRoute {
-    case root
-    case detail(String)
-  }
-
-  public enum ChatRoute {
-    case root
-    case detail(String)
-  }
-
-  public enum ProfileRoute {
-    case root
   }
 }
 

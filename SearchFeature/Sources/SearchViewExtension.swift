@@ -1,3 +1,4 @@
+import APIClient
 import AsyncAlgorithms
 import MapKit
 import Models
@@ -34,17 +35,15 @@ extension SearchView {
     }
   }
 
-	func observeUserProfile(){
-		observeLocalUserTask?.cancel()
-		observeLocalUserTask = Task {
-			for try await user in self.databaseClient.userProfileDB.observeUserProfile()
-			{
-				self.profileURL = user?.pictureURL
-			}
-		
-		}
-	}
-	
+  func observeUserProfile() {
+    observeLocalUserTask?.cancel()
+    observeLocalUserTask = Task {
+      for try await user in self.databaseClient.userProfileDB.observeUserProfile() {
+        self.profileURL = user?.pictureURL
+      }
+    }
+  }
+
   func searchTextChanged() {
     self.searchTask?.cancel()
     self.searchTask = Task {
@@ -53,25 +52,27 @@ extension SearchView {
     }
   }
 
-	func onTapAvartarProfile(){
-		fetchLocalToken?.cancel()
-		fetchLocalToken = Task {
-			do {
-				guard let token = try await self.accessTokenClient.accessToken()
-				else {
-					self.presentedSocialSignInScreen = true
-					return
-				}
-				//TODO: Show user profile
-			}catch(let error) {
-				
-			}
-		
-		}
-	}
-	
-	
-	
+  func onTapAvartarProfile() {
+    fetchLocalToken?.cancel()
+    fetchLocalToken = Task {
+      do {
+        guard let _ = try await self.accessTokenClient.accessToken()
+        else {
+          self.presentedSocialSignInScreen = true
+          return
+        }
+        self.presentedUserProfileScreen = true
+      } catch {
+        if let apiError = error as? APIError {
+          self.banners.show(
+            .error,
+            title: apiError.title,
+            body: apiError.body
+          )
+        }
+      }
+    }
+  }
 }
 
 public func haversine(

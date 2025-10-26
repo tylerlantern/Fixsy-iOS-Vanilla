@@ -31,13 +31,13 @@ extension HomeView {
     case let .didSelect(placeId):
       self.detent = BottomSheetDetents.medium
       self.sheetDisplay = .detail(placeId)
-    case let .zoom(to):
+    case .zoom:
       break
-    case let .regionChanged(mKCoordinateRegion):
+    case .regionChanged:
       break
     case .didDeselect:
       break
-    case let .didChangeCoordiateRegion(mKCoordinateRegion):
+    case .didChangeCoordiateRegion:
       break
     }
   }

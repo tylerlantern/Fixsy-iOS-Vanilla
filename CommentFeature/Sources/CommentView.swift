@@ -27,7 +27,7 @@ public struct CommentView: View {
     .navigationDestination(for: Destination.self) { destination in
       let route = switch destination {
       case .expandedComment:
-        Route.home(
+        Route.app(
           .detail(
             .comment(
               .expandedComment(.root(self.$navPath))

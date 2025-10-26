@@ -3,26 +3,9 @@ import ProjectDescription
 public extension SettingsDictionary {
   static var project_base: SettingsDictionary {
     [
-//      "ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS": false,
-//      "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": false,
-//      "CODE_SIGN_STYLE": "Manual",
-//      "DEVELOPMENT_TEAM": "F3QMGAV9F8",
-//      "IPHONEOS_DEPLOYMENT_TARGET": "26.0",
-//      "ENABLE_USER_SCRIPT_SANDBOXING": true,
-//      "MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS": .array(["gnu11", "gnu++14"]),
-//      "_EXPERIMENTAL_SWIFT_EXPLICIT_MODULES": true,
-//      "EAGER_LINKING": true,
-//      "SWIFT_VERSION": "6",
-//      "SWIFT_ACTIVE_COMPILATION_CONDITIONS": .SWIFT_ACTIVE_COMPILATION_CONDITIONS,
-//      "OTHER_LDFLAGS": .array(["$(inherited)", "-ObjC"]),
-//      "OTHER_SWIFT_FLAGS": .array([
-//        "-Xfrontend -warn-long-function-bodies=1000",
-//        "-Xfrontend -warn-long-expression-type-checking=1000"
-//      ])
-			
-			"DEVELOPMENT_TEAM": "F3QMGAV9F8",
-			"IPHONEOS_DEPLOYMENT_TARGET": "26.0",
-			"OTHER_LDFLAGS": .array(["$(inherited)", "-ObjC"]),
+      "DEVELOPMENT_TEAM": "F3QMGAV9F8",
+      "IPHONEOS_DEPLOYMENT_TARGET": "26.0",
+      "OTHER_LDFLAGS": .array(["$(inherited)", "-ObjC"])
     ]
   }
 
@@ -39,24 +22,22 @@ public extension SettingsDictionary {
       "ENABLE_MODULE_VERIFIER": true
     ]
   }
-	
-	static var app_base: SettingsDictionary {
-		[
-			"PRODUCT_NAME": "Fixsy"
-		]
-	}
+
+  static var app_base: SettingsDictionary {
+    [
+      "PRODUCT_NAME": "Fixsy"
+    ]
+  }
 
   static var app_debug: SettingsDictionary {
-		[:]
+    [:]
 //    [
 //      "CODE_SIGN_IDENTITY": "Apple Development: Created via API (PD8PQZDKG4)"
 //    ]
   }
 
-	
-	
   static var app_release: SettingsDictionary {
-		[:]
+    [:]
 //    [
 //      "CODE_SIGN_IDENTITY": "Apple Distribution: MessageSpring, LLC (92XK5S268V)"
 //    ]

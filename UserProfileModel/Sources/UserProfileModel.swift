@@ -23,4 +23,9 @@ public struct UserProfile: Equatable, Codable, Sendable {
     self.pictureURL = pictureURL
     self.point = point
   }
+
+  public var fullName: String {
+    [self.firstName, self.lastName].filter({ !$0.isEmpty })
+      .joined(separator: " ")
+  }
 }

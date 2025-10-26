@@ -49,88 +49,86 @@ public struct HomeView: View {
   @State var sheetDisplay: SheetDisplay = .search
 
   public var body: some View {
-    NavigationStack(path: self.$navPath) {
-      VStack {
-        MapVisualKitView(
-          channel: self.mapVisualChannel
-        )
+    VStack {
+      MapVisualKitView(
+        channel: self.mapVisualChannel
+      )
+    }
+    .ignoresSafeArea()
+    .task {
+      self.observeTask?.cancel()
+      self.fetchTask?.cancel()
+      self.handleLocationAuthorizationStatus()
+      self.fetchTask = Task {
+        do {
+          try await self.placeStore.fetchRemote()
+        } catch {
+          // TODO: Show tosat error
+        }
       }
-      .ignoresSafeArea()
-      .task {
-        self.observeTask?.cancel()
-        self.fetchTask?.cancel()
-        self.handleLocationAuthorizationStatus()
-        self.fetchTask = Task {
-          do {
-            try await self.placeStore.fetchRemote()
-          } catch {
-            // TODO: Show tosat error
-          }
-        }
 
-        let clock = ContinuousClock()
-        Task {
-          for try await filter in self.databaseClient
-            .observePlaceFilter()
-            .removeDuplicates()
-            .debounce(for: .milliseconds(200), clock: clock)
-          {
-            self.innerTask?.cancel()
-            self.innerTask = Task {
-              do {
-                for try await localPlaces in self.databaseClient.observeMapData(filter, "") {
-                  self.mapVisualChannel.sendEvent(.places(localPlaces))
-                }
-              } catch is CancellationError {
-              } catch {}
-            }
-          }
+      let clock = ContinuousClock()
+      Task {
+        for try await filter in self.databaseClient
+          .observePlaceFilter()
+          .removeDuplicates()
+          .debounce(for: .milliseconds(200), clock: clock)
+        {
           self.innerTask?.cancel()
-        }
-
-        Task {
-          for await locs in self.locationManagerClient.locationStream() {
-            guard !self.hasFocusRegionFirstTime, let loc = locs.first else { continue }
-            self.hasFocusRegionFirstTime = true
-            let region = MKCoordinateRegion(
-              center: loc.coordinate,
-              latitudinalMeters: 750,
-              longitudinalMeters: 750
-            )
-            self.mapVisualChannel.sendEvent(
-              .userRegion(region)
-            )
+          self.innerTask = Task {
+            do {
+              for try await localPlaces in self.databaseClient.observeMapData(filter, "") {
+                self.mapVisualChannel.sendEvent(.places(localPlaces))
+              }
+            } catch is CancellationError {
+            } catch {}
           }
         }
+        self.innerTask?.cancel()
+      }
 
-        Task {
-          for await action in self.mapVisualChannel.actionStream {
-            handlePlaceStoreChannelAction(action: action)
-          }
+      Task {
+        for await locs in self.locationManagerClient.locationStream() {
+          guard !self.hasFocusRegionFirstTime, let loc = locs.first else { continue }
+          self.hasFocusRegionFirstTime = true
+          let region = MKCoordinateRegion(
+            center: loc.coordinate,
+            latitudinalMeters: 750,
+            longitudinalMeters: 750
+          )
+          self.mapVisualChannel.sendEvent(
+            .userRegion(region)
+          )
+        }
+      }
+
+      Task {
+        for await action in self.mapVisualChannel.actionStream {
+          handlePlaceStoreChannelAction(action: action)
         }
       }
     }
     .bottomSheet(
       detent: self.$detent
     ) {
-			switch self.sheetDisplay {
-			case .search:
-				self.router.route(
-					.home(
-						.search(
-							.root(
-								detent: self.$detent,
-								onFocusSearch: {},
-								onTapItemById: { id in
-									self.sheetDisplay = .detail(id)
-								}
-							)
-						)
-					)
-				)
+      switch self.sheetDisplay {
+      case .search:
+        self.router.route(
+          .app(
+            .search(
+              .root(
+                detent: self.$detent,
+                onFocusSearch: {},
+                onTapItemById: { id in
+                  self.sheetDisplay = .detail(id)
+                }
+              )
+            )
+          )
+        )
       case let .detail(placeId):
         self.router.route(
-          .home(
+          .app(
             .detail(
               .root(
                 placeId,

@@ -142,7 +142,7 @@ public struct InfoView: View {
       isPresented: self.$isPresentedImagesInspector
     ) {} content: {
       self.router.route(
-        .home(
+        .app(
           .detail(
             .imagesInsepcter(
               .root(
