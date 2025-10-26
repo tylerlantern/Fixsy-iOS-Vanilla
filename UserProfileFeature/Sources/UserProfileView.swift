@@ -5,8 +5,14 @@ import Models
 import Router
 import SwiftUI
 import UserProfileModel
+import AccessTokenClient
 
 public struct UserProfileView: View {
+	
+	enum SubmitAction {
+		case delete,logout
+	}
+	
   public enum Display {
     case shimmer, render(UserProfile)
   }
@@ -19,6 +25,7 @@ public struct UserProfileView: View {
   @Environment(\.router) var router
   @Environment(\.apiClient) var apiClient
   @Environment(\.databaseClient) var databaseClient
+	@Environment(\.accessTokenClient) var accessTokenClient
   @Environment(\.dismiss) var dismiss
 
   @State var observeTask: Task<(), Error>?
@@ -61,8 +68,7 @@ public struct UserProfileView: View {
         VStack(spacing: 8) {
           Button(
             action: {
-              // TODO:
-
+							self.processSubmit(.delete)
             },
             label: {
               HStack {
@@ -84,7 +90,9 @@ public struct UserProfileView: View {
           .disabled(self.isSubmitting)
 
           Button(
-            action: {},
+            action: {
+							self.processSubmit(.logout)
+						},
             label: {
               HStack {
                 Spacer()

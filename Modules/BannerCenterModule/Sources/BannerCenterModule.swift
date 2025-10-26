@@ -15,7 +15,7 @@ public enum BannerKind {
     switch self {
     case .info: return .blue
     case .success: return .green
-    case .error: return .red
+		case .error: return .red
     }
   }
 
@@ -60,7 +60,10 @@ public final class BannerCenter: ObservableObject {
   /// New: explicit title + body
   @MainActor
   public func show(
-    _ kind: BannerKind, title: String, body: String?, seconds: Double = 3
+    _ kind: BannerKind,
+		title: String,
+		body: String?,
+		seconds: Double = 3
   ) {
     let toast = BannerToast(kind: kind, title: title, body: body)
     self.toasts.append(toast)

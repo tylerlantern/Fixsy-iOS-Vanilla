@@ -389,6 +389,7 @@ let project = Project(
       name: "UserProfileFeature",
       hasResource: true,
       dependencies: [
+				.target(name: "AccessTokenClient"),
         .target(name: "APIClient"),
         .target(name: "DatabaseClient"),
         .target(name: "UserProfileModel"),

@@ -216,7 +216,8 @@ extension APIUserRoute {
       return url
         .appendingPathComponent("auth")
         .appendingPathComponent("delete")
-        .makeAnonymousURLRequest(
+        .makeAuthorizationURLRequest(
+					token: token,
           version: "1.0",
           method: .post(EmptyRequest())
         )
@@ -365,19 +366,6 @@ extension HTTPMethod {
   static var put: Self = "PUT"
   static var delete: Self = "DELETE"
 }
-
-// func genderValue(gender: Gender) -> String {
-//  switch gender {
-//  case .male:
-//    return "Male"
-//  case .female:
-//    return "Female"
-//  case .other:
-//    return "other"
-//  case .none:
-//    return ""
-//  }
-// }
 
 func dateValue(date: Date?) -> String {
   guard let date = date else { return "" }
