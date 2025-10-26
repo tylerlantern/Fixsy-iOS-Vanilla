@@ -5,6 +5,8 @@ import Models
 import Observation
 import SwiftUI
 
+// The class is no longer used.
+// The app use database observation instead
 @Observable
 public class PlaceStore {
   public var filter: PlaceFilter = .identity
@@ -23,64 +25,8 @@ public class PlaceStore {
     self.syncLocalCallback = syncLocalCallback
   }
 
-  public func fetchRemote() async throws {
-    let mapResponse = try await self.apiClient.call(
-      route: .mapData,
-      as: MapResponse.self
-    )
-    _ = try await self.syncLocalCallback(self.toPlaces(mapResponse.branches))
-  }
-
   public func assignPlaceFilter(_ filter: PlaceFilter) {
     self.filter = filter
-  }
-
-  private func toPlaces(_ items: [PlaceResponse]) -> [Place] {
-    items.map { item in
-      let oct = item.openCloseTime
-      return Place(
-        id: item.id,
-        name: item.name,
-        latitude: item.latitude,
-        longitude: item.longitude,
-        address: item.address,
-        hasMotorcycleGarage: item.hasMotorcycleGarage,
-        hasInflationStation: item.hasInflationStation,
-        hasWashStation: item.hasWashStation,
-        hasPatchTireStation: item.hasPatchTireStation,
-        hasCarGarage: item.hasCarGarage,
-        averageRate: item.averageRate,
-        carGarage: item.carGarage.map({ garage in
-          let brands = garage.brands.map { brand in
-            CarBrand(id: brand.id, displayName: brand.displayName)
-          }
-          return Place.CarGarage.init(brands: brands)
-        }),
-        openCloseTime: Place.OpenCloseTime(
-          mondayOpen: oct.mondayOpen,
-          mondayClose: oct.mondayOpen,
-          tuesdayOpen: oct.tuesdayOpen,
-          tuesdayClose: oct.tuesdayClose,
-          wednesdayOpen: oct.wednesdayOpen,
-          wednesdayClose: oct.wednesdayClose,
-          thursdayOpen: oct.tuesdayOpen,
-          thursdayClose: oct.tuesdayClose,
-          fridayOpen: oct.fridayOpen,
-          fridayClose: oct.fridayClose,
-          saturdayOpen: oct.saturdayOpen,
-          saturdayClose: oct.saturdayClose,
-          sundayOpen: oct.sundayOpen,
-          sundayClose: oct.sundayClose,
-        ),
-        images: item.images.map({ image in
-          Place.Image(
-            id: image.id,
-            url: image.url
-          )
-        }),
-        contributorName: item.contributorName
-      )
-    }
   }
 }
 

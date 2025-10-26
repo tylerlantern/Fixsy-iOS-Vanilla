@@ -28,9 +28,8 @@ extension UserProfileView {
             point: response.point
           )
         )
-      }
-			catch is CancellationError {}
-			catch {
+      } catch is CancellationError {}
+      catch {
         if let apiError = error as? APIError {
           self.banners.show(.error, title: apiError.title, body: apiError.body)
           return
@@ -44,32 +43,33 @@ extension UserProfileView {
     }
   }
 
-	func processSubmit(_ action : SubmitAction) {
-		self.isSubmitting = true
-		Task {
-			do {
-				_ =
-				action == .logout
-				? try await self.apiClient.call(route: .logout, as: EmptyResponse.self)
-				: try await self.apiClient.call(route: .delete, as: EmptyResponse.self)
-				_ = try await self.accessTokenClient.updateAccessToken(nil)
-				_ = try await self.databaseClient.userProfileDB.clearUserProfile()
-				self.dismiss()
-			} catch {
-				self.isSubmitting = false
-				if let apiError = error as? APIError {
-					self.banners.show(.error, title: apiError.title, body: apiError.body)
-					return
-				}
-				self.banners.show(
-					.error,
-					title: String(localized: "Something went wrong."),
-					body: error.localizedDescription
-				)
-			}
-		}
-	}
-	
+  func processSubmit(_ action: SubmitAction) {
+    self.isSubmitting = true
+    Task {
+      do {
+        _ = action == .logout
+          ? try await self.apiClient.call(route: .logout, as: EmptyResponse.self)
+          : try await self.apiClient.call(route: .delete, as: EmptyResponse.self)
+        _ = try await self.accessTokenClient.updateAccessToken(nil)
+        _ = try await self.databaseClient.userProfileDB.clearUserProfile()
+        self.authProvidersClient.googleAuth.logout()
+        self.dismiss()
+      } catch {
+        self.isSubmitting = false
+        if let apiError = error as? APIError {
+          self.banners.show(.error, title: apiError.title, body: apiError.body)
+          return
+        }
+
+        self.banners.show(
+          .error,
+          title: String(localized: "Something went wrong."),
+          body: error.localizedDescription
+        )
+      }
+    }
+  }
+
   func cancelTasks() {
     self.observeTask?.cancel()
     self.fetchTask?.cancel()

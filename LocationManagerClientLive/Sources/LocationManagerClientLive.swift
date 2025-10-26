@@ -7,6 +7,9 @@ public extension LocationManagerClient {
   @MainActor
   static let liveValue: Self = {
     let box = LocationManagerBox()
+    let broadcaster = box.broadcaster
+    let initialLocation = box.manager.location
+    let manager = box.manager
     return LocationManagerClient(
       authorizationStatus: { box.manager.authorizationStatus },
       requestWhenInUseAuthorization: { box.manager.requestWhenInUseAuthorization() },
@@ -16,9 +19,7 @@ public extension LocationManagerClient {
         box.broadcaster.makeStream()
       },
       locationStream: {
-        box.broadcaster.makeStreamLocation(
-          box.manager.location
-        )
+        broadcaster.makeStreamLocation(initialLocation)
       }
     )
   }()
@@ -40,7 +41,11 @@ final class Delegate: NSObject, CLLocationManagerDelegate {
   init(broadcaster: Broadcaster) { self.broadcaster = broadcaster }
 
   func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-    self.broadcaster.yield(.didChangeAuthorization(manager.authorizationStatus))
+    self.broadcaster.yield(
+      .didChangeAuthorization(
+        manager.authorizationStatus
+      )
+    )
   }
 
   func locationManager(

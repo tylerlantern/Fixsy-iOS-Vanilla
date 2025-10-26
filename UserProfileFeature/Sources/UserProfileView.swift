@@ -1,18 +1,18 @@
+import AccessTokenClient
 import APIClient
+import AuthProvidersClient
 import BannerCenterModule
 import DatabaseClient
 import Models
 import Router
 import SwiftUI
 import UserProfileModel
-import AccessTokenClient
 
 public struct UserProfileView: View {
-	
-	enum SubmitAction {
-		case delete,logout
-	}
-	
+  enum SubmitAction {
+    case delete, logout
+  }
+
   public enum Display {
     case shimmer, render(UserProfile)
   }
@@ -25,7 +25,8 @@ public struct UserProfileView: View {
   @Environment(\.router) var router
   @Environment(\.apiClient) var apiClient
   @Environment(\.databaseClient) var databaseClient
-	@Environment(\.accessTokenClient) var accessTokenClient
+  @Environment(\.accessTokenClient) var accessTokenClient
+  @Environment(\.authProvidersClient) var authProvidersClient
   @Environment(\.dismiss) var dismiss
 
   @State var observeTask: Task<(), Error>?
@@ -68,7 +69,7 @@ public struct UserProfileView: View {
         VStack(spacing: 8) {
           Button(
             action: {
-							self.processSubmit(.delete)
+              self.processSubmit(.delete)
             },
             label: {
               HStack {
@@ -91,8 +92,8 @@ public struct UserProfileView: View {
 
           Button(
             action: {
-							self.processSubmit(.logout)
-						},
+              self.processSubmit(.logout)
+            },
             label: {
               HStack {
                 Spacer()

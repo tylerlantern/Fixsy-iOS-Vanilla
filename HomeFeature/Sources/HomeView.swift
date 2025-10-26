@@ -1,5 +1,6 @@
 import APIClient
 import AsyncAlgorithms
+import BannerCenterModule
 import BottomSheetModule
 import DatabaseClient
 import LocationManagerClient
@@ -16,6 +17,7 @@ public struct HomeView: View {
   }
 
   @State public var mapVisualChannel: MapVisualChannel
+  @Namespace private var unionNamespace
 
   public init() {
     let event = AsyncStream<MapVisualChannel.Event>.makeStream()
@@ -28,14 +30,13 @@ public struct HomeView: View {
     )
   }
 
-  @Environment(PlaceStore.self) private var placeStore
-
   enum Destination: Hashable { case detail }
   @State var detent: PresentationDetent = BottomSheetDetents.collapsed
   @Environment(\.router) var router
   @Environment(\.apiClient) var apiClient
   @Environment(\.databaseClient) var databaseClient
   @Environment(\.locationManagerClient) var locationManagerClient
+  @EnvironmentObject var bannerCenter: BannerCenter
 
   @State private var showBottomSheet = false
   @State var navPath = NavigationPath()
@@ -43,10 +44,16 @@ public struct HomeView: View {
   @State var observeTask: Task<(), Error>?
   @State var fetchTask: Task<(), Error>?
   @State var innerTask: Task<(), Error>?
-
-  @State var hasFocusRegionFirstTime: Bool = false
+  @State var locationTask: Task<(), Error>?
+  @State var mapVisualActionTask: Task<(), Error>?
+  @State var locationAuthStatusTask: Task<(), Error>?
 
   @State var sheetDisplay: SheetDisplay = .search
+  @State private var sheetHeight: CGFloat = 0
+
+  @State var isRefreshing: Bool = false
+
+  @EnvironmentObject var banners: BannerCenter
 
   public var body: some View {
     VStack {
@@ -56,60 +63,36 @@ public struct HomeView: View {
     }
     .ignoresSafeArea()
     .task {
-      self.observeTask?.cancel()
-      self.fetchTask?.cancel()
       self.handleLocationAuthorizationStatus()
-      self.fetchTask = Task {
-        do {
-          try await self.placeStore.fetchRemote()
-        } catch {
-          // TODO: Show tosat error
-        }
-      }
-
-      let clock = ContinuousClock()
-      Task {
-        for try await filter in self.databaseClient
-          .observePlaceFilter()
-          .removeDuplicates()
-          .debounce(for: .milliseconds(200), clock: clock)
-        {
-          self.innerTask?.cancel()
-          self.innerTask = Task {
-            do {
-              for try await localPlaces in self.databaseClient.observeMapData(filter, "") {
-                self.mapVisualChannel.sendEvent(.places(localPlaces))
-              }
-            } catch is CancellationError {
-            } catch {}
-          }
-        }
-        self.innerTask?.cancel()
-      }
-
-      Task {
-        for await locs in self.locationManagerClient.locationStream() {
-          guard !self.hasFocusRegionFirstTime, let loc = locs.first else { continue }
-          self.hasFocusRegionFirstTime = true
-          let region = MKCoordinateRegion(
-            center: loc.coordinate,
-            latitudinalMeters: 750,
-            longitudinalMeters: 750
-          )
-          self.mapVisualChannel.sendEvent(
-            .userRegion(region)
-          )
-        }
-      }
-
-      Task {
-        for await action in self.mapVisualChannel.actionStream {
-          handlePlaceStoreChannelAction(action: action)
-        }
-      }
+      self.observeAuthStatus()
+      self.observeLocalData()
+      self.observeLocation()
+      self.fetchData()
     }
+    .overlay(
+      alignment: .bottomTrailing,
+      content: {
+        switch self.sheetDisplay {
+        case .detail:
+          EmptyView()
+        case .search:
+          BottomFloatinToolBar(
+            isRefreshing: self.isRefreshing,
+            sheetHeight: self.sheetHeight,
+            unionNamespace: self.unionNamespace,
+            onTapRefresh: {
+              self.fetchData()
+            },
+            onTapUserLocation: {
+              self.handleOnTapUserLocation()
+            }
+          )
+        }
+      }
+    )
     .bottomSheet(
-      detent: self.$detent
+      detent: self.$detent,
+      sheetHeight: self.$sheetHeight
     ) {
       switch self.sheetDisplay {
       case .search:
@@ -146,6 +129,55 @@ public struct HomeView: View {
       }
     }
   }
+}
+
+@ViewBuilder
+func BottomFloatinToolBar(
+  isRefreshing: Bool,
+  sheetHeight: CGFloat,
+  unionNamespace: Namespace.ID,
+  onTapRefresh: @escaping () -> (),
+  onTapUserLocation: @escaping () -> ()
+) -> some View {
+  GlassEffectContainer {
+    VStack {
+      Button {
+        if !isRefreshing {
+          onTapRefresh()
+        }
+      } label: {
+        if isRefreshing {
+          ProgressView()
+            .padding(.top, 8)
+        } else {
+          Label(
+            "Refresh",
+            systemImage: "arrow.clockwise"
+          )
+          .labelStyle(.iconOnly)
+          .padding(.top, 8)
+        }
+      }
+      .buttonStyle(.glass)
+      .glassEffectUnion(
+        id: "mapOptions",
+        namespace: unionNamespace
+      )
+
+      Button {
+        onTapUserLocation()
+      } label: {
+        Label("Navigation", systemImage: "location")
+          .labelStyle(.iconOnly)
+          .padding(.bottom, 8)
+      }
+      .buttonStyle(.glass)
+      .glassEffectUnion(id: "mapOptions", namespace: unionNamespace)
+    }
+    .font(.title3)
+  }
+  .offset(y: -sheetHeight)
+  .padding(24)
 }
 
 #if DEBUG

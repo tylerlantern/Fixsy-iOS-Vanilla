@@ -273,13 +273,15 @@ let project = Project(
       hasResource: true,
       dependencies: [
         .external(name: "AsyncAlgorithms"),
+        .target(name: "AuthProvidersClient"),
         .target(name: "Router"),
         .target(name: "Models"),
         .target(name: "APIClient"),
         .target(name: "DatabaseClient"),
         .target(name: "LocationManagerClient"),
         .target(name: "BottomSheetModule"),
-        .target(name: "PlaceStore")
+        .target(name: "PlaceStore"),
+        .target(name: "BannerCenterModule")
       ]
     ),
     .demoApp(
@@ -389,7 +391,7 @@ let project = Project(
       name: "UserProfileFeature",
       hasResource: true,
       dependencies: [
-				.target(name: "AccessTokenClient"),
+        .target(name: "AccessTokenClient"),
         .target(name: "APIClient"),
         .target(name: "DatabaseClient"),
         .target(name: "UserProfileModel"),

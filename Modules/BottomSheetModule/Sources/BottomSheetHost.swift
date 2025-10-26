@@ -2,18 +2,20 @@ import SwiftUI
 
 public struct BottomSheetModifier<SheetContent: View>: ViewModifier {
   @State private var showBottomSheet: Bool = true
-  @State private var sheetHeight: CGFloat = 0
   @State private var animationDuration: CGFloat = 0
   @State private var toolbarOpacity: CGFloat = 1
 
   @Binding var detent: PresentationDetent
+  @Binding private var sheetHeight: CGFloat
   private let sheetContent: SheetContent
 
   public init(
     detent: Binding<PresentationDetent>,
+    sheetHeight: Binding<CGFloat>,
     @ViewBuilder sheetContent: () -> SheetContent
   ) {
     self._detent = detent
+    self._sheetHeight = sheetHeight
     self.sheetContent = sheetContent()
   }
 
@@ -58,11 +60,13 @@ public struct BottomSheetModifier<SheetContent: View>: ViewModifier {
 public extension View {
   func bottomSheet<Sheet: View>(
     detent: Binding<PresentationDetent>,
+    sheetHeight: Binding<CGFloat>,
     @ViewBuilder _ sheetContent: @escaping () -> Sheet
   ) -> some View {
     self.modifier(
       BottomSheetModifier(
         detent: detent,
+        sheetHeight: sheetHeight,
         sheetContent: sheetContent
       )
     )

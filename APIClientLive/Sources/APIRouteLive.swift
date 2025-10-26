@@ -217,7 +217,7 @@ extension APIUserRoute {
         .appendingPathComponent("auth")
         .appendingPathComponent("delete")
         .makeAuthorizationURLRequest(
-					token: token,
+          token: token,
           version: "1.0",
           method: .post(EmptyRequest())
         )
