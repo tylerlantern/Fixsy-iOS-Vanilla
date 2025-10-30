@@ -67,6 +67,7 @@ public struct HomeView: View {
       self.observeAuthStatus()
       self.observeLocalData()
       self.observeLocation()
+      self.observeMapVisualChannelAction()
       self.fetchData()
     }
     .overlay(

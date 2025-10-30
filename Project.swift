@@ -413,7 +413,25 @@ let project = Project(
         .target(name: "Router"),
         .target(name: "BannerCenterModule")
       ]
+    ),
+    .framework(
+      name: "ReviewListFeature",
+      hasResource: true,
+      dependencies: [
+        .target(name: "AccessTokenClient"),
+        .target(name: "APIClient"),
+        .target(name: "DatabaseClient"),
+        .target(name: "BannerCenterModule"),
+        .target(name: "CapsulesStackComponent"),
+        .target(name: "Models"),
+        .target(name: "CarBrandComponent")
+      ]
+    ),
+    .demoApp(
+      "ReviewListFeature",
+      deps: []
     )
+
     // End Features
   ],
   schemes: [

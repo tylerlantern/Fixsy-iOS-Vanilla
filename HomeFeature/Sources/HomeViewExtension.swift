@@ -113,7 +113,6 @@ extension HomeView {
           CLAuthorizationStatus.authorizedAlways,
           CLAuthorizationStatus.authorizedWhenInUse
         ].contains(authStatus) {
-          print("didChangeAuthorization", authStatus)
           self.locationManagerClient.requestLocation()
         }
       }

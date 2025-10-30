@@ -100,7 +100,10 @@ public struct InfoView: View {
                   id: \.element.id
                 ) { idx, image in
                   let side = (proxy.size.width - 8 - 16 * 2) * 0.5
-                  AsyncImage(url: image.url, transaction: .init(animation: .default)) { phase in
+                  AsyncImage(
+                    url: image.url,
+                    transaction: .init(animation: .default)
+                  ) { phase in
                     switch phase {
                     case .empty:
                       ZStack { ProgressView() }.frame(width: side, height: side)

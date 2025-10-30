@@ -106,8 +106,8 @@ public struct DetailComponentView: View {
           .padding(.horizontal, 16)
           SwipableTabView(
             geoWidth: proxy.size.width,
-            onChangeTab: { _ in
-              // TODO:
+            onChangeTab: { tab in
+              self.selectedTab = tab
             }
           )
         }

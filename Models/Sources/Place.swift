@@ -16,6 +16,7 @@ public struct Place: Equatable, Identifiable {
   public let openCloseTime: OpenCloseTime
   public let images: [Image]
   public let contributorName: String
+
   public struct CarGarage: Equatable {
     public let brands: [CarBrand]
     public init(brands: [CarBrand]) {
