@@ -429,9 +429,14 @@ let project = Project(
     ),
     .demoApp(
       "ReviewListFeature",
-      deps: []
+      deps: [
+				.target(name: "APIClientLive"),
+				.target(name: "DatabaseClientLive"),
+				.target(name: "AccessTokenClientLive"),
+				.target(name: "Configs"),
+				.target(name: "ConfigsLive"),
+			]
     )
-
     // End Features
   ],
   schemes: [

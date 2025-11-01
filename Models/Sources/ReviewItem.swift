@@ -1,6 +1,6 @@
 import Foundation
 
-public struct ReviewItem: Equatable {
+public struct ReviewItem: Equatable,Identifiable {
   public let id: Int
   public let text: String
   public let fullName: String

@@ -6,6 +6,7 @@ public class InfiniteListStore<
   Cursor: Hashable,
   NetworkResponse: Equatable
 > {
+	
   public enum State {
     case shimmer,
          items,
@@ -24,10 +25,16 @@ public class InfiniteListStore<
   public var isFetching: Bool = false
   public var showErrorOnNextPage: Bool = false
 
+	public var isFetchingNextCursor : Bool {
+		self.isFetching &&
+		self.currentCursor != nil
+	}
+	
   public var items: [Item] = []
 
   public var observeTask: Task<(), Error>?
-
+	public var fetchTask: Task<(), Error>?
+	
   public init(
     state: State = .shimmer,
     fetchClosure: @escaping @Sendable (Cursor?) async throws -> NetworkResponse,
@@ -56,11 +63,15 @@ public class InfiniteListStore<
       return
     }
     self.isFetching = true
-    Task {
+		self.fetchTask?.cancel()
+		self.fetchTask = Task {
       do {
         let response = try await self.fetchClosure(self.currentCursor)
         self.isFetching = false
         let (parsedItems, nextCursor) = self.parseResponse(response)
+				if(self.currentCursor == nil ) {
+					try await self.clearItems()
+				}
         try await self.syncItems(parsedItems)
         self.currentCursor = nextCursor
       } catch {
@@ -83,4 +94,9 @@ public class InfiniteListStore<
       }
     }
   }
+	
+	public func initialize(){
+		self.observe()
+	}
+	
 }
