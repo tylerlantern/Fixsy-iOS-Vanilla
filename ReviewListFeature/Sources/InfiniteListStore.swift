@@ -17,7 +17,7 @@ public class InfiniteListStore<
   public var state: State
   public let fetchClosure: (Cursor?) async throws -> NetworkResponse
   public let observeAsyncStream: @Sendable @MainActor () -> AsyncThrowingStream<[Item], Error>
-  public let parseResponse: (NetworkResponse) -> ([Item], _nextCursor: Cursor)
+  public let parseResponse: (NetworkResponse) -> ([Item], _nextCursor: Cursor?)
   public let syncItems: @Sendable ([Item], Cursor?) async throws -> ()
   public let clearItems: @Sendable () async throws -> ()
 
@@ -38,7 +38,7 @@ public class InfiniteListStore<
     state: State = .shimmer,
     fetchClosure: @escaping @Sendable (Cursor?) async throws -> NetworkResponse,
     observeAsyncStream: @escaping @Sendable @MainActor () -> AsyncThrowingStream<[Item], Error>,
-    parseResponse: @escaping @Sendable (NetworkResponse) -> ([Item], _nextCursor: Cursor),
+    parseResponse: @escaping @Sendable (NetworkResponse) -> ([Item], _nextCursor: Cursor?),
     syncItems: @escaping @Sendable ([Item], Cursor?) async throws -> (),
     clearItems: @escaping @Sendable () async throws -> ()
   ) {
@@ -58,10 +58,6 @@ public class InfiniteListStore<
     self.fetch()
   }
 
-  public var showShimmer: Bool {
-    self.items.isEmpty && self.isFetching && self.currentCursor == nil
-  }
-
   public func fetch() {
     guard !self.isFetching else {
       return
@@ -71,13 +67,17 @@ public class InfiniteListStore<
     self.fetchTask = Task {
       do {
         let response = try await self.fetchClosure(self.currentCursor)
-        try await Task.sleep(nanoseconds: 3_000_000_000)
         self.isFetching = false
         let (parsedItems, nextCursor) = self.parseResponse(response)
         if self.currentCursor == nil {
           try await self.clearItems()
         }
         try await self.syncItems(parsedItems, self.currentCursor)
+        if parsedItems.isEmpty, nextCursor == nil {
+          self.state = .emptyList
+          return
+        }
+        self.state = .items
         self.currentCursor = nextCursor
       } catch is CancellationError {
         self.isFetching = false
@@ -105,5 +105,10 @@ public class InfiniteListStore<
   public func initialize() {
     self.observe()
     self.fetch()
+  }
+
+  public func handleOnDisappear() {
+    self.observeTask?.cancel()
+    self.fetchTask?.cancel()
   }
 }

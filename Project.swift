@@ -113,7 +113,8 @@ let project = Project(
         .target(name: "ImagesInspectorFeature"),
         .target(name: "SocialSignInFeature"),
         .target(name: "UserProfileFeature"),
-        .target(name: "EditingNameFeature")
+        .target(name: "EditingNameFeature"),
+        .target(name: "ReviewListFeature")
       ]
     ),
 

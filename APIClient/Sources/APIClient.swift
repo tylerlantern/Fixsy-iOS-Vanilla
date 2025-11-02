@@ -51,8 +51,6 @@ public struct APIClient {
   ) async throws -> A {
     let (data, response) = try await self.request(route)
     let statusCode = (response as! HTTPURLResponse).statusCode
-    //		print(">>>>>>>>>>>>>>>")
-    //		print(String.init(data: data, encoding: .utf8))
     switch statusCode {
     case 200 ..< 300:
       return try decoder.decode(

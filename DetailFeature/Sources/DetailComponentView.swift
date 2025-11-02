@@ -117,12 +117,13 @@ public struct DetailComponentView: View {
             place: self.place
           )
         case .review:
-          Text("Review")
+          self.router.route(
+            .app(.detail(.reviewList(.root(self.place.id))))
+          )
         }
       }
       .padding(.vertical, 16)
     }
-//    .ignoresSafeArea()
     .background(Color(.secondarySystemBackground))
     .task {}
     .onDisappear {}

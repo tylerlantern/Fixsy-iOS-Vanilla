@@ -34,9 +34,16 @@ public struct InfiniteListView<
   public var body: some View {
     ScrollView {
       LazyVStack(alignment: .leading, spacing: 12) {
-        if self.store.showShimmer {
+        switch self.store.state {
+        case .emptyList:
+          HStack {
+            Spacer()
+            Text("No Data.")
+            Spacer()
+          }
+        case .shimmer:
           self.shimmerContent()
-        } else {
+        case .items:
           ForEach(self.store.items) { item in
             self.itemContent(item)
               .onAppear {
@@ -45,6 +52,8 @@ public struct InfiniteListView<
                 }
               }
           }
+        case .errorFullPage:
+          Text("Please try again")
         }
 
         if self.store.isFetchingNextCursor {
@@ -64,6 +73,9 @@ public struct InfiniteListView<
     }
     .task {
       self.store.initialize()
+    }
+    .onDisappear {
+      self.store.handleOnDisappear()
     }
   }
 }

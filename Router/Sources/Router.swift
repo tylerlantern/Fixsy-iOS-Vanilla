@@ -39,7 +39,7 @@ public enum Route {
     )
     case comment(CommentRoute)
     case imagesInsepcter(ImagesInspectorRoute)
-
+    case reviewList(ReviewListRouter)
     public enum CommentRoute {
       case root(Binding<NavigationPath>)
       case expandedComment(ExpandedCommentRout)
@@ -47,6 +47,10 @@ public enum Route {
         case root(Binding<NavigationPath>)
       }
     }
+  }
+
+  public enum ReviewListRouter {
+    case root(_ placeId: Int)
   }
 
   public enum ImagesInspectorRoute {

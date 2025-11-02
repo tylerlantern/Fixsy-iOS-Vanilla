@@ -10,6 +10,7 @@ import ImagesInspectorFeature
 import LocationManagerClient
 import Models
 import ProfileFeature
+import ReviewListFeature
 import Router
 import SearchFeature
 import SocialSignInFeature
@@ -61,6 +62,11 @@ struct RouteView: View {
         }
       case let .detail(detailRoute):
         switch detailRoute {
+        case let .reviewList(reviewListRouter):
+          switch reviewListRouter {
+          case let .root(placeId):
+            ReviewListView(placeId: placeId)
+          }
         case let .root(placeId, dismiss, onTapReviewButton):
           DetailView(
             placeId: placeId,

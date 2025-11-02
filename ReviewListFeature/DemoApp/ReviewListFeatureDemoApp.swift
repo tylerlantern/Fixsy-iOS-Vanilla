@@ -38,7 +38,6 @@ struct ReviewListFeatureDemoApp: App {
         branchId: 1
       ),
       withResponse: {
-        print("HELLO THE RESPONSE")
         // Encode mocks → Data (fallback to empty array JSON if encoding ever fails)
         let data: Data = (try? jsonData(1, 20))!
         let url = URL(string: "https://mock.local/reviewList?page=1&pageSize=20&branchId=1")!
@@ -187,7 +186,5 @@ func jsonData(_ start: Int, _ count: Int) throws -> Data {
   let encoder = JSONEncoder()
   encoder.dateEncodingStrategy = .iso8601
   let str = try String.init(data: encoder.encode(pageResponse), encoding: .utf8)
-  print("JSON DATA")
-  print(str)
   return try encoder.encode(pageResponse)
 }

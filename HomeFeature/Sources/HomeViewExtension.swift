@@ -79,7 +79,6 @@ extension HomeView {
   func observeLocation() {
     self.locationTask = Task {
       for await locs in self.locationManagerClient.locationStream() {
-        print("observeLocation", locs)
         // Fetch location first time and cancel observation.
         guard let loc = locs.first
         else { continue }

@@ -30,12 +30,16 @@ public struct ReviewListView: View {
         },
         observeAsyncStream: {
           self.databaseClient.reviewDB.observe(
-            1
+            self.placeId
           )
         },
         parseResponse: { response in
+          if response.items.isEmpty, response.page == 1 {
+            return ([], nil)
+          }
           let nextPage = response.items.count >= self.pageSize
-            ? response.page + 1 : response.page
+            ? response.page + 1
+            : response.page
           return (
             mapResponseToItems(response),
             nextPage
@@ -63,7 +67,6 @@ public struct ReviewListView: View {
         ReviewItemView(item: item) { _ in }
       }
     )
-    .task {}
   }
 }
 
