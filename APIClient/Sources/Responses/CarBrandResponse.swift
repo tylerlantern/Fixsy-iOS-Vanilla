@@ -1,6 +1,11 @@
 import Foundation
 
-public struct CarBrandResponse: Decodable, Equatable {
+public struct CarBrandResponse: Codable, Equatable {
   public let id: Int
   public let displayName: String
+
+  public init(id: Int, displayName: String) {
+    self.id = id
+    self.displayName = displayName
+  }
 }

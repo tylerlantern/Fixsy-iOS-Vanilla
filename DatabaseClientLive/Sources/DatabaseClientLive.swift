@@ -124,7 +124,6 @@ extension DatabaseClient {
         try await cache.read { db in
           try fetchPlaceFilter(db: db)
         }
-
       },
       syncPlaceFilter: { filter in
         try await cache.write({ db in

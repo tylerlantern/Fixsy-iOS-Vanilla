@@ -1,12 +1,12 @@
 import SwiftUI
 
+@MainActor
 @Observable
 public class InfiniteListStore<
   Item: Identifiable,
   Cursor: Hashable,
   NetworkResponse: Equatable
 > {
-	
   public enum State {
     case shimmer,
          items,
@@ -16,31 +16,30 @@ public class InfiniteListStore<
 
   public var state: State
   public let fetchClosure: (Cursor?) async throws -> NetworkResponse
-  public let observeAsyncStream: () -> AsyncThrowingStream<[Item], Error>
+  public let observeAsyncStream: @Sendable @MainActor () -> AsyncThrowingStream<[Item], Error>
   public let parseResponse: (NetworkResponse) -> ([Item], _nextCursor: Cursor)
-  public let syncItems: @Sendable ([Item]) async throws -> ()
+  public let syncItems: @Sendable ([Item], Cursor?) async throws -> ()
   public let clearItems: @Sendable () async throws -> ()
 
   public var currentCursor: Cursor?
   public var isFetching: Bool = false
   public var showErrorOnNextPage: Bool = false
+  public var isFetchingNextCursor: Bool {
+    self.isFetching &&
+      self.currentCursor != nil
+  }
 
-	public var isFetchingNextCursor : Bool {
-		self.isFetching &&
-		self.currentCursor != nil
-	}
-	
   public var items: [Item] = []
 
   public var observeTask: Task<(), Error>?
-	public var fetchTask: Task<(), Error>?
-	
+  public var fetchTask: Task<(), Error>?
+
   public init(
     state: State = .shimmer,
     fetchClosure: @escaping @Sendable (Cursor?) async throws -> NetworkResponse,
-    observeAsyncStream: @escaping @Sendable () -> AsyncThrowingStream<[Item], Error>,
+    observeAsyncStream: @escaping @Sendable @MainActor () -> AsyncThrowingStream<[Item], Error>,
     parseResponse: @escaping @Sendable (NetworkResponse) -> ([Item], _nextCursor: Cursor),
-    syncItems: @escaping @Sendable ([Item]) async throws -> (),
+    syncItems: @escaping @Sendable ([Item], Cursor?) async throws -> (),
     clearItems: @escaping @Sendable () async throws -> ()
   ) {
     self.state = state
@@ -52,10 +51,15 @@ public class InfiniteListStore<
   }
 
   public func refresh() {
-    self.items = []
+    self.fetchTask?.cancel()
     self.isFetching = false
     self.showErrorOnNextPage = false
     self.currentCursor = nil
+    self.fetch()
+  }
+
+  public var showShimmer: Bool {
+    self.items.isEmpty && self.isFetching && self.currentCursor == nil
   }
 
   public func fetch() {
@@ -63,17 +67,20 @@ public class InfiniteListStore<
       return
     }
     self.isFetching = true
-		self.fetchTask?.cancel()
-		self.fetchTask = Task {
+    self.fetchTask?.cancel()
+    self.fetchTask = Task {
       do {
         let response = try await self.fetchClosure(self.currentCursor)
+        try await Task.sleep(nanoseconds: 3_000_000_000)
         self.isFetching = false
         let (parsedItems, nextCursor) = self.parseResponse(response)
-				if(self.currentCursor == nil ) {
-					try await self.clearItems()
-				}
-        try await self.syncItems(parsedItems)
+        if self.currentCursor == nil {
+          try await self.clearItems()
+        }
+        try await self.syncItems(parsedItems, self.currentCursor)
         self.currentCursor = nextCursor
+      } catch is CancellationError {
+        self.isFetching = false
       } catch {
         self.isFetching = false
         // First page error show full screen error instead
@@ -94,9 +101,9 @@ public class InfiniteListStore<
       }
     }
   }
-	
-	public func initialize(){
-		self.observe()
-	}
-	
+
+  public func initialize() {
+    self.observe()
+    self.fetch()
+  }
 }

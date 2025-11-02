@@ -8,7 +8,9 @@ public struct ListResponse<Data: Decodable>: Decodable, Equatable where Data: Eq
   }
 }
 
-public struct PageResponse<Data: Decodable>: Decodable, Equatable where Data: Equatable {
+public struct PageResponse<Data: Codable>: Codable, Equatable
+  where Data: Equatable
+{
   public var items: [Data]
   public let page: Int
   public let size: Int

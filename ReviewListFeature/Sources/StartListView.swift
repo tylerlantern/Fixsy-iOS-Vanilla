@@ -183,7 +183,7 @@ struct StarRatingView_Previews: PreviewProvider {
       )
       // Changable with Swipe
       StarRatingView(rating: $rating, spacing: 8)
-        .onChange(of: rating) { _ in
+        .onChange(of: rating) { _, _ in
         }
     }
     .frame(width: 300, height: 30)

@@ -52,10 +52,28 @@ extension ReviewDB {
           }
         }
       },
+      syncItemsByBranchId: { placeId, items in
+        _ = try await cache.write({ db in
+          try items.forEach { item in
+            let record = toReviewFetchableRecord(placeId: placeId, item)
+            _ = try saveReviewFetchableRecrod(
+              db: db,
+              record
+            )
+          }
+        })
+      },
       update: { placeId, item in
         try await cache.write({ db in
           let reviewFetchableRecord = toReviewFetchableRecord(placeId: placeId, item)
           return try saveReviewFetchableRecrod(db: db, reviewFetchableRecord)
+        })
+      },
+      clearByBranchId: { id in
+        _ = try await cache.write({ db in
+          try ReviewItemRecord
+            .filter(Column("placeId") == id)
+            .deleteAll(db)
         })
       }
     )

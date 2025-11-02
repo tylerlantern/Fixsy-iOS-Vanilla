@@ -20,45 +20,51 @@ public struct ReviewItemView: View {
   public var body: some View {
     VStack(alignment: .leading, spacing: 8) {
       VStack(alignment: .leading, spacing: 8) {
-        HStack(alignment: .top) {
-          AsyncImage(
-            url: self.item.profileImage,
-            transaction: .init(animation: .default)
-          ) { phase in
-            switch phase {
-            case .empty:
-              ZStack { ProgressView() }
-                .frame(
-                  width: self.profileImageSize.width,
-                  height: self.profileImageSize.height
-                )
+        HStack(alignment: .bottom) {
+          if let url = self.item.profileImage {
+            AsyncImage(
+              url: url,
+              transaction: .init(animation: .default)
+            ) { phase in
+              switch phase {
+              case .empty:
+                ZStack { ProgressView() }
+                  .frame(
+                    width: self.profileImageSize.width,
+                    height: self.profileImageSize.height
+                  )
 
-            case let .success(img):
-              img.resizable()
-                .scaledToFit()
-                .frame(
-                  width: self.profileImageSize.width,
-                  height: self.profileImageSize.height
-                )
+              case let .success(img):
+                img.resizable()
+                  .scaledToFit()
+                  .frame(
+                    width: self.profileImageSize.width,
+                    height: self.profileImageSize.height
+                  )
 
-            case .failure:
-              ZStack {
+              case .failure:
                 Image(systemName: "person.crop.circle.fill")
-                  .imageScale(.large)
-                  .foregroundStyle(.secondary)
+                  .resizable()
+                  .frame(
+                    width: self.profileImageSize.width,
+                    height: self.profileImageSize.height
+                  )
+
+              @unknown default:
+                EmptyView()
+                  .frame(
+                    width: self.profileImageSize.width,
+                    height: self.profileImageSize.height
+                  )
               }
+            }
+          } else {
+            Image(systemName: "person.crop.circle.fill")
+              .resizable()
               .frame(
                 width: self.profileImageSize.width,
                 height: self.profileImageSize.height
               )
-
-            @unknown default:
-              EmptyView()
-                .frame(
-                  width: self.profileImageSize.width,
-                  height: self.profileImageSize.height
-                )
-            }
           }
 
           Text(self.item.fullName)
@@ -86,7 +92,6 @@ public struct ReviewItemView: View {
           )
         }
       }
-
       if !self.item.images.isEmpty {
         ScrollView(.horizontal, showsIndicators: true) {
           LazyHStack(spacing: 8) {
@@ -97,8 +102,11 @@ public struct ReviewItemView: View {
               AsyncImage(url: image.url) { phase in
                 switch phase {
                 case .empty:
-                  ProgressView()
+                  RoundedRectangle(cornerRadius: 8)
+                    .fill(Color(.systemGray5))
                     .frame(width: 100, height: 100)
+                    .redacted(reason: .placeholder)
+                    .shimmer()
                 case let .success(image):
                   image
                     .resizable()
@@ -106,7 +114,6 @@ public struct ReviewItemView: View {
                     .frame(width: 100, height: 100)
                     .clipped()
                 case .failure:
-                  // Fallback UI if the image fails to load
                   Image(systemName: "photo")
                     .resizable()
                     .scaledToFit()
@@ -125,6 +132,11 @@ public struct ReviewItemView: View {
           }
           .padding(.horizontal, 8)
         }
+      }
+
+      if !self.item.text.isEmpty {
+        Text(self.item.text)
+          .font(.body)
       }
     }
     .padding(16)

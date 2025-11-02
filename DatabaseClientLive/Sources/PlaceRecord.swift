@@ -137,7 +137,6 @@ func fetchPlaces(
     inflationStations +
     washStations +
     patchtireStations
-
   return allServices.uniqued(comparator: ==)
 }
 
@@ -182,9 +181,11 @@ func savePlaces(db: Database, places ps: [Place]) throws {
   try ps.map(toPlaceRecord(place:))
     .forEach { info in
       try info.place.save(db)
-      try info.images.forEach({ image in
-        try image.save(db)
-      })
+      try info
+        .images
+        .forEach({ image in
+          try image.save(db)
+        })
       try PlaceCarBrandRelationRecord
         .filter(Column("placeId") == info.place.id)
         .deleteAll(db)
@@ -211,10 +212,8 @@ extension Sequence {
       if try buffer.contains(where: { try comparator(element, $0) }) {
         continue
       }
-
       buffer.append(element)
     }
-
     return buffer
   }
 }

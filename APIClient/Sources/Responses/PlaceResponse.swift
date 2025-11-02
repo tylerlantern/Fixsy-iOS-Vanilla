@@ -43,7 +43,12 @@ public struct OpenCloseTimeResponse: Decodable {
   public let sundayClose: String
 }
 
-public struct ImageResponse: Decodable, Equatable {
+public struct ImageResponse: Codable, Equatable {
   public let id: Int
   public let url: URL
+
+  public init(id: Int, url: URL) {
+    self.id = id
+    self.url = url
+  }
 }
