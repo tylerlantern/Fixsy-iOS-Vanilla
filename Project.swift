@@ -134,6 +134,9 @@ let project = Project(
     .component(
       name: "ContentHeightSheetComponent"
     ),
+    .component(
+      name: "StarRatingComponent"
+    ),
     // End Components
 
     // Start Config
@@ -425,7 +428,8 @@ let project = Project(
         .target(name: "BannerCenterModule"),
         .target(name: "CapsulesStackComponent"),
         .target(name: "Models"),
-        .target(name: "CarBrandComponent")
+        .target(name: "CarBrandComponent"),
+        .target(name: "StarRatingComponent")
       ]
     ),
     .demoApp(
@@ -435,9 +439,28 @@ let project = Project(
         .target(name: "DatabaseClientLive"),
         .target(name: "AccessTokenClientLive"),
         .target(name: "Configs"),
-        .target(name: "ConfigsLive")
+        .target(name: "ConfigsLive"),
+        .target(name: "StarRatingComponent")
       ]
+    ),
+    .framework(
+      name: "ReviewFormFeature",
+      hasResource: true,
+      dependencies: [
+        .target(name: "Router"),
+        .target(name: "Models"),
+        .target(name: "APIClient"),
+        .target(name: "DatabaseClient"),
+        .target(name: "CapsulesStackComponent"),
+        .target(name: "CarBrandComponent"),
+        .target(name: "StarRatingComponent")
+      ]
+    ),
+    .demoApp(
+      "ReviewFormFeature",
+      deps: []
     )
+
     // End Features
   ],
   schemes: [

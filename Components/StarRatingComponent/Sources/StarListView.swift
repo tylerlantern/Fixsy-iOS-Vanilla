@@ -168,25 +168,3 @@ extension StarRatingView {
       .simultaneously(with: self.swipe(on: length))
   }
 }
-
-struct StarRatingView_Previews: PreviewProvider {
-  @State static var rating: Float = 1.5
-
-  static var previews: some View {
-    Group {
-//      StarRatingView(rating: 4,spacing: 8)
-      StarRatingView(
-        rating: 5.5,
-        spacing: 8,
-        color: .pink,
-        maxRating: 7
-      )
-      // Changable with Swipe
-      StarRatingView(rating: $rating, spacing: 8)
-        .onChange(of: rating) { _, _ in
-        }
-    }
-    .frame(width: 300, height: 30)
-    .previewLayout(.fixed(width: 300, height: 40))
-  }
-}

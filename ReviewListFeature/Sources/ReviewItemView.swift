@@ -1,6 +1,7 @@
 import CapsulesStackComponent
 import CarBrandComponent
 import Models
+import StarRatingComponent
 import SwiftUI
 
 public struct ReviewItemView: View {
