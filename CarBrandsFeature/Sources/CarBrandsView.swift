@@ -1,0 +1,120 @@
+import SwiftUI
+import Models
+import APIClient
+import DatabaseClient
+
+public struct CarBrandsView: View {
+	
+	public enum Display {
+		case shimmer,render,fullScreenError
+	}
+	
+	@State var store : CarBrandsStore
+	@State var display : Display = .shimmer
+	@State var disableSaveButton : Bool = false
+	@State var disableClearButton : Bool = false
+	
+	@Environment(\.apiClient) var apiClient
+	@Environment(\.databaseClient) var databaseClient
+	
+	@State var fetchTask : Task<Void,Never>?
+	@State var observeTask : Task<Void,Never>?
+	
+	public init(selectedIds : [Int]) {
+		self.store = .init(selectedIds: [])
+	}
+	
+	public var body: some View {
+		VStack {
+			switch self.display {
+			case .shimmer:
+				CarBrandsComponentView(
+					store: CarBrandsStore.shimmer()
+				)
+				.redacted(reason: .placeholder)
+			case .render:
+				CarBrandsComponentView(store: store)
+			case .fullScreenError:
+				Text("Error")
+			}
+			
+			HStack(spacing: 16) {
+				Button {
+					
+				} label: {
+					HStack {
+						Spacer()
+						Text("Clear")
+							.foregroundColor(
+								self.disableSaveButton
+								? Color.gray.opacity(0.8)
+								: Color.white
+							)
+						
+						Spacer()
+					}
+				}
+				.disabled(self.disableClearButton)
+				.padding()
+				.background(
+					self.disableSaveButton
+					? Color.gray.opacity(0.5)
+					: CarBrandsFeatureAsset.Colors.primary.swiftUIColor
+				)
+				
+				Button {
+					
+				} label: {
+					Spacer()
+					Text("Save")
+						.foregroundColor(
+							self.disableSaveButton
+							? Color.gray.opacity(0.8)
+							: Color.white
+						)
+					Spacer()
+				}
+				
+				.disabled(self.disableSaveButton)
+				.padding()
+				.background(
+					self.disableSaveButton
+					? Color.gray.opacity(0.5)
+					: CarBrandsFeatureAsset.Colors.primary.swiftUIColor
+				)
+			}
+			.padding(.horizontal, 16)
+			.padding(.vertical, 4)
+		}
+		.task {
+			self.fetch()
+		}
+		.navigationBarTitleDisplayMode(.inline)
+	}
+}
+
+// 1) A fixed, human-readable set
+extension CarBrand {
+	static let shimmers: [CarBrand] = [
+		.init(id: 1,  displayName: "Toyota"),
+		.init(id: 2,  displayName: "Honda"),
+		.init(id: 3,  displayName: "Nissan"),
+		.init(id: 4,  displayName: "Mazda"),
+		.init(id: 5,  displayName: "Mitsubishi"),
+		.init(id: 6,  displayName: "Suzuki"),
+		.init(id: 7,  displayName: "Subaru"),
+		.init(id: 8,  displayName: "Isuzu"),
+		.init(id: 9,  displayName: "Ford"),
+		.init(id: 10, displayName: "Chevrolet"),
+		.init(id: 11, displayName: "BMW"),
+		.init(id: 12, displayName: "Mercedes-Benz"),
+		.init(id: 13, displayName: "Volkswagen"),
+		.init(id: 14, displayName: "Hyundai"),
+		.init(id: 15, displayName: "Kia"),
+		.init(id: 16, displayName: "Lexus"),
+		.init(id: 17, displayName: "Volvo"),
+		.init(id: 18, displayName: "Porsche"),
+		.init(id: 19, displayName: "Audi"),
+		.init(id: 20, displayName: "Tesla"),
+	]
+}

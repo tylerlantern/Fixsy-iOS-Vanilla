@@ -459,8 +459,30 @@ let project = Project(
     .demoApp(
       "ReviewFormFeature",
       deps: []
-    )
-
+    ),
+		.framework(
+			name: "CarBrandsFeature",
+			hasResource: true,
+			dependencies: [
+				.target(name: "Router"),
+				.target(name: "Models"),
+				.target(name: "APIClient"),
+				.target(name: "DatabaseClient"),
+				.target(name: "CapsulesStackComponent"),
+				.target(name: "CarBrandComponent")
+			]
+		),
+		.demoApp(
+			"CarBrandsFeature",
+			deps: [
+				.target(name: "APIClientLive"),
+				.target(name: "DatabaseClientLive"),
+				.target(name: "AccessTokenClientLive"),
+				.target(name: "Configs"),
+				.target(name: "ConfigsLive"),
+				.target(name: "StarRatingComponent")
+			]
+		),
     // End Features
   ],
   schemes: [
