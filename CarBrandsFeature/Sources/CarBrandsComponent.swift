@@ -16,10 +16,13 @@ struct CarBrandsComponentView: View {
   public var body: some View {
     GeometryReader { proxy in
       ScrollView {
-        CapsulesStackView(items: self.store.selections) { selection in
+        CapsulesStackView(items: self.store.selections) { idx, item in
           CarBrandItemView(
-            displayName: selection.carBrand.displayName,
-            isSelected: selection.$isSelected
+            displayName: item.carBrand.displayName,
+            isSelected: item.isSelected,
+            onTap: {
+              self.store.toggleSelection(at: idx)
+            }
           )
         }
         .frame(maxWidth: .infinity, alignment: .leading)

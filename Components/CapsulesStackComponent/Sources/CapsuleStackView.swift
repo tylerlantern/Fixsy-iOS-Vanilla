@@ -5,14 +5,14 @@ public struct CapsulesStackView<Item: Identifiable, Content: View>: View {
   public let horizontalSpacing: CGFloat
   public let verticalSpacing: CGFloat
   public let maxWidth: CGFloat?
-  public let content: (Item) -> Content
+  public let content: (Int, Item) -> Content
 
   public init(
     items: [Item],
     horizontalSpacing: CGFloat = 8,
     verticalSpacing: CGFloat = 8,
     maxWidth: CGFloat? = nil,
-    @ViewBuilder content: @escaping (Item) -> Content
+    @ViewBuilder content: @escaping (Int, Item) -> Content
   ) {
     self.items = items
     self.horizontalSpacing = horizontalSpacing
@@ -27,8 +27,8 @@ public struct CapsulesStackView<Item: Identifiable, Content: View>: View {
       rowSpacing: self.verticalSpacing,
       maxWidth: self.maxWidth
     ) {
-      ForEach(self.items) { item in
-        self.content(item)
+      ForEach(self.items.indices, id: \.self) { i in
+        self.content(i, self.items[i])
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)

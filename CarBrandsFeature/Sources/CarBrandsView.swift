@@ -2,6 +2,8 @@ import APIClient
 import AsyncAlgorithms
 import DatabaseClient
 import Models
+import ShimmerComponent
+import SwiftOverlayShims
 import SwiftUI
 
 public struct CarBrandsView: View {
@@ -19,6 +21,7 @@ public struct CarBrandsView: View {
 
   @State var fetchTask: Task<(), Never>?
   @State var observeTask: Task<(), Never>?
+  @State var hasReceiveData: Bool = false
 
   public init(selectedIds: [Int]) {
     self.store = .init(selectedIds: [])
@@ -116,6 +119,16 @@ extension CarBrand {
     .init(id: 17, displayName: "Volvo"),
     .init(id: 18, displayName: "Porsche"),
     .init(id: 19, displayName: "Audi"),
-    .init(id: 20, displayName: "Tesla")
+    .init(id: 20, displayName: "Tesla"),
+    .init(id: 21, displayName: "BMW"),
+    .init(id: 22, displayName: "Mercedes-Benz"),
+    .init(id: 23, displayName: "Volkswagen"),
+    .init(id: 24, displayName: "Hyundai"),
+    .init(id: 25, displayName: "Kia"),
+    .init(id: 26, displayName: "Lexus"),
+    .init(id: 27, displayName: "Volvo"),
+    .init(id: 28, displayName: "Porsche"),
+    .init(id: 29, displayName: "Audi"),
+    .init(id: 30, displayName: "Tesla")
   ]
 }

@@ -22,13 +22,12 @@ extension CarBrandsView {
         //						displayName: $0.displayName
         //					)
         //				})
-
+        let responseItems = CarBrand.shimmers
         try await Task.sleep(nanoseconds: 2_000_000_000)
         try await self.databaseClient.carBrandDB.sync(
-          CarBrand.shimmers
+          responseItems
         )
       } catch {
-        print("Error>>>", error)
         self.display = .fullScreenError
       }
     }
@@ -38,11 +37,10 @@ extension CarBrandsView {
     self.observeTask?.cancel()
     self.observeTask = Task {
       do {
-        for try await carBrands in self.databaseClient.carBrandDB.observe().removeDuplicates() {
-          print("CARBRANDS", carBrands.count)
-          guard !carBrands.isEmpty else {
-            continue
-          }
+        for try await carBrands in self.databaseClient.carBrandDB.observe().removeDuplicates()
+          .filter({ !$0.isEmpty })
+        {
+          self.display = .render
           self.store.updateSelections(
             carBrands: carBrands
           )

@@ -2,7 +2,7 @@ import SwiftUI
 
 public struct CarBrandItemView: View {
   public let displayName: String
-  @Binding public var isSelected: Bool
+  public var isSelected: Bool
 
   /// If true, tapping toggles `isSelected` before calling `onTap`.
   public let togglesOnTap: Bool
@@ -11,13 +11,13 @@ public struct CarBrandItemView: View {
 
   public init(
     displayName: String,
-    isSelected: Binding<Bool>,
+    isSelected: Bool,
     togglesOnTap: Bool = true,
     activeColor: Color = .accentColor,
     onTap: @escaping () -> () = {}
   ) {
     self.displayName = displayName
-    self._isSelected = isSelected
+    self.isSelected = isSelected
     self.togglesOnTap = togglesOnTap
     self.activeColor = activeColor
     self.onTap = onTap
@@ -25,7 +25,6 @@ public struct CarBrandItemView: View {
 
   public var body: some View {
     Button {
-      if self.togglesOnTap { self.isSelected.toggle() }
       self.onTap()
     } label: {
       Text(self.displayName)

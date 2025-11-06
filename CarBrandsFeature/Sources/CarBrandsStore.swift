@@ -10,6 +10,11 @@ public class CarBrandsStore {
     self.selectedIds = selectedIds
   }
 
+  public init(selections: [Selection]) {
+    self.selectedIds = .init()
+    self.selections = selections
+  }
+
   var selections: [Selection] = []
 
   public struct Selection: Identifiable {
@@ -18,7 +23,7 @@ public class CarBrandsStore {
     }
 
     let carBrand: CarBrand
-    @State var isSelected: Bool
+    var isSelected: Bool
   }
 
   func updateSelections(carBrands: [CarBrand]) {
@@ -31,10 +36,19 @@ public class CarBrandsStore {
     })
     self.selections = selections
   }
+
+  func toggleSelection(at idx: Int) {
+    self.selections[idx].isSelected.toggle()
+  }
 }
 
 extension CarBrandsStore {
   static func shimmer() -> CarBrandsStore {
-    CarBrandsStore(selectedIds: [])
+    CarBrandsStore(
+      selections:
+      CarBrand.shimmers.map({
+        .init(carBrand: $0, isSelected: false)
+      })
+    )
   }
 }

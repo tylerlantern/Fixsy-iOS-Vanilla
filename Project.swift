@@ -137,6 +137,9 @@ let project = Project(
     .component(
       name: "StarRatingComponent"
     ),
+    .component(
+      name: "ShimmerComponent"
+    ),
     // End Components
 
     // Start Config
@@ -429,7 +432,8 @@ let project = Project(
         .target(name: "CapsulesStackComponent"),
         .target(name: "Models"),
         .target(name: "CarBrandComponent"),
-        .target(name: "StarRatingComponent")
+        .target(name: "StarRatingComponent"),
+        .target(name: "ShimmerComponent")
       ]
     ),
     .demoApp(
@@ -470,7 +474,8 @@ let project = Project(
         .target(name: "APIClient"),
         .target(name: "DatabaseClient"),
         .target(name: "CapsulesStackComponent"),
-        .target(name: "CarBrandComponent")
+        .target(name: "CarBrandComponent"),
+        .target(name: "ShimmerComponent")
       ]
     ),
     .demoApp(
