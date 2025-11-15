@@ -34,12 +34,13 @@ public enum Route {
   public enum DetailRoute {
     case root(
       _ placeId: Int,
-      _ dismiss: () -> (),
-      _ onTapReviewButton: () -> ()
+      _ dismiss: () -> ()
     )
     case comment(CommentRoute)
     case imagesInsepcter(ImagesInspectorRoute)
     case reviewList(ReviewListRouter)
+    case socialSignIn
+    case reviewForm(ReviewForm)
     public enum CommentRoute {
       case root(Binding<NavigationPath>)
       case expandedComment(ExpandedCommentRout)
@@ -47,6 +48,19 @@ public enum Route {
         case root(Binding<NavigationPath>)
       }
     }
+  }
+
+  public enum ReviewForm {
+    case root(
+      _ placeId: Int,
+      _ hasCarGarage: Bool
+    )
+    case carBrands(CarBrandsRouter)
+    case imageInspector(ImagesInspectorRoute)
+  }
+
+  public enum CarBrandsRouter {
+    case root(_ selectedIds: [Int], _ onTapSave: () -> ())
   }
 
   public enum ReviewListRouter {

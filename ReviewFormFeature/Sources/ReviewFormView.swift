@@ -20,29 +20,35 @@ public struct ReviewFormView: View {
   let padding: CGFloat = 16
   let maxCharTellStory: Int = 120
 
-  @State var rating: Float = 0
+  @State var isSubmiting: Bool = false
+  @State var exceedLimit: Bool = false
   @State var tellStory: String = ""
+  @State var rating: Float = 0
+  @State var presentedCarBrandsScreen: Bool = false
   @State var showRateError: Bool = false
   @State var showCarBrandsError: Bool = false
-  @State var isSubmiting: Bool = false
+
   @FocusState private var focusedField: Field?
   @Environment(\.dismiss) var dismiss
-  @State var exceedLimit: Bool = false
   @Environment(\.colorScheme) var colorScheme
+  @Environment(\.router) var router
 
   public var countTextLabel: String {
     "\(self.tellStory.count)/\(self.maxCharTellStory)"
   }
 
+  let placeId: Int
   let hasCarGarage: Bool
-  @State var carBrands: [CarBrand]
+  @State var carBrands: [CarBrand] = []
 
   public init(
-    carBrands: [CarBrand],
-    hasCarGarage: Bool
+    placeId: Int,
+    hasCarGarage: Bool,
+    carBrands: [CarBrand] = [],
   ) {
-    self.hasCarGarage = hasCarGarage
+    self.placeId = placeId
     self.carBrands = carBrands
+    self.hasCarGarage = hasCarGarage
   }
 
   func ratingHeight(width w: CGFloat) -> CGFloat {
@@ -69,14 +75,16 @@ public struct ReviewFormView: View {
                   .transition(.move(edge: .leading))
               }
             }
-
             if self.hasCarGarage {
               Section("Car Brands") {
                 ZStack {
                   if !self.carBrands.isEmpty {
-                    CapsulesStackView(items: self.carBrands) { chip in
+                    CapsulesStackView(
+                      items: self.carBrands
+                    ) { _, chip in
                       CarBrandItemView(
-                        displayName: chip.displayName, isSelected: .constant(true)
+                        displayName: chip.displayName,
+                        isSelected: true
                       )
                     }
                     .frame(maxWidth: proxy.size.width, alignment: .leading)
@@ -92,10 +100,11 @@ public struct ReviewFormView: View {
                     }
                     .systemCard()
                     .contentShape(Rectangle())
-                    .onTapGesture {}
+                    .onTapGesture {
+                      self.handleOnTapOpeningCarBrandsScree()
+                    }
                   }
                 }
-
                 if self.showCarBrandsError {
                   Text("Required at least 1 brand.")
                     .font(.system(size: 12, weight: .regular, design: .default))
@@ -149,6 +158,7 @@ public struct ReviewFormView: View {
             Spacer()
             Button {
               // TODO: Submit
+
             } label: {
               HStack(spacing: 8) {
                 Spacer()
@@ -164,7 +174,10 @@ public struct ReviewFormView: View {
               }
             }
             .background(
-              ReviewFormFeatureAsset.Colors.primary.swiftUIColor
+              ReviewFormFeatureAsset
+                .Colors
+                .primary
+                .swiftUIColor
             )
             .padding()
             .disabled(self.isSubmiting)
@@ -172,7 +185,7 @@ public struct ReviewFormView: View {
           }
         }
         .onTapGesture {
-          //					self.viewStore.send(.focusedField(nil))
+          // self.viewStore.send(.focusedField(nil))
         }
       }
       .toolbar {
@@ -200,6 +213,27 @@ public struct ReviewFormView: View {
       //				store: self.store.scope(state: \.$carBrands, action: ReviewForm.Action.carBrands),
       //				destination: CarBrandsView.init
       //			)
+      .navigationDestination(
+        isPresented: self.$presentedCarBrandsScreen,
+        destination: {
+          self.router.route(
+            .app(
+              .detail(
+                .reviewForm(
+                  .carBrands(
+                    .root(
+                      self.carBrands.map(\.id),
+                      {
+                        self.presentedCarBrandsScreen = false
+                      }
+                    )
+                  )
+                )
+              )
+            )
+          )
+        }
+      )
       .navigationTitle("Review Form")
     }
   }
@@ -213,13 +247,22 @@ struct SystemCard: ViewModifier {
       .padding(.vertical, 12)
       .background(
         // iOS-native “card” background that adapts to Light/Dark
-        RoundedRectangle(cornerRadius: self.cornerRadius, style: .continuous)
-          .fill(Color(uiColor: .secondarySystemBackground))
+        RoundedRectangle(
+          cornerRadius: self.cornerRadius,
+          style: .continuous
+        )
+        .fill(Color(uiColor: .secondarySystemBackground))
       )
       .overlay(
         // Very subtle border like iOS grouped lists
-        RoundedRectangle(cornerRadius: self.cornerRadius, style: .continuous)
-          .stroke(Color(uiColor: .separator), lineWidth: 0.5)
+        RoundedRectangle(
+          cornerRadius: self.cornerRadius,
+          style: .continuous
+        )
+        .stroke(
+          Color(uiColor: .separator),
+          lineWidth: 0.5
+        )
       )
   }
 }
@@ -232,6 +275,7 @@ extension View {
 }
 
 #if DEBUG
+
   extension CarBrand {
     static var mockPreview: [CarBrand] = [
       CarBrand(id: 1, displayName: "Honda"),
@@ -243,8 +287,9 @@ extension View {
 
   #Preview {
     ReviewFormView(
-      carBrands: [],
-      hasCarGarage: true,
+      placeId: 5,
+      hasCarGarage: true
     )
   }
+
 #endif

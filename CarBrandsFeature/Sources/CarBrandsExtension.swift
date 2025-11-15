@@ -12,20 +12,18 @@ extension CarBrandsView {
   func fetch() {
     self.fetchTask = Task {
       do {
-        //				let responseItems =	try await self.apiClient.call(
-        //					route: .carBrands,
-        //					as: [CarBrandResponse].self
-        //				)
-        //				let items = responseItems.map({
-        //					CarBrand(
-        //						id: $0.id,
-        //						displayName: $0.displayName
-        //					)
-        //				})
-        let responseItems = CarBrand.shimmers
-        try await Task.sleep(nanoseconds: 2_000_000_000)
+        let responseItems = try await self.apiClient.call(
+          route: .carBrands,
+          as: [CarBrandResponse].self
+        )
+        let items = responseItems.map({
+          CarBrand(
+            id: $0.id,
+            displayName: $0.displayName
+          )
+        })
         try await self.databaseClient.carBrandDB.sync(
-          responseItems
+          items
         )
       } catch {
         self.display = .fullScreenError
@@ -40,6 +38,7 @@ extension CarBrandsView {
         for try await carBrands in self.databaseClient.carBrandDB.observe().removeDuplicates()
           .filter({ !$0.isEmpty })
         {
+          self.disableSaveButton = false
           self.display = .render
           self.store.updateSelections(
             carBrands: carBrands

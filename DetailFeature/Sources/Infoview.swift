@@ -43,9 +43,9 @@ public struct InfoView: View {
           }
 
           if !self.carBrands.isEmpty {
-            CapsulesStackView(items: self.carBrands) { chip in
+            CapsulesStackView(items: self.carBrands) { _, chip in
               CarBrandItemView(
-                displayName: chip.displayName, isSelected: .constant(true)
+                displayName: chip.displayName, isSelected: true
               )
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -182,9 +182,9 @@ public struct InfoView: View {
           displayName: "Flying Dutch man"
         )
       ]
-    ) { chip in
+    ) { _, chip in
       CarBrandItemView(
-        displayName: chip.displayName, isSelected: .constant(true)
+        displayName: chip.displayName, isSelected: true
       )
     }
     .padding(.horizontal, 16)

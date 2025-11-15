@@ -1,3 +1,4 @@
+import CarBrandsFeature
 import ChatListFeature
 import CommentFeature
 import DatabaseClient
@@ -10,6 +11,7 @@ import ImagesInspectorFeature
 import LocationManagerClient
 import Models
 import ProfileFeature
+import ReviewFormFeature
 import ReviewListFeature
 import Router
 import SearchFeature
@@ -67,11 +69,10 @@ struct RouteView: View {
           case let .root(placeId):
             ReviewListView(placeId: placeId)
           }
-        case let .root(placeId, dismiss, onTapReviewButton):
+        case let .root(placeId, dismiss):
           DetailView(
             placeId: placeId,
-            dismiss: dismiss,
-            onTapReviewButton: onTapReviewButton
+            dismiss: dismiss
           )
         case let .comment(commentRoute):
           switch commentRoute {
@@ -93,6 +94,27 @@ struct RouteView: View {
               initialIndex: index
             )
           }
+        case .socialSignIn:
+          SocialSignInView()
+        case let .reviewForm(
+          .root(placeId, hasCarGarage)
+        ):
+          ReviewFormView(
+            placeId: placeId,
+            hasCarGarage: hasCarGarage
+          )
+        case let .reviewForm(
+          .imageInspector(.root(urls, index))
+        ):
+          ImagesInspectorView(
+            urls: urls,
+            initialIndex: index
+          )
+        case let .reviewForm(.carBrands(.root(selectedIds, onTapSave))):
+          CarBrandsView(
+            selectedIds: selectedIds,
+            onTapSave: onTapSave
+          )
         }
       }
     }

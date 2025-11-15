@@ -114,7 +114,9 @@ let project = Project(
         .target(name: "SocialSignInFeature"),
         .target(name: "UserProfileFeature"),
         .target(name: "EditingNameFeature"),
-        .target(name: "ReviewListFeature")
+        .target(name: "ReviewListFeature"),
+        .target(name: "ReviewFormFeature"),
+        .target(name: "CarBrandsFeature")
       ]
     ),
 
@@ -304,7 +306,9 @@ let project = Project(
         .target(name: "APIClient"),
         .target(name: "DatabaseClient"),
         .target(name: "CapsulesStackComponent"),
-        .target(name: "CarBrandComponent")
+        .target(name: "CarBrandComponent"),
+        .target(name: "AccessTokenClient"),
+        .target(name: "ContentHeightSheetComponent")
       ]
     ),
     .demoApp(
@@ -457,7 +461,8 @@ let project = Project(
         .target(name: "DatabaseClient"),
         .target(name: "CapsulesStackComponent"),
         .target(name: "CarBrandComponent"),
-        .target(name: "StarRatingComponent")
+        .target(name: "StarRatingComponent"),
+        .target(name: "CarBrandsFeature")
       ]
     ),
     .demoApp(
@@ -475,6 +480,7 @@ let project = Project(
         .target(name: "DatabaseClient"),
         .target(name: "CapsulesStackComponent"),
         .target(name: "CarBrandComponent"),
+        .target(name: "ShimmerComponent"),
         .target(name: "ShimmerComponent")
       ]
     ),

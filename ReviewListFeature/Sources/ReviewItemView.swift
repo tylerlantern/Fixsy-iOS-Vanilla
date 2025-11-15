@@ -1,6 +1,7 @@
 import CapsulesStackComponent
 import CarBrandComponent
 import Models
+import ShimmerComponent
 import StarRatingComponent
 import SwiftUI
 
@@ -86,10 +87,10 @@ public struct ReviewItemView: View {
 
         CapsulesStackView(
           items: self.item.carBrands
-        ) { carBrand in
+        ) { _, carBrand in
           CarBrandItemView(
             displayName: carBrand.displayName,
-            isSelected: .constant(true)
+            isSelected: true
           )
         }
       }

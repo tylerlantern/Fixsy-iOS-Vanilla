@@ -12,8 +12,7 @@ import SwiftUI
 
 public struct HomeView: View {
   public enum SheetDisplay {
-    case search,
-         detail(_ placeId: Int)
+    case search, detail(_ placeId: Int)
   }
 
   @State public var mapVisualChannel: MapVisualChannel
@@ -119,9 +118,6 @@ public struct HomeView: View {
                 {
                   self.sheetDisplay = .search
                   self.detent = BottomSheetDetents.collapsed
-                },
-                {
-                  // TODO: Open review form
                 }
               )
             )

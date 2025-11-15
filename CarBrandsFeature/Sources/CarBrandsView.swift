@@ -18,13 +18,20 @@ public struct CarBrandsView: View {
 
   @Environment(\.apiClient) var apiClient
   @Environment(\.databaseClient) var databaseClient
+  @Environment(\.dismiss) var dismiss
 
   @State var fetchTask: Task<(), Never>?
   @State var observeTask: Task<(), Never>?
   @State var hasReceiveData: Bool = false
 
-  public init(selectedIds: [Int]) {
+  public let onTapSave: ([Int]) -> ()
+
+  public init(
+    selectedIds: [Int],
+    onTapSave: @escaping ([Int]) -> ()
+  ) {
     self.store = .init(selectedIds: [])
+    self.onTapSave = onTapSave
   }
 
   public var body: some View {
@@ -43,7 +50,9 @@ public struct CarBrandsView: View {
       }
       Spacer()
       HStack(spacing: 16) {
-        Button {} label: {
+        Button {
+          self.dismiss()
+        } label: {
           HStack {
             Spacer()
             Text("Clear")
@@ -64,7 +73,9 @@ public struct CarBrandsView: View {
             : CarBrandsFeatureAsset.Colors.primary.swiftUIColor
         )
 
-        Button {} label: {
+        Button {
+          self.onTapSave()
+        } label: {
           Spacer()
           Text("Save")
             .foregroundColor(
@@ -74,7 +85,6 @@ public struct CarBrandsView: View {
             )
           Spacer()
         }
-
         .disabled(self.disableSaveButton)
         .padding()
         .background(
