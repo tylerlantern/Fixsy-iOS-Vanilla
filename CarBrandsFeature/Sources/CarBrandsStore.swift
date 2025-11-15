@@ -40,6 +40,15 @@ public class CarBrandsStore {
   func toggleSelection(at idx: Int) {
     self.selections[idx].isSelected.toggle()
   }
+
+  func getSelectedBrandCars() -> [CarBrand] {
+    self.selections.compactMap({
+      if $0.isSelected {
+        return $0.carBrand
+      }
+      return nil
+    })
+  }
 }
 
 extension CarBrandsStore {

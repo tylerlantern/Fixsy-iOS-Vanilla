@@ -60,7 +60,7 @@ public enum Route {
   }
 
   public enum CarBrandsRouter {
-    case root(_ selectedIds: [Int], _ onTapSave: () -> ())
+    case root(_ selectedIds: [Int], _ onTapSave: ([CarBrand]) -> ())
   }
 
   public enum ReviewListRouter {

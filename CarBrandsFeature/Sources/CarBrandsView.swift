@@ -24,11 +24,11 @@ public struct CarBrandsView: View {
   @State var observeTask: Task<(), Never>?
   @State var hasReceiveData: Bool = false
 
-  public let onTapSave: ([Int]) -> ()
+  public let onTapSave: ([CarBrand]) -> ()
 
   public init(
     selectedIds: [Int],
-    onTapSave: @escaping ([Int]) -> ()
+    onTapSave: @escaping ([CarBrand]) -> ()
   ) {
     self.store = .init(selectedIds: [])
     self.onTapSave = onTapSave
@@ -74,7 +74,9 @@ public struct CarBrandsView: View {
         )
 
         Button {
-          self.onTapSave()
+          self.onTapSave(
+            self.store.getSelectedBrandCars()
+          )
         } label: {
           Spacer()
           Text("Save")

@@ -8,17 +8,26 @@ import DatabaseClient
 import LocationManagerClient
 import MapKit
 import Models
+import PhotosUI
 import PlaceStore
 import Router
 import StarRatingComponent
 import SwiftUI
+import UIKit
 
 public struct ReviewFormView: View {
   enum Field { case tellStory }
+
+  enum ScrollPosition: String {
+    case imageSelection
+  }
+
   let spacing: CGFloat = 8
   let maxRating: CGFloat = 5
   let padding: CGFloat = 16
   let maxCharTellStory: Int = 120
+
+  private let maxNumberOfImages: Int = 2
 
   @State var isSubmiting: Bool = false
   @State var exceedLimit: Bool = false
@@ -27,6 +36,9 @@ public struct ReviewFormView: View {
   @State var presentedCarBrandsScreen: Bool = false
   @State var showRateError: Bool = false
   @State var showCarBrandsError: Bool = false
+  @State var showPhotoPicker: Bool = false
+  @State private var selectedItems: [PhotosPickerItem] = []
+  @State private var selectedImages: [UIImage] = []
 
   @FocusState private var focusedField: Field?
   @Environment(\.dismiss) var dismiss
@@ -44,7 +56,7 @@ public struct ReviewFormView: View {
   public init(
     placeId: Int,
     hasCarGarage: Bool,
-    carBrands: [CarBrand] = [],
+    carBrands: [CarBrand] = []
   ) {
     self.placeId = placeId
     self.carBrands = carBrands
@@ -55,119 +67,178 @@ public struct ReviewFormView: View {
     ((w - self.padding * 2) / 5) - self.spacing
   }
 
+  func getImageSize(
+    _ width: CGFloat,
+    numberOfImages: Int
+  ) -> CGSize {
+    let totalWidth = width - 64 - CGFloat(numberOfImages - 1) * 16
+    return CGSize(
+      width: totalWidth / CGFloat(numberOfImages),
+      height: totalWidth / CGFloat(numberOfImages)
+    )
+  }
+
   public var body: some View {
     NavigationStack {
       GeometryReader { proxy in
         VStack {
-          Form {
-            Section("Rating") {
-              StarRatingView(
-                rating: self.$rating,
-                spacing: 8
-              )
-              .frame(
-                height: self.ratingHeight(width: proxy.size.width - 24)
-              )
-              if self.showRateError {
-                Text("We need your satisfaction rate for this place")
-                  .font(.system(size: 12, weight: .regular, design: .default))
-                  .foregroundColor(Color.red)
-                  .transition(.move(edge: .leading))
-              }
-            }
-            if self.hasCarGarage {
-              Section("Car Brands") {
-                ZStack {
-                  if !self.carBrands.isEmpty {
-                    CapsulesStackView(
-                      items: self.carBrands
-                    ) { _, chip in
-                      CarBrandItemView(
-                        displayName: chip.displayName,
-                        isSelected: true
-                      )
-                    }
-                    .frame(maxWidth: proxy.size.width, alignment: .leading)
-                    .contentShape(Rectangle())
-                    .onTapGesture {}
-                  } else {
-                    HStack {
-                      Spacer()
-                      Text("Click me to select at least one brand.")
-                        .font(.body)
-                        .foregroundStyle(Color(uiColor: .label))
-                      Spacer()
-                    }
-                    .systemCard()
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                      self.handleOnTapOpeningCarBrandsScree()
-                    }
-                  }
-                }
-                if self.showCarBrandsError {
-                  Text("Required at least 1 brand.")
+          ScrollViewReader { scrollProxy in
+            Form {
+              Section("Rating") {
+                StarRatingView(
+                  rating: self.$rating,
+                  spacing: 8
+                )
+                .frame(
+                  height: self.ratingHeight(width: proxy.size.width - 24)
+                )
+                if self.showRateError {
+                  Text("We need your satisfaction rate for this place")
                     .font(.system(size: 12, weight: .regular, design: .default))
-                    .foregroundColor(Color.red)
+                    .foregroundColor(.red)
                     .transition(.move(edge: .leading))
                 }
               }
-              .onTapGesture {
-                // TODO: Present car brand selection
+
+              if self.hasCarGarage {
+                Section("Car Brands") {
+                  ZStack {
+                    if self.carBrands.isEmpty {
+                      Button {
+                        self.handleOnTapOpeningCarBrandsScree()
+                      } label: {
+                        HStack {
+                          Spacer()
+                          Text("Click me to select at least one brand.")
+                          Spacer()
+                        }
+                      }
+                      .buttonStyle(.glass)
+
+                    } else {
+                      CapsulesStackView(
+                        items: self.carBrands
+                      ) { _, chip in
+                        CarBrandItemView(
+                          displayName: chip.displayName,
+                          isSelected: true
+                        )
+                      }
+                      .frame(maxWidth: proxy.size.width, alignment: .leading)
+                      .contentShape(Rectangle())
+                      .onTapGesture {}
+                    }
+                  }
+
+                  if self.showCarBrandsError {
+                    Text("Required at least 1 brand.")
+                      .font(.system(size: 12, weight: .regular, design: .default))
+                      .foregroundColor(.red)
+                      .transition(.move(edge: .leading))
+                  }
+                }
+                .onTapGesture {
+                  // TODO: Present car brand selection
+                }
+              }
+
+              Section("Tell the community your story.") {
+                TextField(
+                  "Tell us about this place's service.",
+                  text: self.$tellStory,
+                  axis: .vertical
+                )
+                .focused(self.$focusedField, equals: .tellStory)
+                .lineLimit(5...)
+                .textFieldStyle(.roundedBorder)
+                .border(
+                  self.exceedLimit
+                    ? Color.red
+                    : Color.gray.opacity(0.5)
+                )
+
+                HStack {
+                  Spacer()
+                  Text(self.countTextLabel)
+                    .font(.caption)
+                    .foregroundColor(
+                      self.exceedLimit
+                        ? .red
+                        : (self.colorScheme == .dark ? .white : .black)
+                    )
+                }
+              }
+
+              Section("Images") {
+                Button {
+                  print("TAP IMAGES")
+                  self.showPhotoPicker = true
+                } label: {
+                  HStack {
+                    Spacer()
+                    Text("Select Multiple Photos")
+                    Spacer()
+                  }
+                }
+                .buttonStyle(.glass)
+
+                if !self.selectedImages.isEmpty {
+                  ScrollView(.horizontal) {
+                    LazyHStack(spacing: 16) {
+                      ForEach(self.selectedImages, id: \.self) { image in
+                        let size = self.getImageSize(
+                          proxy.size.width,
+                          numberOfImages: self.maxNumberOfImages
+                        )
+                        Image(uiImage: image)
+                          .resizable()
+                          .scaledToFill()
+                          .frame(
+                            width: size.width,
+                            height: size.height
+                          )
+                          .clipped()
+                      }
+                    }
+                  }
+                  .id(ScrollPosition.imageSelection.rawValue)
+                }
               }
             }
-
-            Section("Tell the community your story.") {
-              TextField(
-                "Tell us about this place's service.",
-                text: self.$tellStory,
-                axis: .vertical
-              )
-              .focused(self.$focusedField, equals: .tellStory)
-              .lineLimit(5...)
-              .textFieldStyle(.roundedBorder)
-              .border(
-                self.exceedLimit
-                  ? Color.red
-                  : Color.gray.opacity(0.5)
-              )
-              HStack {
-                Spacer()
-                Text(self.countTextLabel)
-                  .font(.caption)
-                  .foregroundColor(
-                    self.exceedLimit
-                      ? Color.red
-                      : self.colorScheme == .dark ? Color.white : Color.black
+            .onChange(of: self.selectedItems) { _, _ in
+              Task {
+                self.selectedImages.removeAll()
+                for item in self.selectedItems {
+                  if let data = try? await item.loadTransferable(type: Data.self),
+                     let uiImage = UIImage(data: data)
+                  {
+                    self.selectedImages.append(uiImage)
+                  }
+                }
+                withAnimation {
+                  scrollProxy.scrollTo(
+                    ScrollPosition.imageSelection.rawValue,
+                    anchor: .center
                   )
+                }
               }
             }
-
-            Section("Images") {
-              //							DisplayImageListView(
-              //								store: self.store.scope(
-              //									state: \.displayImageList,
-              //									action: ReviewForm.Action.displayImageList
-              //								)
-              //							)
-            }
+            .scrollDismissesKeyboard(.interactively)
           }
-          .scrollDismissesKeyboard(.interactively)
 
           HStack {
             Spacer()
             Button {
               // TODO: Submit
-
             } label: {
               HStack(spacing: 8) {
                 Spacer()
                 if self.isSubmiting {
                   ProgressView()
-                    .tint(Color.white)
+                    .tint(.white)
                 }
                 Text("Save")
-                  .foregroundColor(Color.white)
+                  .foregroundColor(.white)
                   .bold()
                   .padding()
                 Spacer()
@@ -184,6 +255,7 @@ public struct ReviewFormView: View {
             Spacer()
           }
         }
+
         .onTapGesture {
           // self.viewStore.send(.focusedField(nil))
         }
@@ -193,7 +265,8 @@ public struct ReviewFormView: View {
           Button(
             action: {
               self.dismiss()
-            }, label: {
+            },
+            label: {
               Label("Dismiss", systemImage: "xmark")
                 .labelStyle(.iconOnly)
                 .frame(width: 44, height: 44)
@@ -202,17 +275,6 @@ public struct ReviewFormView: View {
           .glassEffect()
         }
       }
-      //			.synchronize(
-      //				self.viewStore.binding(
-      //					get: \.focusedField,
-      //					send: ReviewForm.Action.focusedField
-      //				),
-      //				self.$focusedField
-      //			)
-      //			.navigationDestination(
-      //				store: self.store.scope(state: \.$carBrands, action: ReviewForm.Action.carBrands),
-      //				destination: CarBrandsView.init
-      //			)
       .navigationDestination(
         isPresented: self.$presentedCarBrandsScreen,
         destination: {
@@ -223,8 +285,9 @@ public struct ReviewFormView: View {
                   .carBrands(
                     .root(
                       self.carBrands.map(\.id),
-                      {
+                      { carBrands in
                         self.presentedCarBrandsScreen = false
+                        self.carBrands = carBrands
                       }
                     )
                   )
@@ -236,8 +299,16 @@ public struct ReviewFormView: View {
       )
       .navigationTitle("Review Form")
     }
+    .photosPicker( // 👈 attached to the root view
+      isPresented: self.$showPhotoPicker,
+      selection: self.$selectedItems,
+      maxSelectionCount: self.maxNumberOfImages,
+      matching: .images
+    )
   }
 }
+
+// MARK: - SystemCard
 
 struct SystemCard: ViewModifier {
   var cornerRadius: CGFloat = 14
@@ -246,7 +317,6 @@ struct SystemCard: ViewModifier {
       .padding(.horizontal, 14)
       .padding(.vertical, 12)
       .background(
-        // iOS-native “card” background that adapts to Light/Dark
         RoundedRectangle(
           cornerRadius: self.cornerRadius,
           style: .continuous
@@ -254,7 +324,6 @@ struct SystemCard: ViewModifier {
         .fill(Color(uiColor: .secondarySystemBackground))
       )
       .overlay(
-        // Very subtle border like iOS grouped lists
         RoundedRectangle(
           cornerRadius: self.cornerRadius,
           style: .continuous
@@ -268,7 +337,6 @@ struct SystemCard: ViewModifier {
 }
 
 extension View {
-  /// Rounded card background that matches iOS forms in Light/Dark.
   func systemCard(cornerRadius: CGFloat = 14) -> some View {
     modifier(SystemCard(cornerRadius: cornerRadius))
   }
