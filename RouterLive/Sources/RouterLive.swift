@@ -68,6 +68,8 @@ struct RouteView: View {
           switch reviewListRouter {
           case let .root(placeId):
             ReviewListView(placeId: placeId)
+					case let .imagesInsepcter(imageRoute):
+						imageRoute.makeView()
           }
         case let .root(placeId, dismiss):
           DetailView(
@@ -85,15 +87,7 @@ struct RouteView: View {
             }
           }
         case let .imagesInsepcter(imageRoute):
-          switch imageRoute {
-          case let .root(
-            urls, index
-          ):
-            ImagesInspectorView(
-              urls: urls,
-              initialIndex: index
-            )
-          }
+					imageRoute.makeView()
         case .socialSignIn:
           SocialSignInView()
         case let .reviewForm(
@@ -104,12 +98,9 @@ struct RouteView: View {
             hasCarGarage: hasCarGarage
           )
         case let .reviewForm(
-          .imageInspector(.root(urls, index))
+          .imageInspector(imageInspectorRoute)
         ):
-          ImagesInspectorView(
-            urls: urls,
-            initialIndex: index
-          )
+					imageInspectorRoute.makeView()
         case let .reviewForm(.carBrands(.root(selectedIds, onTapSave))):
           CarBrandsView(
             selectedIds: selectedIds,
@@ -119,4 +110,17 @@ struct RouteView: View {
       }
     }
   }
+}
+
+extension Route.ImagesInspectorRoute {
+		@ViewBuilder
+		func makeView() -> some View {
+				switch self {
+				case let .root(urls, index):
+						ImagesInspectorView(
+								urls: urls,
+								initialIndex: index
+						)
+				}
+		}
 }

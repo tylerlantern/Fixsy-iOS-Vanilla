@@ -193,7 +193,7 @@ extension APIUserRoute {
         parameters["text"] = .string(text)
       }
       if !images.isEmpty {
-        parameters["files"] = .images(images, .jpeg(0.75))
+        parameters["files"] = .images(images, .jpeg(0.50))
       }
       let carBrandIds = carBrands
         .map(\.id)

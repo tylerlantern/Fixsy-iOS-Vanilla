@@ -3,16 +3,16 @@ import SwiftUI
 public struct ImagesInspectorView: View {
   public let urls: [URL]
 
-  @Binding private var index: Int
+  @State private var index: Int
 
   @Environment(\.dismiss) var dismiss
 
   public init(
     urls: [URL],
-    initialIndex: Binding<Int>
+    initialIndex: Int
   ) {
     self.urls = urls
-    self._index = initialIndex
+    self.index = initialIndex
   }
 
   public var body: some View {

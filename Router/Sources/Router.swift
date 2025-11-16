@@ -65,10 +65,11 @@ public enum Route {
 
   public enum ReviewListRouter {
     case root(_ placeId: Int)
+		case imagesInsepcter(ImagesInspectorRoute)
   }
 
   public enum ImagesInspectorRoute {
-    case root([URL], _ index: Binding<Int>)
+    case root([URL], Int)
   }
 }
 

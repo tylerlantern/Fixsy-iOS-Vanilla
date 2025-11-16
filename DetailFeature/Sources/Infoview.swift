@@ -5,11 +5,45 @@ import Router
 import SwiftUI
 
 public struct InfoView: View {
+	
+	public enum SheetDisplay: Identifiable {
+		case imagesInspector([URL],Int)
+		
+		public var id: String {
+			switch self {
+			case .imagesInspector:
+				return "imagesInspector"
+			}
+		}
+		
+		@ViewBuilder
+		func destination(
+			router: Router
+		) -> some View {
+			switch self {
+			case let .imagesInspector(urls,idx):
+				router.route(
+					.app(
+						.detail(
+							.reviewList(
+								.imagesInsepcter(
+									.root(
+										urls,
+										idx
+									)
+								)
+							)
+						)
+					)
+				)
+			}
+		}
+		
+	}
+	
+	@State private var sheet : SheetDisplay? = nil
   @State var place: Place
   @State var carBrands: [CarBrand]
-  @State private var isPresentedImagesInspector: Bool = false
-
-  @State private var selectedIndex = 0
 
   @Environment(\.router) var router
 
@@ -127,8 +161,10 @@ public struct InfoView: View {
                   }
                   .contentShape(Rectangle())
                   .onTapGesture {
-                    self.selectedIndex = idx
-                    self.isPresentedImagesInspector = true
+										self.sheet = .imagesInspector(
+											self.place.images.map(\.url),
+											idx
+										)
                   }
                 }
               }
@@ -141,22 +177,17 @@ public struct InfoView: View {
         }
       }
     }
-    .fullScreenCover(
-      isPresented: self.$isPresentedImagesInspector
-    ) {} content: {
-      self.router.route(
-        .app(
-          .detail(
-            .imagesInsepcter(
-              .root(
-                self.place.images.map(\.url),
-                self.$selectedIndex
-              )
-            )
-          )
-        )
-      )
-    }
+		.fullScreenCover(
+			item: $sheet,
+			onDismiss: {
+				self.sheet = nil
+			},
+			content: { sheet in
+				sheet.destination(
+					router: router
+				)
+			}
+		)
   }
 }
 
