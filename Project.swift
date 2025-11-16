@@ -116,7 +116,8 @@ let project = Project(
         .target(name: "EditingNameFeature"),
         .target(name: "ReviewListFeature"),
         .target(name: "ReviewFormFeature"),
-        .target(name: "CarBrandsFeature")
+        .target(name: "CarBrandsFeature"),
+				.target(name: "ChangeAppLanguageFeature")
       ]
     ),
 
@@ -407,7 +408,8 @@ let project = Project(
         .target(name: "DatabaseClient"),
         .target(name: "UserProfileModel"),
         .target(name: "Router"),
-        .target(name: "BannerCenterModule")
+        .target(name: "BannerCenterModule"),
+				.target(name: "AuthProvidersClient")
       ]
     ),
     .demoApp(
@@ -455,6 +457,7 @@ let project = Project(
       name: "ReviewFormFeature",
       hasResource: true,
       dependencies: [
+				.external(name: "AsyncAlgorithms"),
         .target(name: "Router"),
         .target(name: "Models"),
         .target(name: "APIClient"),
@@ -494,8 +497,17 @@ let project = Project(
         .target(name: "Configs"),
         .target(name: "ConfigsLive"),
         .target(name: "StarRatingComponent")
-      ]
-    )
+      ],
+    ),
+		.framework(
+			name: "ChangeAppLanguageFeature",
+			hasResource: true,
+			dependencies: []
+		),
+		.demoApp(
+			"ChangeAppLanguageFeature",
+			deps: []
+		)
     // End Features
   ],
   schemes: [

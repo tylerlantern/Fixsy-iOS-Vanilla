@@ -19,6 +19,7 @@ import SocialSignInFeature
 import SwiftUI
 import TabContainerFeature
 import UserProfileFeature
+import ChangeAppLanguageFeature
 
 extension Router {
   public static let liveValue: Router = .init { route in
@@ -60,6 +61,8 @@ struct RouteView: View {
               firstName: firstName,
               lastName: lastName
             )
+					case .selectAppLanguage:
+						ChangeApplicationLanguageView()
           }
         }
       case let .detail(detailRoute):
@@ -113,14 +116,14 @@ struct RouteView: View {
 }
 
 extension Route.ImagesInspectorRoute {
-		@ViewBuilder
-		func makeView() -> some View {
-				switch self {
-				case let .root(urls, index):
-						ImagesInspectorView(
-								urls: urls,
-								initialIndex: index
-						)
-				}
+	@ViewBuilder
+	func makeView() -> some View {
+		switch self {
+		case let .root(urls, index):
+			ImagesInspectorView(
+				urls: urls,
+				initialIndex: index
+			)
 		}
+	}
 }

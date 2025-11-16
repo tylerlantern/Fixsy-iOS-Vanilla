@@ -1,25 +1,10 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "Car Brands" : {
-
-    },
     "Click me to select at least one brand." : {
 
     },
-    "Dismiss" : {
-
-    },
-    "Images" : {
-
-    },
-    "Rating" : {
-
-    },
     "Required at least 1 brand." : {
-
-    },
-    "Review Form" : {
 
     },
     "Save" : {
@@ -55,12 +40,6 @@
           }
         }
       }
-    },
-    "Tell the community your story." : {
-
-    },
-    "Tell us about this place's service." : {
-
     },
     "We need your satisfaction rate for this place" : {
 

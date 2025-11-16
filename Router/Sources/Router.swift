@@ -29,6 +29,7 @@ public enum Route {
   public enum UserProfile {
     case root
     case editingName(_ firstName: String, _ lastName: String)
+		case selectAppLanguage
   }
 
   public enum DetailRoute {

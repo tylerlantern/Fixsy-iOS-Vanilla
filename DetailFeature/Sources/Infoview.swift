@@ -8,14 +8,12 @@ public struct InfoView: View {
 	
 	public enum SheetDisplay: Identifiable {
 		case imagesInspector([URL],Int)
-		
 		public var id: String {
 			switch self {
 			case .imagesInspector:
 				return "imagesInspector"
 			}
 		}
-		
 		@ViewBuilder
 		func destination(
 			router: Router

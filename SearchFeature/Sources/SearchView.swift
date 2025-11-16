@@ -155,7 +155,6 @@ public struct SearchView: View {
       )
       .adjustSheetHeightToContent()
     }
-
     .sheet(
       isPresented: self.$presentedUserProfileScreen
     ) {

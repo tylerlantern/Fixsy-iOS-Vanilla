@@ -1,17 +1,24 @@
 import SwiftUI
 
 public struct UserProfileComponentView: View {
+
+	//Probably crash ?
+	let applicationLanguageSet: Set<String> = Set(
+		Bundle.main.preferredLocalizations
+	)
+	
   let uuid: String
   let url: URL?
   let fullName: String
   let point: Int
   let email: String
-
+	let nativeLanguage : String
+	
   let onEditName: () -> ()
+	let onTapChangeAppLang: () -> ()
   let onCopyUUID: (String) -> ()
 
-  @State var showingEditingName: Bool = false
-  @Environment(\.router) var router
+	@Environment(\.router) var router
 
   public init(
     uuid: String,
@@ -19,7 +26,9 @@ public struct UserProfileComponentView: View {
     fullName: String,
     point: Int,
     email: String,
+		nativeLanguage : String,
     onEditName: @escaping () -> (),
+		onTapChangeAppLang : @escaping () -> (),
     onCopyUUID: @escaping (String) -> () = { value in
       UIPasteboard.general.string = value
     }
@@ -29,7 +38,9 @@ public struct UserProfileComponentView: View {
     self.fullName = fullName
     self.point = point
     self.email = email
+		self.nativeLanguage = nativeLanguage
     self.onEditName = onEditName
+		self.onTapChangeAppLang = onTapChangeAppLang
     self.onCopyUUID = onCopyUUID
   }
 
@@ -75,17 +86,28 @@ public struct UserProfileComponentView: View {
         .multilineTextAlignment(.center)
         .padding(.horizontal, 16)
 
-        VStack(spacing: 0) {
-          ItemRow(label: "UUID", display: self.uuid) {
-            Button {
-              self.onCopyUUID(self.uuid)
-            } label: {
-              Image(systemName: "doc.on.doc")
-                .foregroundStyle(.white)
-                .accessibilityLabel("Copy UUID")
-            }
-          }
-          ItemRow(label: "Email", display: self.email)
+				VStack(spacing: 0) {
+					ItemRow(
+						label: "UUID",
+						display: self.uuid,
+						accessory : {
+							Button {
+								self.onCopyUUID(self.uuid)
+							} label: {
+								Image(systemName: "doc.on.doc")
+									.foregroundStyle(.white)
+									.accessibilityLabel("Copy UUID")
+							}
+						}
+					)
+					ItemRow(label: "Email", display: self.email)
+					ItemRow(
+						label: "Change Language",
+						display: self.email,
+						onTap : {
+							
+						}
+					)
         }
       }
       Spacer(minLength: 0)
@@ -99,11 +121,18 @@ private struct ItemRow<Accessory: View>: View {
   let label: String
   let display: String
   var accessory: Accessory
-
-  init(label: String, display: String, @ViewBuilder accessory: () -> Accessory = { EmptyView() }) {
+	var onTap : (() -> Void)?
+	
+  init(
+		label: String,
+		display: String,
+		@ViewBuilder accessory: () -> Accessory = { EmptyView() },
+		onTap : (() -> Void)? = nil
+	) {
     self.label = label
     self.display = display
     self.accessory = accessory()
+		self.onTap = onTap
   }
 
   var body: some View {
@@ -127,6 +156,10 @@ private struct ItemRow<Accessory: View>: View {
 
       Divider().overlay(Color.white.opacity(0.6))
     }
+		.contentShape(Rectangle())
+		.onTapGesture {
+			self.onTap?()
+		}
   }
 }
 
@@ -164,6 +197,17 @@ private func AvatarView(url: URL?) -> some View {
   }
 }
 
+func getNativeLanguageNameText(localization: String) -> String {
+	if localization.hasPrefix("en") {
+		return "English"
+	} else if localization.hasPrefix("th") {
+		return "ไทย"
+	} else {
+		return "English"
+	}
+}
+
+
 #if DEBUG
   #Preview("User Profile – With Avatar") {
     ZStack {
@@ -173,7 +217,9 @@ private func AvatarView(url: URL?) -> some View {
         fullName: "Jane Appleseed",
         point: 420,
         email: "jane@example.com",
-        onEditName: { print("Edit name tapped") }
+				nativeLanguage: "English",
+        onEditName: { },
+				onTapChangeAppLang: {}
       )
       .padding()
     }
@@ -188,7 +234,9 @@ private func AvatarView(url: URL?) -> some View {
         fullName: "John Doe",
         point: 0,
         email: "john@example.com",
-        onEditName: {}
+				nativeLanguage: "English",
+        onEditName: {},
+				onTapChangeAppLang: {}
       )
       .padding()
     }
