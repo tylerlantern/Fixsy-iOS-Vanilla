@@ -23,7 +23,7 @@ public struct ReviewListView: View {
             route: .reviewList(
               pageNumber: cursor ?? 1,
               pageSize: self.pageSize,
-              branchId: 1
+              branchId: self.placeId
             ),
             as: ReviewPageResponse.self
           )

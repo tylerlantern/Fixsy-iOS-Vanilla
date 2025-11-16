@@ -19,7 +19,7 @@ public struct APIClient {
   public func call<A: Decodable>(
     route: APIUserRoute,
     as: A.Type,
-    decoder: JSONDecoder = JSONDecoder.init(),
+    decoder: JSONDecoder = JSONDecoder.apiDecoder,
     file: StaticString = #file,
     line: UInt = #line
   ) async throws -> A {

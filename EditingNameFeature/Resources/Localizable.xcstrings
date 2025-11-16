@@ -70,7 +70,6 @@
       }
     },
     "Something went wrong." : {
-      "extractionState" : "stale",
       "localizations" : {
         "th" : {
           "stringUnit" : {

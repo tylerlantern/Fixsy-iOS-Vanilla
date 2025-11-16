@@ -127,24 +127,6 @@ public struct DetailComponentView: View {
     .background(Color(.secondarySystemBackground))
     .task {}
     .onDisappear {}
-    //		.sheet(
-    //			item: self.$store.scope(
-    //				state: \.destination?.reviewForm,
-    //				action: \.destination.reviewForm
-    //			),
-    //			content: { (store: StoreOf<ReviewForm>) in
-    //				ReviewFormView(store: store)
-    //			}
-    //		)
-    //		.fullScreenCover(
-    //			item: self.$store.scope(
-    //				state: \.destination?.imagesInspector,
-    //				action: \.destination.imagesInspector
-    //			),
-    //			content: { (store: StoreOf<ImagesInspector>) in
-    //				ImagesInspectorView(store: store)
-    //			}
-    //		)
   }
 }
 

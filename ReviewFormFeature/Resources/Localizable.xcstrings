@@ -1,0 +1,70 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Car Brands" : {
+
+    },
+    "Click me to select at least one brand." : {
+
+    },
+    "Dismiss" : {
+
+    },
+    "Images" : {
+
+    },
+    "Rating" : {
+
+    },
+    "Required at least 1 brand." : {
+
+    },
+    "Review Form" : {
+
+    },
+    "Save" : {
+
+    },
+    "Select Multiple Photos" : {
+
+    },
+    "Something went wrong." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "มีบางอย่างผิดปกติเกิดขึ้น"
+          }
+        }
+      }
+    },
+    "Submitted successfully" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Submitted successfully"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ส่งเรียบร้อยแล้ว"
+          }
+        }
+      }
+    },
+    "Tell the community your story." : {
+
+    },
+    "Tell us about this place's service." : {
+
+    },
+    "We need your satisfaction rate for this place" : {
+
+    }
+  },
+  "version" : "1.1"
+}

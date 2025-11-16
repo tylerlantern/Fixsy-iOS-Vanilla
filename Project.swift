@@ -462,7 +462,8 @@ let project = Project(
         .target(name: "CapsulesStackComponent"),
         .target(name: "CarBrandComponent"),
         .target(name: "StarRatingComponent"),
-        .target(name: "CarBrandsFeature")
+        .target(name: "CarBrandsFeature"),
+        .target(name: "BannerCenterModule")
       ]
     ),
     .demoApp(

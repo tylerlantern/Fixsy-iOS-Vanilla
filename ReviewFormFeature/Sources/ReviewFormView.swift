@@ -38,12 +38,17 @@ public struct ReviewFormView: View {
   @State var showCarBrandsError: Bool = false
   @State var showPhotoPicker: Bool = false
   @State private var selectedItems: [PhotosPickerItem] = []
-  @State private var selectedImages: [UIImage] = []
+  @State
+  var selectedImages: [UIImage] = []
+  @State var submitTask: Task<(), Never>? = nil
 
   @FocusState private var focusedField: Field?
   @Environment(\.dismiss) var dismiss
   @Environment(\.colorScheme) var colorScheme
   @Environment(\.router) var router
+  @Environment(\.apiClient) var apiClient
+  @EnvironmentObject var banners: BannerCenter
+  @Environment(\.databaseClient) var databaseClient
 
   public var countTextLabel: String {
     "\(self.tellStory.count)/\(self.maxCharTellStory)"
@@ -171,7 +176,6 @@ public struct ReviewFormView: View {
 
               Section("Images") {
                 Button {
-                  print("TAP IMAGES")
                   self.showPhotoPicker = true
                 } label: {
                   HStack {
@@ -201,14 +205,15 @@ public struct ReviewFormView: View {
                       }
                     }
                   }
-                  .id(ScrollPosition.imageSelection.rawValue)
                 }
               }
+              .id(ScrollPosition.imageSelection.rawValue)
             }
-            .onChange(of: self.selectedItems) { _, _ in
+            .scrollDismissesKeyboard(.interactively)
+            .onChange(of: self.selectedItems) { _, newValue in
               Task {
                 self.selectedImages.removeAll()
-                for item in self.selectedItems {
+                for item in newValue {
                   if let data = try? await item.loadTransferable(type: Data.self),
                      let uiImage = UIImage(data: data)
                   {
@@ -223,13 +228,12 @@ public struct ReviewFormView: View {
                 }
               }
             }
-            .scrollDismissesKeyboard(.interactively)
           }
 
           HStack {
             Spacer()
             Button {
-              // TODO: Submit
+              self.submit()
             } label: {
               HStack(spacing: 8) {
                 Spacer()
@@ -255,7 +259,6 @@ public struct ReviewFormView: View {
             Spacer()
           }
         }
-
         .onTapGesture {
           // self.viewStore.send(.focusedField(nil))
         }

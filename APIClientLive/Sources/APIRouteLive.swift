@@ -203,14 +203,16 @@ extension APIUserRoute {
         parameters["brandOfCarIds"] = .string(carBrandIds)
       }
       let multipartFormData = MultipartFormData(multipartFormParameters: parameters)
-      let urlRequest = url
-        .appendingPathComponent("review")
-        .appendingPathComponent("create")
-        .makeAuthorizationURLRequest(
-          token: token,
-          version: "1.1",
-          formData: multipartFormData
-        )
+      var urlRequest = URLRequest(
+        url: url
+          .appendingPathComponent("review")
+          .appendingPathComponent("create"),
+        formData: multipartFormData
+      )
+      urlRequest.httpMethod = .post
+      authorizationHeader(
+        accessToken: token.accessToken
+      )(&urlRequest)
       return urlRequest
     case .delete:
       return url
