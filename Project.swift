@@ -2,6 +2,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let prefixBundleId = "com.to.fixsy."
+let bundleId = "com.to.fixsy"
 
 let bottomSheetModuleScheme = Scheme.scheme(
   name: "BottomSheetModuleApp",
@@ -528,18 +529,18 @@ public extension Target {
     name: String,
     hasResource: Bool = false,
     dependencies: [TargetDependency] = []
-  ) -> Target {
-    .target(
-      name: name,
-      destinations: .iOS,
-      product: .framework,
-      bundleId: "\(prefixBundleId)\(name)",
-      infoPlist: .default,
-      sources: ["\(name)/Sources/**"],
-      resources: hasResource ? ["\(name)/Resources/**"] : nil,
-      dependencies: dependencies
-    )
-  }
+	) -> Target {
+		.target(
+			name: name,
+			destinations: .iOS,
+			product: .framework,
+			bundleId: "\(prefixBundleId)\(name)",
+			infoPlist: .default,
+			sources: ["\(name)/Sources/**"],
+			resources: hasResource ? ["\(name)/Resources/**"] : nil,
+			dependencies: dependencies,
+		)
+	}
 
   static func component(
     name: String,

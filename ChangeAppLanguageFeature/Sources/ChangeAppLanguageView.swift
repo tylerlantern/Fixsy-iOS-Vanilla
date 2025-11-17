@@ -4,6 +4,7 @@ public struct ChangeApplicationLanguageView: View {
 	let applicationLanguageSet: Set<String> = Set(
 		Bundle.main.preferredLocalizations
 	)
+	
 	let suggestedLocales: [String] = Locale.preferredLanguages
 	let suggestedLocaleSet: Set<String> = Set(Locale.preferredLanguages)
 	var localizations: [String] {
@@ -15,6 +16,8 @@ public struct ChangeApplicationLanguageView: View {
 	}
 
 	@State var changeLanguageAs: String? = nil
+	@AppStorage("appLanguage") private var appLanguage = "en"
+	
 	var confirmChangeLanguageAlertPresented: Binding<Bool> {
 		Binding(
 			get: {
@@ -29,9 +32,10 @@ public struct ChangeApplicationLanguageView: View {
 	public init() {}
 
 	func isLocalizationSelected(_ localization: String) -> Bool {
-		self.applicationLanguageSet.contains(where: { applicationLanguage in
-			localization.hasPrefix(applicationLanguage)
-		})
+		return localization.hasPrefix(self.appLanguage)
+//		self.applicationLanguageSet.contains(where: { applicationLanguage in
+//			localization.hasPrefix(applicationLanguage)
+//		})
 	}
 
 	public var body: some View {
@@ -47,7 +51,9 @@ public struct ChangeApplicationLanguageView: View {
 
 					ForEach(self.suggestedLocales, id: \.self) { localization in
 						Button {
-							self.changeLanguageAs = localization
+//							self.changeLanguageAs = localization
+							print("localization",localization)
+							self.appLanguage = localization
 						} label: {
 							HStack {
 								MenuMessageView(
@@ -79,7 +85,9 @@ public struct ChangeApplicationLanguageView: View {
 					index,
 						localization in
 					Button {
-						self.changeLanguageAs = localization
+//						self.changeLanguageAs = localization
+						print("localization",localization)
+						self.appLanguage = localization
 					} label: {
 						HStack {
 							MenuMessageView(
@@ -116,8 +124,10 @@ public struct ChangeApplicationLanguageView: View {
 			}
 			Button {
 				if let changeLanguageAs {
-					UserDefaults.standard.set([changeLanguageAs], forKey: "AppleLanguages")
-					exit(0)
+					appLanguage = changeLanguageAs
+//					
+//					UserDefaults.standard.set([changeLanguageAs], forKey: "AppleLanguages")
+//					exit(0)
 				}
 			} label: {
 				Text("Restart")

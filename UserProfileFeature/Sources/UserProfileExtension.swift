@@ -9,7 +9,15 @@ extension UserProfileView {
         guard let user = user else {
           continue
         }
-        self.display = .render(user)
+//				let preferredLocalization = Bundle.main.preferredLocalizations.first
+//        self.display = .render(
+//					user,
+//					preferredLocalization.map(getNativeLanguageNameText) ?? "unknown"
+//				)
+				self.display = .render(
+					user,
+					self.appLanguage
+				)
       }
     }
     self.fetchTask = Task {
@@ -74,4 +82,15 @@ extension UserProfileView {
     self.observeTask?.cancel()
     self.fetchTask?.cancel()
   }
+}
+
+
+func getNativeLanguageNameText(localization: String) -> String {
+	if localization.hasPrefix("en") {
+		return "English"
+	} else if localization.hasPrefix("th") {
+		return "ไทย"
+	} else {
+		return "English"
+	}
 }

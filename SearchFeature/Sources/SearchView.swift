@@ -48,6 +48,9 @@ public struct SearchView: View {
   @Environment(\.locationManagerClient) var locationManagerClient
   @Environment(\.apiClient) var apiClient
   @Environment(\.accessTokenClient) var accessTokenClient
+  private var searchPlaceholder: String {
+    String(localized: "Search…", bundle: .searchFeature)
+  }
 
   public init(
     detent: Binding<PresentationDetent>,
@@ -79,30 +82,33 @@ public struct SearchView: View {
     })
     .safeAreaInset(edge: .top, spacing: 0) {
       HStack(spacing: 10) {
-        TextField("Search…", text: self.$searchText)
-          .padding(.horizontal, 20)
-          .padding(.vertical, 12)
-          .background(.gray.opacity(0.25), in: .capsule)
-          .focused(self.$focusedField, equals: .search)
-          .submitLabel(.search)
-          .onSubmit { self.observeLocalData() }
-          .onChange(of: self.searchText) { _, _ in
-            self.observeLocalData()
-          }
-
+				Text("Search…")
+				TextField(
+					self.searchPlaceholder,
+					text: self.$searchText
+				)
+				.padding(.horizontal, 20)
+				.padding(.vertical, 12)
+				.background(.gray.opacity(0.25), in: .capsule)
+				.focused(self.$focusedField, equals: .search)
+				.submitLabel(.search)
+				.onSubmit { self.observeLocalData() }
+				.onChange(of: self.searchText) { _, _ in
+					self.observeLocalData()
+				}
         if self.focusedField == .search {
-          Button {
-            if self.focusedField == .search {
-              self.focusedField = nil
-            }
-          } label: {
-            Image(systemName: "xmark")
-              .font(.title2).fontWeight(.semibold)
-              .foregroundStyle(.primary)
-              .frame(width: 48, height: 48)
-              .glassEffect(in: .circle)
-              .transition(.blurReplace)
-          }
+					Button {
+						if self.focusedField == .search {
+							self.focusedField = nil
+						}
+					} label: {
+						Image(systemName: "xmark")
+							.font(.title2).fontWeight(.semibold)
+							.foregroundStyle(.primary)
+							.frame(width: 48, height: 48)
+							.glassEffect(in: .circle)
+							.transition(.blurReplace)
+					}
         } else {
           ProfileAvatar(
             url: self.profileURL
@@ -170,6 +176,14 @@ public struct SearchView: View {
     }
   }
 }
+
+private extension Bundle {
+  static var searchFeature: Bundle {
+    Bundle(for: BundleToken.self)
+  }
+}
+
+private final class BundleToken {}
 
 private struct ProfileAvatar: View {
   let url: URL?

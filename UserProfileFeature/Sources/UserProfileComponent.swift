@@ -2,31 +2,26 @@ import SwiftUI
 
 public struct UserProfileComponentView: View {
 
-	//Probably crash ?
-	let applicationLanguageSet: Set<String> = Set(
-		Bundle.main.preferredLocalizations
-	)
-	
   let uuid: String
   let url: URL?
   let fullName: String
   let point: Int
   let email: String
-	let nativeLanguage : String
+	let currentNativeLanguage : String
 	
   let onEditName: () -> ()
 	let onTapChangeAppLang: () -> ()
   let onCopyUUID: (String) -> ()
-
+	
 	@Environment(\.router) var router
-
+	
   public init(
     uuid: String,
     url: URL?,
     fullName: String,
     point: Int,
     email: String,
-		nativeLanguage : String,
+		currentNativeLanguage : String,
     onEditName: @escaping () -> (),
 		onTapChangeAppLang : @escaping () -> (),
     onCopyUUID: @escaping (String) -> () = { value in
@@ -38,7 +33,7 @@ public struct UserProfileComponentView: View {
     self.fullName = fullName
     self.point = point
     self.email = email
-		self.nativeLanguage = nativeLanguage
+		self.currentNativeLanguage = currentNativeLanguage
     self.onEditName = onEditName
 		self.onTapChangeAppLang = onTapChangeAppLang
     self.onCopyUUID = onCopyUUID
@@ -103,9 +98,15 @@ public struct UserProfileComponentView: View {
 					ItemRow(label: "Email", display: self.email)
 					ItemRow(
 						label: "Change Language",
-						display: self.email,
+						display: self.currentNativeLanguage,
+						accessory: {
+							Image(systemName: "chevron.right")
+								.resizable()
+								.scaledToFit()
+								.frame(width: 16, height: 16)
+						},
 						onTap : {
-							
+							onTapChangeAppLang()
 						}
 					)
         }
@@ -122,7 +123,6 @@ private struct ItemRow<Accessory: View>: View {
   let display: String
   var accessory: Accessory
 	var onTap : (() -> Void)?
-	
   init(
 		label: String,
 		display: String,
@@ -137,12 +137,9 @@ private struct ItemRow<Accessory: View>: View {
 
   var body: some View {
     VStack {
-      HStack(alignment: .firstTextBaseline, spacing: 8) {
+			HStack(alignment: .center, spacing: 8) {
         VStack(alignment: .leading, spacing: 2) {
-          HStack(spacing: 8) {
-            Text(self.label).bold()
-            self.accessory
-          }
+					Text(self.label).bold()
           .foregroundStyle(.white)
 
           Text(self.display)
@@ -150,6 +147,7 @@ private struct ItemRow<Accessory: View>: View {
             .foregroundStyle(.white)
         }
         Spacer()
+				self.accessory
       }
       .padding(.horizontal, 16)
       .padding(.vertical, 6)
@@ -197,17 +195,6 @@ private func AvatarView(url: URL?) -> some View {
   }
 }
 
-func getNativeLanguageNameText(localization: String) -> String {
-	if localization.hasPrefix("en") {
-		return "English"
-	} else if localization.hasPrefix("th") {
-		return "ไทย"
-	} else {
-		return "English"
-	}
-}
-
-
 #if DEBUG
   #Preview("User Profile – With Avatar") {
     ZStack {
@@ -217,7 +204,7 @@ func getNativeLanguageNameText(localization: String) -> String {
         fullName: "Jane Appleseed",
         point: 420,
         email: "jane@example.com",
-				nativeLanguage: "English",
+				currentNativeLanguage: "English",
         onEditName: { },
 				onTapChangeAppLang: {}
       )
@@ -234,7 +221,7 @@ func getNativeLanguageNameText(localization: String) -> String {
         fullName: "John Doe",
         point: 0,
         email: "john@example.com",
-				nativeLanguage: "English",
+				currentNativeLanguage: "English",
         onEditName: {},
 				onTapChangeAppLang: {}
       )

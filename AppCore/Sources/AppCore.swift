@@ -22,6 +22,12 @@ struct AppCore: App {
   @Environment(\.scenePhase) private var scenePhase
   @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
+
+//	@AppStorage("appLanguage") private var appLanguage = Locale.current.language.languageCode?.identifier ?? "en"
+
+	@AppStorage("appLanguage") private var appLanguage = "en"
+	
+
   @State var router: Router
   @State var apiClient: APIClient
   @State var accessTokenClient: AccessTokenClient
@@ -34,6 +40,7 @@ struct AppCore: App {
   @StateObject var bannerCenter = BannerCenter()
 
   public init() {
+		
     self.router = .liveValue
     let accessTokenClient = AccessTokenClient.live(
       accessGroup: Configs.live.appGroup.accessGroup,
@@ -72,6 +79,7 @@ struct AppCore: App {
         .environment(\.databaseClient, self.databaseClient)
         .environment(\.locationManagerClient, self.locationManagerClient)
         .environment(self.placeStore)
+				.environment(\.locale, Locale(identifier: appLanguage))
         .onOpenURL { url in
           self.authProvidersClient.googleAuth.handleURL(url)
         }

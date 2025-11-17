@@ -47,13 +47,14 @@ public struct UserProfileView: View {
 	}
 	
 	public enum Display {
-		case shimmer, render(UserProfile)
+		case shimmer, render(UserProfile,_ currentNativeLanguage : String)
 	}
 	
 	@State var display: Display
 	@State var showingConfirmationDialog: Bool = false
 	@State var isSubmitting: Bool = false
 	
+	@AppStorage("appLanguage") var appLanguage = "en"
 	@Environment(\.router) var router
 	@Environment(\.apiClient) var apiClient
 	@Environment(\.databaseClient) var databaseClient
@@ -74,14 +75,14 @@ public struct UserProfileView: View {
 		NavigationStack {
 			VStack(spacing: 8) {
 				switch self.display {
-				case let .render(user):
+				case let .render(user,localization):
 					UserProfileComponentView(
 						uuid: user.id,
 						url: user.pictureURL,
 						fullName: user.fullName,
 						point: user.point,
 						email: user.email,
-						nativeLanguage: "English",
+						currentNativeLanguage: localization,
 						onEditName: {
 							self.navigation = .editingName(
 								user.firstName,
@@ -89,7 +90,7 @@ public struct UserProfileView: View {
 							)
 						},
 						onTapChangeAppLang: {
-//							self.navigation = .changeLanguageApp
+							self.navigation = .changeLanguageApp
 						}
 					)
 				case .shimmer:
@@ -99,7 +100,7 @@ public struct UserProfileView: View {
 						fullName: "SHIMMER SHIMMER",
 						point: 100,
 						email: "SHIMMER@SHIMMER.com",
-						nativeLanguage: "English",
+						currentNativeLanguage: "English",
 						onEditName: {},
 						onTapChangeAppLang: {
 							
@@ -211,7 +212,7 @@ public let previewUserProfile = UserProfileComponentView(
 	fullName: "Jane Appleseed",
 	point: 420,
 	email: "jane@example.com",
-	nativeLanguage: "English",
+	currentNativeLanguage: "English",
 	onEditName: { print("Edit name tapped") },
 	onTapChangeAppLang: {}
 )
@@ -226,7 +227,8 @@ public let previewUserProfile = UserProfileComponentView(
 				lastName: "Appleseed",
 				pictureURL: URL(string: "https://picsum.photos/200"),
 				point: 50
-			)
+			),
+			"English"
 		)
 	)
 }
