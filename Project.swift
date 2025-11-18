@@ -118,7 +118,7 @@ let project = Project(
         .target(name: "ReviewListFeature"),
         .target(name: "ReviewFormFeature"),
         .target(name: "CarBrandsFeature"),
-				.target(name: "ChangeAppLanguageFeature")
+        .target(name: "ChangeAppLanguageFeature")
       ]
     ),
 
@@ -410,7 +410,7 @@ let project = Project(
         .target(name: "UserProfileModel"),
         .target(name: "Router"),
         .target(name: "BannerCenterModule"),
-				.target(name: "AuthProvidersClient")
+        .target(name: "AuthProvidersClient")
       ]
     ),
     .demoApp(
@@ -458,7 +458,7 @@ let project = Project(
       name: "ReviewFormFeature",
       hasResource: true,
       dependencies: [
-				.external(name: "AsyncAlgorithms"),
+        .external(name: "AsyncAlgorithms"),
         .target(name: "Router"),
         .target(name: "Models"),
         .target(name: "APIClient"),
@@ -500,15 +500,15 @@ let project = Project(
         .target(name: "StarRatingComponent")
       ],
     ),
-		.framework(
-			name: "ChangeAppLanguageFeature",
-			hasResource: true,
-			dependencies: []
-		),
-		.demoApp(
-			"ChangeAppLanguageFeature",
-			deps: []
-		)
+    .framework(
+      name: "ChangeAppLanguageFeature",
+      hasResource: true,
+      dependencies: []
+    ),
+    .demoApp(
+      "ChangeAppLanguageFeature",
+      deps: []
+    )
     // End Features
   ],
   schemes: [
@@ -529,18 +529,18 @@ public extension Target {
     name: String,
     hasResource: Bool = false,
     dependencies: [TargetDependency] = []
-	) -> Target {
-		.target(
-			name: name,
-			destinations: .iOS,
-			product: .framework,
-			bundleId: "\(prefixBundleId)\(name)",
-			infoPlist: .default,
-			sources: ["\(name)/Sources/**"],
-			resources: hasResource ? ["\(name)/Resources/**"] : nil,
-			dependencies: dependencies,
-		)
-	}
+  ) -> Target {
+    .target(
+      name: name,
+      destinations: .iOS,
+      product: .framework,
+      bundleId: "\(prefixBundleId)\(name)",
+      infoPlist: .default,
+      sources: ["\(name)/Sources/**"],
+      resources: hasResource ? ["\(name)/Resources/**"] : nil,
+      dependencies: dependencies,
+    )
+  }
 
   static func component(
     name: String,

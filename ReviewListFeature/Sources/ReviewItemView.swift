@@ -7,11 +7,11 @@ import SwiftUI
 
 public struct ReviewItemView: View {
   let item: ReviewItem
-  let onTapImage: @Sendable ([URL],Int) -> ()
+  let onTapImage: @Sendable ([URL], Int) -> ()
 
   public init(
     item: ReviewItem,
-    onTapImage: @Sendable @escaping ([URL],Int) -> ()
+    onTapImage: @Sendable @escaping ([URL], Int) -> ()
   ) {
     self.item = item
     self.onTapImage = onTapImage
@@ -97,10 +97,10 @@ public struct ReviewItemView: View {
       if !self.item.images.isEmpty {
         ScrollView(.horizontal, showsIndicators: true) {
           LazyHStack(spacing: 8) {
-						ForEach(
-							Array(self.item.images.enumerated()),
-							id: \.element.id
-						) { index, image in
+            ForEach(
+              Array(self.item.images.enumerated()),
+              id: \.element.id
+            ) { index, image in
               AsyncImage(url: image.url) { phase in
                 switch phase {
                 case .empty:
@@ -127,7 +127,7 @@ public struct ReviewItemView: View {
               }
               .contentShape(Rectangle())
               .onTapGesture {
-								self.onTapImage(self.item.images.compactMap({$0.url}),index)
+                self.onTapImage(self.item.images.compactMap(\.url), index)
               }
               .transition(.opacity)
             }

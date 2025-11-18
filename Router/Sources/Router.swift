@@ -29,7 +29,7 @@ public enum Route {
   public enum UserProfile {
     case root
     case editingName(_ firstName: String, _ lastName: String)
-		case selectAppLanguage
+    case selectAppLanguage
   }
 
   public enum DetailRoute {
@@ -66,7 +66,7 @@ public enum Route {
 
   public enum ReviewListRouter {
     case root(_ placeId: Int)
-		case imagesInsepcter(ImagesInspectorRoute)
+    case imagesInsepcter(ImagesInspectorRoute)
   }
 
   public enum ImagesInspectorRoute {

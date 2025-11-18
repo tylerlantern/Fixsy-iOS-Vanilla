@@ -132,6 +132,7 @@ public extension InfoPlist {
         ],
 
         // MARK: - Localizations
+
         "CFBundleLocalizations": [
           "en", "th"
         ]

@@ -55,7 +55,7 @@ public struct CarBrandsView: View {
         } label: {
           HStack {
             Spacer()
-            Text("Clear")
+            Text("Clear", bundle: .module)
               .foregroundColor(
                 self.disableSaveButton
                   ? Color.gray.opacity(0.8)
@@ -79,12 +79,15 @@ public struct CarBrandsView: View {
           )
         } label: {
           Spacer()
-          Text("Save")
-            .foregroundColor(
-              self.disableSaveButton
-                ? Color.gray.opacity(0.8)
-                : Color.white
-            )
+          Text(
+            "Save",
+            bundle: .module
+          )
+          .foregroundColor(
+            self.disableSaveButton
+              ? Color.gray.opacity(0.8)
+              : Color.white
+          )
           Spacer()
         }
         .disabled(self.disableSaveButton)

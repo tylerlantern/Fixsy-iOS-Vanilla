@@ -1,29 +1,28 @@
 import SwiftUI
 
 public struct UserProfileComponentView: View {
-
   let uuid: String
   let url: URL?
   let fullName: String
   let point: Int
   let email: String
-	let currentNativeLanguage : String
-	
+  let currentNativeLanguage: String
+
   let onEditName: () -> ()
-	let onTapChangeAppLang: () -> ()
+  let onTapChangeAppLang: () -> ()
   let onCopyUUID: (String) -> ()
-	
-	@Environment(\.router) var router
-	
+
+  @Environment(\.router) var router
+
   public init(
     uuid: String,
     url: URL?,
     fullName: String,
     point: Int,
     email: String,
-		currentNativeLanguage : String,
+    currentNativeLanguage: String,
     onEditName: @escaping () -> (),
-		onTapChangeAppLang : @escaping () -> (),
+    onTapChangeAppLang: @escaping () -> (),
     onCopyUUID: @escaping (String) -> () = { value in
       UIPasteboard.general.string = value
     }
@@ -33,9 +32,9 @@ public struct UserProfileComponentView: View {
     self.fullName = fullName
     self.point = point
     self.email = email
-		self.currentNativeLanguage = currentNativeLanguage
+    self.currentNativeLanguage = currentNativeLanguage
     self.onEditName = onEditName
-		self.onTapChangeAppLang = onTapChangeAppLang
+    self.onTapChangeAppLang = onTapChangeAppLang
     self.onCopyUUID = onCopyUUID
   }
 
@@ -81,34 +80,34 @@ public struct UserProfileComponentView: View {
         .multilineTextAlignment(.center)
         .padding(.horizontal, 16)
 
-				VStack(spacing: 0) {
-					ItemRow(
-						label: "UUID",
-						display: self.uuid,
-						accessory : {
-							Button {
-								self.onCopyUUID(self.uuid)
-							} label: {
-								Image(systemName: "doc.on.doc")
-									.foregroundStyle(.white)
-									.accessibilityLabel("Copy UUID")
-							}
-						}
-					)
-					ItemRow(label: "Email", display: self.email)
-					ItemRow(
-						label: "Change Language",
-						display: self.currentNativeLanguage,
-						accessory: {
-							Image(systemName: "chevron.right")
-								.resizable()
-								.scaledToFit()
-								.frame(width: 16, height: 16)
-						},
-						onTap : {
-							onTapChangeAppLang()
-						}
-					)
+        VStack(spacing: 0) {
+          ItemRow(
+            label: "UUID",
+            display: self.uuid,
+            accessory: {
+              Button {
+                self.onCopyUUID(self.uuid)
+              } label: {
+                Image(systemName: "doc.on.doc")
+                  .foregroundStyle(.white)
+                  .accessibilityLabel("Copy UUID")
+              }
+            }
+          )
+          ItemRow(label: "Email", display: self.email)
+          ItemRow(
+            label: "Change Language",
+            display: self.currentNativeLanguage,
+            accessory: {
+              Image(systemName: "chevron.right")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 16, height: 16)
+            },
+            onTap: {
+              self.onTapChangeAppLang()
+            }
+          )
         }
       }
       Spacer(minLength: 0)
@@ -122,42 +121,42 @@ private struct ItemRow<Accessory: View>: View {
   let label: String
   let display: String
   var accessory: Accessory
-	var onTap : (() -> Void)?
+  var onTap: (() -> ())?
   init(
-		label: String,
-		display: String,
-		@ViewBuilder accessory: () -> Accessory = { EmptyView() },
-		onTap : (() -> Void)? = nil
-	) {
+    label: String,
+    display: String,
+    @ViewBuilder accessory: () -> Accessory = { EmptyView() },
+    onTap: (() -> ())? = nil
+  ) {
     self.label = label
     self.display = display
     self.accessory = accessory()
-		self.onTap = onTap
+    self.onTap = onTap
   }
 
   var body: some View {
     VStack {
-			HStack(alignment: .center, spacing: 8) {
+      HStack(alignment: .center, spacing: 8) {
         VStack(alignment: .leading, spacing: 2) {
-					Text(self.label).bold()
-          .foregroundStyle(.white)
+          Text(self.label).bold()
+            .foregroundStyle(.white)
 
           Text(self.display)
             .lineLimit(1)
             .foregroundStyle(.white)
         }
         Spacer()
-				self.accessory
+        self.accessory
       }
       .padding(.horizontal, 16)
       .padding(.vertical, 6)
 
       Divider().overlay(Color.white.opacity(0.6))
     }
-		.contentShape(Rectangle())
-		.onTapGesture {
-			self.onTap?()
-		}
+    .contentShape(Rectangle())
+    .onTapGesture {
+      self.onTap?()
+    }
   }
 }
 
@@ -204,9 +203,9 @@ private func AvatarView(url: URL?) -> some View {
         fullName: "Jane Appleseed",
         point: 420,
         email: "jane@example.com",
-				currentNativeLanguage: "English",
-        onEditName: { },
-				onTapChangeAppLang: {}
+        currentNativeLanguage: "English",
+        onEditName: {},
+        onTapChangeAppLang: {}
       )
       .padding()
     }
@@ -221,9 +220,9 @@ private func AvatarView(url: URL?) -> some View {
         fullName: "John Doe",
         point: 0,
         email: "john@example.com",
-				currentNativeLanguage: "English",
+        currentNativeLanguage: "English",
         onEditName: {},
-				onTapChangeAppLang: {}
+        onTapChangeAppLang: {}
       )
       .padding()
     }

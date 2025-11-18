@@ -1,171 +1,170 @@
 import SwiftUI
 
 public struct ChangeApplicationLanguageView: View {
-	let applicationLanguageSet: Set<String> = Set(
-		Bundle.main.preferredLocalizations
-	)
-	
-	let suggestedLocales: [String] = Locale.preferredLanguages
-	let suggestedLocaleSet: Set<String> = Set(Locale.preferredLanguages)
-	var localizations: [String] {
-		Bundle.main.localizations.filter { localization in
-			!self.suggestedLocaleSet.contains { suggested in
-				suggested.hasPrefix(localization)
-			}
-		}
-	}
+  let applicationLanguageSet: Set<String> = Set(
+    Bundle.main.preferredLocalizations
+  )
 
-	@State var changeLanguageAs: String? = nil
-	@AppStorage("appLanguage") private var appLanguage = "en"
-	
-	var confirmChangeLanguageAlertPresented: Binding<Bool> {
-		Binding(
-			get: {
-				self.changeLanguageAs != nil
-			},
-			set: { isPresented in
-				self.changeLanguageAs = isPresented ? self.changeLanguageAs : nil
-			}
-		)
-	}
+  let suggestedLocales: [String] = Locale.preferredLanguages
+  let suggestedLocaleSet: Set<String> = Set(Locale.preferredLanguages)
+  var localizations: [String] {
+    Bundle.main.localizations.filter { localization in
+      !self.suggestedLocaleSet.contains { suggested in
+        suggested.hasPrefix(localization)
+      }
+    }
+  }
 
-	public init() {}
+  @State var changeLanguageAs: String? = nil
 
-	func isLocalizationSelected(_ localization: String) -> Bool {
-		return localization.hasPrefix(self.appLanguage)
-//		self.applicationLanguageSet.contains(where: { applicationLanguage in
-//			localization.hasPrefix(applicationLanguage)
-//		})
-	}
+  var confirmChangeLanguageAlertPresented: Binding<Bool> {
+    Binding(
+      get: {
+        self.changeLanguageAs != nil
+      },
+      set: { isPresented in
+        self.changeLanguageAs = isPresented ? self.changeLanguageAs : nil
+      }
+    )
+  }
 
-	public var body: some View {
-		ScrollView {
-			VStack(spacing: 12) {
-				if !self.suggestedLocales.isEmpty {
-					HStack {
-						Text("Suggested")
-							.fontWeight(.semibold)
-						Spacer()
-					}
-					.padding(.bottom, 5)
+  public init() {}
 
-					ForEach(self.suggestedLocales, id: \.self) { localization in
-						Button {
-//							self.changeLanguageAs = localization
-							print("localization",localization)
-							self.appLanguage = localization
-						} label: {
-							HStack {
-								MenuMessageView(
-									title: Text.nativeLanguageNameText(
-										localization: localization
-									),
-									subtitle: Text.englishLanguageNameText(
-										localization: localization
-									),
-								)
-								if self.isLocalizationSelected(localization) {
-									Image(systemName: "checkmark.circle.fill")
-										.foregroundStyle(
-											ChangeAppLanguageFeatureAsset.primary.swiftUIColor
-										)
-								}
-							}
-							.padding(.vertical, 4)
-							.contentShape(Rectangle())
-						}
-						.buttonStyle(.plain)
-						.disabled(self.isLocalizationSelected(localization))
+  func isLocalizationSelected(_ localization: String) -> Bool {
+    self.applicationLanguageSet.contains(where: { applicationLanguage in
+      localization.hasPrefix(applicationLanguage)
+    })
+  }
 
-						Divider()
-					}
-				}
+  private func normalizedLanguage(_ id: String) -> String {
+    id.split(separator: "-").first.map(String.init) ?? id
+  }
 
-				ForEach(Array(self.localizations.enumerated()), id: \.element) {
-					index,
-						localization in
-					Button {
-//						self.changeLanguageAs = localization
-						print("localization",localization)
-						self.appLanguage = localization
-					} label: {
-						HStack {
-							MenuMessageView(
-								title: Text.nativeLanguageNameText(localization: localization),
-								subtitle: Text.englishLanguageNameText(
-									localization: localization
-								),
-							)
+  public var body: some View {
+    ScrollView {
+      VStack(spacing: 12) {
+        if !self.suggestedLocales.isEmpty {
+          HStack {
+            Text(
+              "Suggested",
+              bundle: .module
+            )
+            .fontWeight(.semibold)
+            Spacer()
+          }
+          .padding(.bottom, 5)
 
-							if self.isLocalizationSelected(localization) {
-								Image(systemName: "checkmark.circle.fill")
-									.foregroundStyle(.primary)
-							}
-						}
-						.padding(.vertical, 4)
-					}
-					.disabled(self.isLocalizationSelected(localization))
+          ForEach(self.suggestedLocales, id: \.self) { localization in
+            Button {
+              self.changeLanguageAs = localization
+            } label: {
+              HStack {
+                MenuMessageView(
+                  title: Text.nativeLanguageNameText(
+                    localization: localization
+                  ),
+                  subtitle: Text.englishLanguageNameText(
+                    localization: localization
+                  ),
+                )
+                if self.isLocalizationSelected(localization) {
+                  Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(
+                      ChangeAppLanguageFeatureAsset.primary.swiftUIColor
+                    )
+                }
+              }
+              .padding(.vertical, 4)
+              .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .disabled(self.isLocalizationSelected(localization))
 
-					if index != self.localizations.count - 1 {
-						Divider()
-					}
-				}
-			}
-			.padding()
-		}
-		.toolbarTitleDisplayMode(.inline)
-		.navigationTitle(Text("Application language"))
-		.alert(
-			Text("Restart App Required"),
-			isPresented: self.confirmChangeLanguageAlertPresented
-		) {
-			Button(role: .cancel) {} label: {
-				Text("Cancel")
-			}
-			Button {
-				if let changeLanguageAs {
-					appLanguage = changeLanguageAs
-//					
-//					UserDefaults.standard.set([changeLanguageAs], forKey: "AppleLanguages")
-//					exit(0)
-				}
-			} label: {
-				Text("Restart")
-			}
-		} message: {
-			Text("To apply the language change, please restart the app.")
-		}
-	}
+            Divider()
+          }
+        }
+
+        ForEach(Array(self.localizations.enumerated()), id: \.element) {
+          index,
+            localization in
+          Button {
+            self.changeLanguageAs = localization
+          } label: {
+            HStack {
+              MenuMessageView(
+                title: Text.nativeLanguageNameText(localization: localization),
+                subtitle: Text.englishLanguageNameText(
+                  localization: localization
+                ),
+              )
+
+              if self.isLocalizationSelected(localization) {
+                Image(systemName: "checkmark.circle.fill")
+                  .foregroundStyle(.primary)
+              }
+            }
+            .padding(.vertical, 4)
+          }
+          .disabled(self.isLocalizationSelected(localization))
+
+          if index != self.localizations.count - 1 {
+            Divider()
+          }
+        }
+      }
+      .padding()
+    }
+    .toolbarTitleDisplayMode(.inline)
+    .navigationTitle(Text("Application language", bundle: .module))
+    .alert(
+      Text("Restart App Required", bundle: .module),
+      isPresented: self.confirmChangeLanguageAlertPresented
+    ) {
+      Button(role: .cancel) {} label: {
+        Text("Cancel", bundle: .module)
+      }
+      Button {
+        if let changeLanguageAs {
+          UserDefaults.standard.set([changeLanguageAs], forKey: "AppleLanguages")
+          exit(0)
+        }
+      } label: {
+        Text("Restart", bundle: .module)
+      }
+    } message: {
+      Text("To apply the language change, please restart the app.", bundle: .module)
+    }
+  }
 }
 
 public struct MenuMessageView: View {
-	let title: Text
-	let subtitle: Text
+  let title: Text
+  let subtitle: Text
 
-	let detailTitle: Text?
+  let detailTitle: Text?
 
-	public init(title: Text, subtitle: Text, detailTitle: Text? = nil) {
-		self.title = title
-		self.subtitle = subtitle
-		self.detailTitle = detailTitle
-	}
+  public init(title: Text, subtitle: Text, detailTitle: Text? = nil) {
+    self.title = title
+    self.subtitle = subtitle
+    self.detailTitle = detailTitle
+  }
 
-	public var body: some View {
-		VStack(alignment: .leading, spacing: 2) {
-			HStack {
-				Spacer()
-			}
-			self.title
-					.fontWeight(.semibold)
-			self.subtitle
-		}
-	}
+  public var body: some View {
+    VStack(alignment: .leading, spacing: 2) {
+      HStack {
+        Spacer()
+      }
+      self.title
+        .fontWeight(.semibold)
+      self.subtitle
+    }
+  }
 }
 
 #if DEBUG
-	#Preview {
-		NavigationStack {
-			ChangeApplicationLanguageView()
-		}
-	}
+  #Preview {
+    NavigationStack {
+      ChangeApplicationLanguageView()
+    }
+  }
 #endif

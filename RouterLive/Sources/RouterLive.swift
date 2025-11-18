@@ -1,4 +1,5 @@
 import CarBrandsFeature
+import ChangeAppLanguageFeature
 import ChatListFeature
 import CommentFeature
 import DatabaseClient
@@ -19,7 +20,6 @@ import SocialSignInFeature
 import SwiftUI
 import TabContainerFeature
 import UserProfileFeature
-import ChangeAppLanguageFeature
 
 extension Router {
   public static let liveValue: Router = .init { route in
@@ -61,8 +61,8 @@ struct RouteView: View {
               firstName: firstName,
               lastName: lastName
             )
-					case .selectAppLanguage:
-						ChangeApplicationLanguageView()
+          case .selectAppLanguage:
+            ChangeApplicationLanguageView()
           }
         }
       case let .detail(detailRoute):
@@ -71,8 +71,8 @@ struct RouteView: View {
           switch reviewListRouter {
           case let .root(placeId):
             ReviewListView(placeId: placeId)
-					case let .imagesInsepcter(imageRoute):
-						imageRoute.makeView()
+          case let .imagesInsepcter(imageRoute):
+            imageRoute.makeView()
           }
         case let .root(placeId, dismiss):
           DetailView(
@@ -90,7 +90,7 @@ struct RouteView: View {
             }
           }
         case let .imagesInsepcter(imageRoute):
-					imageRoute.makeView()
+          imageRoute.makeView()
         case .socialSignIn:
           SocialSignInView()
         case let .reviewForm(
@@ -103,7 +103,7 @@ struct RouteView: View {
         case let .reviewForm(
           .imageInspector(imageInspectorRoute)
         ):
-					imageInspectorRoute.makeView()
+          imageInspectorRoute.makeView()
         case let .reviewForm(.carBrands(.root(selectedIds, onTapSave))):
           CarBrandsView(
             selectedIds: selectedIds,
@@ -116,14 +116,14 @@ struct RouteView: View {
 }
 
 extension Route.ImagesInspectorRoute {
-	@ViewBuilder
-	func makeView() -> some View {
-		switch self {
-		case let .root(urls, index):
-			ImagesInspectorView(
-				urls: urls,
-				initialIndex: index
-			)
-		}
-	}
+  @ViewBuilder
+  func makeView() -> some View {
+    switch self {
+    case let .root(urls, index):
+      ImagesInspectorView(
+        urls: urls,
+        initialIndex: index
+      )
+    }
+  }
 }

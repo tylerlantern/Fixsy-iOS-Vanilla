@@ -5,41 +5,40 @@ import Router
 import SwiftUI
 
 public struct InfoView: View {
-	
-	public enum SheetDisplay: Identifiable {
-		case imagesInspector([URL],Int)
-		public var id: String {
-			switch self {
-			case .imagesInspector:
-				return "imagesInspector"
-			}
-		}
-		@ViewBuilder
-		func destination(
-			router: Router
-		) -> some View {
-			switch self {
-			case let .imagesInspector(urls,idx):
-				router.route(
-					.app(
-						.detail(
-							.reviewList(
-								.imagesInsepcter(
-									.root(
-										urls,
-										idx
-									)
-								)
-							)
-						)
-					)
-				)
-			}
-		}
-		
-	}
-	
-	@State private var sheet : SheetDisplay? = nil
+  public enum SheetDisplay: Identifiable {
+    case imagesInspector([URL], Int)
+    public var id: String {
+      switch self {
+      case .imagesInspector:
+        return "imagesInspector"
+      }
+    }
+
+    @ViewBuilder
+    func destination(
+      router: Router
+    ) -> some View {
+      switch self {
+      case let .imagesInspector(urls, idx):
+        router.route(
+          .app(
+            .detail(
+              .reviewList(
+                .imagesInsepcter(
+                  .root(
+                    urls,
+                    idx
+                  )
+                )
+              )
+            )
+          )
+        )
+      }
+    }
+  }
+
+  @State private var sheet: SheetDisplay? = nil
   @State var place: Place
   @State var carBrands: [CarBrand]
 
@@ -59,8 +58,11 @@ public struct InfoView: View {
           if self.place.contributorName.isEmpty {
             VStack(spacing: 0) {
               HStack {
-                Text("Contributor")
-                  .bold()
+                Text(
+                  "Contributor",
+                  bundle: .module
+                )
+                .bold()
 
                 Rectangle()
                   .frame(width: 1)
@@ -159,10 +161,10 @@ public struct InfoView: View {
                   }
                   .contentShape(Rectangle())
                   .onTapGesture {
-										self.sheet = .imagesInspector(
-											self.place.images.map(\.url),
-											idx
-										)
+                    self.sheet = .imagesInspector(
+                      self.place.images.map(\.url),
+                      idx
+                    )
                   }
                 }
               }
@@ -175,17 +177,17 @@ public struct InfoView: View {
         }
       }
     }
-		.fullScreenCover(
-			item: $sheet,
-			onDismiss: {
-				self.sheet = nil
-			},
-			content: { sheet in
-				sheet.destination(
-					router: router
-				)
-			}
-		)
+    .fullScreenCover(
+      item: self.$sheet,
+      onDismiss: {
+        self.sheet = nil
+      },
+      content: { sheet in
+        sheet.destination(
+          router: self.router
+        )
+      }
+    )
   }
 }
 
