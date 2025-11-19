@@ -120,7 +120,12 @@ public struct UserProfileView: View {
                       CircularProgressViewStyle(tint: Color.white)
                     )
                 }
-                Text("Delete Account")
+                Text(
+                  String(
+                    localized: "Delete Account",
+                    bundle: .module
+                  )
+                )
                   .foregroundColor(.white)
                   .bold().padding()
                 Spacer()
@@ -145,7 +150,14 @@ public struct UserProfileView: View {
                       )
                     )
                 }
-                Text("Sign Out").bold().padding()
+                Text(
+                  String(
+                    localized: "Sign Out",
+                    bundle: .module
+                  )
+                )
+                .bold()
+                .padding()
                 Spacer()
               }
             }
@@ -162,17 +174,37 @@ public struct UserProfileView: View {
         self.cancelTasks()
       }
       .confirmationDialog(
-        "Delete Account",
+        String(
+          localized: "Delete Account",
+          bundle: .module
+        ),
         isPresented: self.$showingConfirmationDialog
       ) {
-        Button("Confirm", role: .destructive) {
+        Button(
+          String(
+            localized: "Confirm",
+            bundle: .module
+          ),
+          role: .destructive
+        ) {
           self.processSubmit(.delete)
         }
-        Button("Cancel", role: .cancel) {
+        Button(
+          String(
+            localized: "Cancel",
+            bundle: .module
+          ),
+          role: .cancel
+        ) {
           self.showingConfirmationDialog = false
         }
       } message: {
-        Text("Are you sure to permanently delete the account ?")
+        Text(
+          String(
+            localized: "Are you sure to permanently delete the account ?",
+            bundle: .module
+          )
+        )
       }
       .toolbar {
         ToolbarItem(placement: .topBarTrailing) {
@@ -180,10 +212,16 @@ public struct UserProfileView: View {
             action: {
               self.dismiss()
             }, label: {
-              Label(
-                "Dismiss",
-                systemImage: "xmark"
-              )
+              Label {
+                Text(
+                  String(
+                    localized: "Dismiss",
+                    bundle: .module
+                  )
+                )
+              } icon: {
+                Image(systemName: "xmark")
+              }
               .labelStyle(.iconOnly)
               .frame(width: 44, height: 44)
             }

@@ -12,7 +12,11 @@ extension UserProfileView {
         let preferredLocalization = Bundle.main.preferredLocalizations.first
         self.display = .render(
           user,
-          preferredLocalization.map(getNativeLanguageNameText) ?? "unknown"
+          preferredLocalization.map(getNativeLanguageNameText)
+            ?? String(
+              localized: "Unknown",
+              bundle: .module
+            )
         )
       }
     }
@@ -40,7 +44,10 @@ extension UserProfileView {
         }
         self.banners.show(
           .error,
-          title: String(localized: "Something went wrong."),
+          title: String(
+            localized: "Something went wrong.",
+            bundle: .module
+          ),
           body: error.localizedDescription
         )
       }
@@ -67,7 +74,10 @@ extension UserProfileView {
 
         self.banners.show(
           .error,
-          title: String(localized: "Something went wrong."),
+          title: String(
+            localized: "Something went wrong.",
+            bundle: .module
+          ),
           body: error.localizedDescription
         )
       }

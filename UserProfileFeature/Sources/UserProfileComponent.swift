@@ -50,10 +50,16 @@ public struct UserProfileComponentView: View {
           Button(
             action: self.onEditName,
             label: {
-              Label(
-                "Edit Name",
-                systemImage: "square.and.pencil"
-              )
+              Label {
+                Text(
+                  String(
+                    localized: "Edit Name",
+                    bundle: .module
+                  )
+                )
+              } icon: {
+                Image(systemName: "square.and.pencil")
+              }
               .labelStyle(.iconOnly)
               .font(.title2)
               .frame(width: 44, height: 44)
@@ -68,13 +74,24 @@ public struct UserProfileComponentView: View {
             .frame(width: 36, height: 36)
             .foregroundStyle(Color(red: 212 / 255, green: 175 / 255, blue: 55 / 255))
 
-          Text("\(self.point) $FXS")
+          Text(
+            String(
+              format: String(
+                localized: "%@ $FXS",
+                bundle: .module
+              ),
+              self.point.formatted()
+            )
+          )
             .bold()
             .foregroundStyle(Color(red: 212 / 255, green: 175 / 255, blue: 55 / 255))
         }
 
         Text(
-          "Earn coins by creating form-requests pinned on the map. Once approved, you’ll receive $FXS."
+          String(
+            localized: "Earn coins by creating form-requests pinned on the map. Once approved, you’ll receive $FXS.",
+            bundle: .module
+          )
         )
         .foregroundStyle(.white)
         .multilineTextAlignment(.center)
@@ -82,7 +99,10 @@ public struct UserProfileComponentView: View {
 
         VStack(spacing: 0) {
           ItemRow(
-            label: "UUID",
+            label: String(
+              localized: "UUID",
+              bundle: .module
+            ),
             display: self.uuid,
             accessory: {
               Button {
@@ -90,13 +110,29 @@ public struct UserProfileComponentView: View {
               } label: {
                 Image(systemName: "doc.on.doc")
                   .foregroundStyle(.white)
-                  .accessibilityLabel("Copy UUID")
+                  .accessibilityLabel(
+                    Text(
+                      String(
+                        localized: "Copy UUID",
+                        bundle: .module
+                      )
+                    )
+                  )
               }
             }
           )
-          ItemRow(label: "Email", display: self.email)
           ItemRow(
-            label: "Change Language",
+            label: String(
+              localized: "Email",
+              bundle: .module
+            ),
+            display: self.email
+          )
+          ItemRow(
+            label: String(
+              localized: "Change Language",
+              bundle: .module
+            ),
             display: self.currentNativeLanguage,
             accessory: {
               Image(systemName: "chevron.right")

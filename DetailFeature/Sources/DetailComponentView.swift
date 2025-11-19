@@ -30,7 +30,7 @@ public struct DetailComponentView: View {
   }
 
   func getServiceLocalizableKey(
-  ) -> String {
+	) -> String.LocalizationValue {
     if self.place.hasCarGarage {
       return "Car Garage"
     } else if self.place.hasMotorcycleGarage {
@@ -57,8 +57,11 @@ public struct DetailComponentView: View {
               Text(self.place.name)
                 .font(.largeTitle)
               Text(
-                self.getServiceLocalizableKey()
-              )
+								String(
+									localized: getServiceLocalizableKey(),
+									bundle: .module
+								)
+							)
               .lineLimit(2)
               .font(.headline)
             }

@@ -2,7 +2,15 @@
   "sourceLanguage" : "en",
   "strings" : {
     "Apple Map" : {
-
+      "extractionState" : "stale",
+      "localizations" : {
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แผนที่ Apple"
+          }
+        }
+      }
     },
     "Car Garage" : {
       "extractionState" : "manual",
@@ -39,7 +47,15 @@
       }
     },
     "Google Map" : {
-
+      "extractionState" : "stale",
+      "localizations" : {
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แผนที่ Google"
+          }
+        }
+      }
     },
     "Inflation Point" : {
       "extractionState" : "manual",
