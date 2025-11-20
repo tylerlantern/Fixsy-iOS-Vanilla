@@ -35,6 +35,23 @@
         }
       }
     },
+    "Change Language" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change Language"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เปลี่ยนภาษา"
+          }
+        }
+      }
+    },
     "Confirm" : {
       "extractionState" : "manual",
       "localizations" : {

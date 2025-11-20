@@ -46,8 +46,10 @@ public struct ChangeApplicationLanguageView: View {
         if !self.suggestedLocales.isEmpty {
           HStack {
             Text(
-              "Suggested",
-              bundle: .module
+							String(
+								localized: "Suggested",
+								bundle: .module
+							)
             )
             .fontWeight(.semibold)
             Spacer()
@@ -115,13 +117,30 @@ public struct ChangeApplicationLanguageView: View {
       .padding()
     }
     .toolbarTitleDisplayMode(.inline)
-    .navigationTitle(Text("Application language", bundle: .module))
+    .navigationTitle(
+			Text(
+				String(
+					localized: "Application language",
+					bundle: .module
+				)
+			)
+		)
     .alert(
-      Text("Restart App Required", bundle: .module),
+      Text(
+				String(
+					localized: "Restart App Required",
+					bundle: .module
+				)
+			),
       isPresented: self.confirmChangeLanguageAlertPresented
     ) {
       Button(role: .cancel) {} label: {
-        Text("Cancel", bundle: .module)
+        Text(
+					String(
+						localized: "Cancel",
+						bundle: .module
+					)
+				)
       }
       Button {
         if let changeLanguageAs {
@@ -129,10 +148,20 @@ public struct ChangeApplicationLanguageView: View {
           exit(0)
         }
       } label: {
-        Text("Restart", bundle: .module)
+        Text(
+					String(
+						localized: "Restart",
+						bundle: .module
+					)
+				)
       }
     } message: {
-      Text("To apply the language change, please restart the app.", bundle: .module)
+      Text(
+				String(
+					localized: "To apply the language change, please restart the app.",
+					bundle: .module
+				)
+			)
     }
   }
 }

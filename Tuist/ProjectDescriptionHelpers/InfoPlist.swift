@@ -9,7 +9,8 @@ public extension InfoPlist {
         "CFBundleDisplayName": "Fixsy",
         "LSRequiresIPhoneOS": .boolean(true),
         "UILaunchStoryboardName": .string("LaunchScreen"),
-
+				"CFBundleShortVersionString": "$(MARKETING_VERSION)",
+				"CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
         // MARK: - Launch Services / URL Schemes the app may query
 
         "LSApplicationQueriesSchemes": .array([
@@ -51,11 +52,8 @@ public extension InfoPlist {
         // MARK: - Background Modes
 
         "UIBackgroundModes": .array([
-          "audio",
-          "fetch",
           "location",
-          "remote-notification",
-          "processing"
+          "remote-notification"
         ]),
 
         // MARK: - Privacy Usage Strings
@@ -64,24 +62,24 @@ public extension InfoPlist {
           "This app needs access to your calendar to add and edit events."
         ),
         "NSLocationAlwaysAndWhenInUseUsageDescription": .string(
-          "We use your location to show you nearby services such as Motorcycle stations, Car service stations, Tire Inflation stations, Patching Tire stations, and Wash stations."
+					"We use your location to show you nearby services such as Motorcycle stations, Car service stations, Tire Inflation stations, Patching Tire stations, and Wash stations. This helps you find the services you need quickly and conveniently, based on your current location."
         ),
         "NSLocationAlwaysUsageDescription": .string(
-          "We use your location to show you nearby services such as Motorcycle stations, Car service stations, Tire Inflation stations, Patching Tire stations, and Wash stations."
+					"We use your location to show you nearby services such as Motorcycle stations, Car service stations, Tire Inflation stations, Patching Tire stations, and Wash stations. This helps you find the services you need quickly and conveniently, based on your current location."
         ),
         "NSLocationWhenInUseUsageDescription": .string(
-          "We use your location to show you nearby services such as Motorcycle stations, Car service stations, Tire Inflation stations, Patching Tire stations, and Wash stations."
+					"We use your location to show you nearby services such as Motorcycle stations, Car service stations, Tire Inflation stations, Patching Tire stations, and Wash stations. This helps you find the services you need quickly and conveniently, based on your current location."
         ),
         "NSCameraUsageDescription": .string(
           "Enable Fixsy to access your camera to take a photo and upload place's image."
         ),
         "NSPhotoLibraryAddUsageDescription": .string(
-          "Enable MessageSpring to access your Photos to upload profile image or to download images from home feed tab."
+					"Enable Fixsy to access your Photos to upload place's images or to download palce's images."
         ),
         "NSPhotoLibraryUsageDescription": .string(
-          "Enable MessageSpring to access your Photos to upload profile image or to download images from home feed tab."
+					"Enable Fixsy to access your Photos to upload place's images or to download palce's images."
         ),
-
+				
         // MARK: - Apple Intents
 
         "NSUserActivityTypes": .array(["INSendMessageIntent"]),

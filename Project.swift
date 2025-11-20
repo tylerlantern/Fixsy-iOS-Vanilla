@@ -2,7 +2,6 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let prefixBundleId = "com.to.fixsy."
-let bundleId = "com.to.fixsy"
 
 let bottomSheetModuleScheme = Scheme.scheme(
   name: "BottomSheetModuleApp",
@@ -57,28 +56,24 @@ let project = Project(
         .target(name: "BannerToastComponent")
         // End Component
 
-      ], settings: .settings(
-        base: .app_base.merging(.secret_base),
+      ],
+			settings: .settings(
+        base: .app_base
+					.merging(.secret_base)
+					.merging([
+						"MARKETING_VERSION": "2.0.0",
+						"CURRENT_PROJECT_VERSION": "1"
+					]),
         debug: .app_base.merging(.app_debug).merging(.secret_debug).merging([
-          "PROVISIONING_PROFILE_SPECIFIER": "TODO"
+          "PROVISIONING_PROFILE_SPECIFIER": "match Development com.to.fixsy.dev",
+					"PRODUCT_BUNDLE_IDENTIFIER": "com.to.fixsy.dev"
         ]),
         release: .app_base.merging(.app_release).merging(.secret_release).merging([
-          "PROVISIONING_PROFILE_SPECIFIER": "TODO"
+          "PROVISIONING_PROFILE_SPECIFIER": "match AppStore com.to.fixsy",
+					"PRODUCT_BUNDLE_IDENTIFIER": "com.to.fixsy"
         ])
       ),
     ),
-    //		.target(
-    //			name: "iOSTests",
-    //			destinations: .iOS,
-    //			product: .unitTests,
-    //			bundleId: "com.to.fixsy.iOSTests",
-    //			infoPlist: .default,
-    //			sources: ["Tests/**"],
-    //			resources: [],
-    //			dependencies: [
-    //				.target(name: "AppCore"),
-    //			]
-    //		),
     .target(
       name: "Router",
       destinations: .iOS,

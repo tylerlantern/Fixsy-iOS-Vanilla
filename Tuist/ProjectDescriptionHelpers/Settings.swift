@@ -31,16 +31,10 @@ public extension SettingsDictionary {
 
   static var app_debug: SettingsDictionary {
     [:]
-//    [
-//      "CODE_SIGN_IDENTITY": "Apple Development: Created via API (PD8PQZDKG4)"
-//    ]
   }
 
   static var app_release: SettingsDictionary {
     [:]
-//    [
-//      "CODE_SIGN_IDENTITY": "Apple Distribution: MessageSpring, LLC (92XK5S268V)"
-//    ]
   }
 }
 

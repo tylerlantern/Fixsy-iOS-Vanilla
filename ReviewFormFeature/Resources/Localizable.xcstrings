@@ -1,21 +1,134 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Car Brands" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Car Brands"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ยี่ห้อรถยนต์"
+          }
+        }
+      }
+    },
     "Click me to select at least one brand." : {
-
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Click me to select at least one brand."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แตะที่ฉันเพื่อเลือกอย่างน้อยหนึ่งแบรนด์"
+          }
+        }
+      }
+    },
+    "Rating" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rating"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ระดับ"
+          }
+        }
+      }
     },
     "Required at least 1 brand." : {
-
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Required at least 1 brand."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ต้องเลือกอย่างน้อย 1 แบรนด์"
+          }
+        }
+      }
+    },
+    "Review Form" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review Form"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แบบฟอร์มรีวิว"
+          }
+        }
+      }
     },
     "Save" : {
-
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "บันทึก"
+          }
+        }
+      }
     },
     "Select Multiple Photos" : {
-
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select Multiple Photos"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกรูปภาพหลายรายการ"
+          }
+        }
+      }
     },
     "Something went wrong." : {
       "extractionState" : "manual",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something went wrong."
+          }
+        },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
@@ -41,8 +154,50 @@
         }
       }
     },
+    "Tell the community your story." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tell the community your story."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "บอกเล่าเรื่องราวของคุณให้ชุมชน"
+          }
+        }
+      }
+    },
+    "Tell us about this place's service." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "บอกเราเกี่ยวกับบริการของสถานที่แห่งนี้"
+          }
+        }
+      }
+    },
     "We need your satisfaction rate for this place" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We need your satisfaction rate for this place"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เราต้องการระดับความพึงพอใจของคุณสำหรับสถานที่นี้"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

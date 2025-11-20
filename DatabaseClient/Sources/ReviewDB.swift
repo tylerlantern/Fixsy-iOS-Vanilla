@@ -4,7 +4,7 @@ import Models
 
 public struct ReviewDB {
   public var observe: @Sendable (Int) -> AsyncThrowingStream<[ReviewItem], Error>
-  public var sync: (Int, [ReviewItem], Int) async throws -> Int
+	public var sync: (Int, [ReviewItem], Int) async throws -> Int
   public var syncItemsByBranchId: (Int, [ReviewItem]) async throws -> ()
   public var update: (Int, ReviewItem) async throws -> Int
   public var clearByBranchId: @Sendable (Int) async throws -> ()
