@@ -126,8 +126,8 @@ public struct UserProfileView: View {
                     bundle: .module
                   )
                 )
-                  .foregroundColor(.white)
-                  .bold().padding()
+                .foregroundColor(.white)
+                .bold().padding()
                 Spacer()
               }
             }

@@ -50,7 +50,7 @@ public struct InfoView: View {
     self.place = place
     self.carBrands = place.carGarage?.brands ?? []
   }
-	
+
   public var body: some View {
     GeometryReader { proxy in
       ScrollView(.vertical, showsIndicators: true) {
@@ -59,10 +59,10 @@ public struct InfoView: View {
             VStack(spacing: 0) {
               HStack {
                 Text(
-									String(
-										localized: "Contributor",
-										bundle: .module
-									)
+                  String(
+                    localized: "Contributor",
+                    bundle: .module
+                  )
                 )
                 .bold()
 
@@ -102,40 +102,40 @@ public struct InfoView: View {
                   .frame(width: 30, height: 30)
                   .aspectRatio(1, contentMode: .fit)
                 Text(
-									String(
-										localized: "Apple Map",
-										bundle: .module
-									)
-								)
-                  .bold()
-                  .foregroundColor(Color.white)
-                  .padding()
+                  String(
+                    localized: "Apple Map",
+                    bundle: .module
+                  )
+                )
+                .bold()
+                .foregroundColor(Color.white)
+                .padding()
                 Spacer()
               }
             }
             .background(DetailFeatureAsset.Colors.dodgleBlue.swiftUIColor)
 
-						Button {} label: {
-							HStack {
-								Spacer()
-								DetailFeatureAsset.Images.googleMapIcon.swiftUIImage
-									.resizable()
-									.frame(width: 30, height: 30)
-									.aspectRatio(1, contentMode: .fit)
-								Text(
-									String(
-										localized: "Google Map",
-										bundle: .module
-									)
-								)
-								.bold()
-								.foregroundColor(Color.white)
-								.bold()
-								.padding()
-								Spacer()
-							}
-						}
-						.background(
+            Button {} label: {
+              HStack {
+                Spacer()
+                DetailFeatureAsset.Images.googleMapIcon.swiftUIImage
+                  .resizable()
+                  .frame(width: 30, height: 30)
+                  .aspectRatio(1, contentMode: .fit)
+                Text(
+                  String(
+                    localized: "Google Map",
+                    bundle: .module
+                  )
+                )
+                .bold()
+                .foregroundColor(Color.white)
+                .bold()
+                .padding()
+                Spacer()
+              }
+            }
+            .background(
               DetailFeatureAsset.Colors.waterMelon.swiftUIColor
             )
 

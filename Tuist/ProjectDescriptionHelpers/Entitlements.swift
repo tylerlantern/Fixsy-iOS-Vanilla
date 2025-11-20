@@ -5,10 +5,10 @@ public extension Entitlements {
     .dictionary(
       [
         "com.apple.developer.applesignin": ["Default"],
-        "keychain-access-groups": [
-          "com.to.fixsy.dev",
-          "com.to.fixsy"
-        ]
+        "keychain-access-groups": .array([
+          "$(AppIdentifierPrefix)com.to.fixsy.dev",
+          "$(AppIdentifierPrefix)com.to.fixsy"
+        ])
       ]
     )
   }

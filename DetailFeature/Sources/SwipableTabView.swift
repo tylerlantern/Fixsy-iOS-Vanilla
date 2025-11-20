@@ -6,15 +6,15 @@ public struct SwipableTabView: View {
     public var title: String {
       switch self {
       case .info:
-				return String(
-					localized: "Info",
-					bundle: .module
-				)
-      case .review: 
-				return String(
-					localized: "Review",
-					bundle: .module
-				)
+        return String(
+          localized: "Info",
+          bundle: .module
+        )
+      case .review:
+        return String(
+          localized: "Review",
+          bundle: .module
+        )
       }
     }
   }

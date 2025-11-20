@@ -83,8 +83,8 @@ public struct UserProfileComponentView: View {
               self.point.formatted()
             )
           )
-            .bold()
-            .foregroundStyle(Color(red: 212 / 255, green: 175 / 255, blue: 55 / 255))
+          .bold()
+          .foregroundStyle(Color(red: 212 / 255, green: 175 / 255, blue: 55 / 255))
         }
 
         Text(
