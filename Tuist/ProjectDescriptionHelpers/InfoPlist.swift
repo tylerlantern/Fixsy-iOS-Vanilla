@@ -4,11 +4,9 @@ public extension InfoPlist {
   static var appInfoPlist: Self {
     .extendingDefault(
       with: [
-        // MARK: - App Basics
-
         "CFBundleDisplayName": "Fixsy",
         "LSRequiresIPhoneOS": .boolean(true),
-        "UILaunchStoryboardName": .string("LaunchScreen"),
+        "UILaunchStoryboardName": "LaunchScreen.storyboard",
         "CFBundleShortVersionString": "$(MARKETING_VERSION)",
         "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
 
@@ -90,10 +88,6 @@ public extension InfoPlist {
         // MARK: - Encryption export
 
         "ITSAppUsesNonExemptEncryption": .boolean(false),
-
-        // MARK: - Launch Screen (keep empty dict if you’re using storyboard name above)
-
-        "UILaunchScreen": [:],
 
         // MARK: - Facebook Sign In / Analytics
 
