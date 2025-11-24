@@ -104,6 +104,9 @@ public struct HomeView: View {
                 onFocusSearch: {},
                 onTapItemById: { id in
                   self.sheetDisplay = .detail(id)
+                  self.mapVisualChannel.sendEvent(
+                    .selectedId(id)
+                  )
                 }
               )
             )

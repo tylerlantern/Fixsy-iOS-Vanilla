@@ -41,7 +41,7 @@ struct AppCore: App {
   public init() {
     self.router = .liveValue
     let accessTokenClient = AccessTokenClient.live(
-			accessGroup: Configs.live.appGroup.accessGroup,
+      accessGroup: Configs.live.appGroup.accessGroup,
       service: Configs.live.appGroup.identifier
     )
     self.accessTokenClient = accessTokenClient

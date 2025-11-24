@@ -64,7 +64,10 @@ public struct SearchView: View {
     ScrollView(.vertical) {
       VStack {
         SearchFilterView()
-        if self.detent == BottomSheetDetents.expanded {
+        if [
+          BottomSheetDetents.expanded,
+          BottomSheetDetents.medium
+        ].contains(self.detent) {
           ForEach(self.items) { item in
             ItemView(item: item) { id in self.onTapItemById(id) }
           }

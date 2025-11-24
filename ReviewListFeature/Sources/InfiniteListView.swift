@@ -39,11 +39,11 @@ public struct InfiniteListView<
           HStack {
             Spacer()
             Text(
-							String(
-								localized: "No Data.",
-								bundle : .module
-							)
-						)
+              String(
+                localized: "No Data.",
+                bundle: .module
+              )
+            )
             Spacer()
           }
         case .shimmer:
@@ -59,11 +59,11 @@ public struct InfiniteListView<
           }
         case .errorFullPage:
           Text(
-						String(
-							localized: "Please try again",
-							bundle : .module
-						)
-					)
+            String(
+              localized: "Please try again",
+              bundle: .module
+            )
+          )
         }
 
         if self.store.isFetchingNextCursor {

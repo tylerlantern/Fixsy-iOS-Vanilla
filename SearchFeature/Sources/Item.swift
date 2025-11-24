@@ -63,8 +63,11 @@ struct ItemView: View {
       }
       Divider()
     }
+    .containerShape(Rectangle())
     .padding(.horizontal)
-    .onTapGesture {}
+    .onTapGesture {
+      self.onTap(self.item.id)
+    }
   }
 }
 

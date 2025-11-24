@@ -34,7 +34,7 @@ public struct AppGroupConfigs {
   public let teamId: String
 
   public var accessGroup: String {
-		"\(self.teamId).\(self.identifier)"
+    "\(self.teamId).\(self.identifier)"
   }
 
   public init(identifier: String, teamId: String) {

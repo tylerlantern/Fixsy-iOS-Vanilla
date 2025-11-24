@@ -52,59 +52,30 @@ public struct DetailComponentView: View {
     GeometryReader { proxy in
       VStack(spacing: 0) {
         VStack {
-          HStack(alignment: .top, spacing: 8) {
-            VStack(alignment: .leading) {
-              Text(self.place.name)
-                .font(.largeTitle)
-              Text(
-                String(
-                  localized: self.getServiceLocalizableKey(),
-                  bundle: .module
-                )
+          HStack(alignment: .center, spacing: 12) {
+            Text(
+              String(
+                localized: self.getServiceLocalizableKey(),
+                bundle: .module
               )
-              .lineLimit(2)
-              .font(.headline)
-            }
-            Spacer()
-            VStack(alignment: .leading) {
-              HStack(alignment: .center) {
-                Image(systemName: "star.fill")
-                  .resizable()
-                  .frame(width: 24, height: 24)
-                  .foregroundColor(Color(red: 1, green: 215 / 255, blue: 0))
-                Text(self.rate)
-                  .font(.system(size: 28, weight: .bold, design: .monospaced))
-                  .font(.largeTitle)
-                  .foregroundColor(
-                    DetailFeatureAsset.Colors.primary.swiftUIColor
-                  )
-              }
-
-              Button(
-                action: {
-                  self.onTapReviewButton()
-                },
-                label: {
-                  Label(
-                    "AddReview",
-                    systemImage: "plus.app.fill"
-                  )
-                  .labelStyle(.iconOnly)
-                  .frame(width: 44, height: 44)
-                }
-              )
-              .glassEffect()
-            }
+            )
+            .lineLimit(2)
+            .font(.headline)
             Button(
               action: {
-                self.dismiss()
-              }, label: {
-                Label("Dismiss", systemImage: "xmark")
-                  .labelStyle(.iconOnly)
-                  .frame(width: 44, height: 44)
+                self.onTapReviewButton()
+              },
+              label: {
+                Label(
+                  "AddReview",
+                  systemImage: "plus.app.fill"
+                )
+                .labelStyle(.iconOnly)
+                .frame(width: 44, height: 44)
               }
             )
             .glassEffect()
+            Spacer()
           }
           .padding(.horizontal, 16)
           SwipableTabView(
@@ -127,6 +98,38 @@ public struct DetailComponentView: View {
       }
       .padding(.vertical, 16)
     }
+    .safeAreaInset(edge: .top, content: {
+      HStack(alignment: .center, spacing: 12) {
+        Text(self.place.name)
+          .font(.largeTitle)
+        Spacer()
+        HStack {
+          Image(systemName: "star.fill")
+            .resizable()
+            .frame(width: 24, height: 24)
+            .foregroundColor(Color(red: 1, green: 215 / 255, blue: 0))
+          Text(self.rate)
+            .font(.system(size: 28, weight: .bold, design: .monospaced))
+            .font(.largeTitle)
+            .foregroundColor(
+              DetailFeatureAsset.Colors.primary.swiftUIColor
+            )
+        }
+        Button(
+          action: {
+            self.dismiss()
+          }, label: {
+            Label("Dismiss", systemImage: "xmark")
+              .labelStyle(.iconOnly)
+              .frame(width: 44, height: 44)
+          }
+        )
+        .glassEffect()
+      }
+      .padding(.horizontal, 16)
+      .padding(.top, 12)
+      .frame(height: 80)
+    })
     .background(Color(.secondarySystemBackground))
     .task {}
     .onDisappear {}
