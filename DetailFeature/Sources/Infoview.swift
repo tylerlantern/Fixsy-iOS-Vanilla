@@ -1,5 +1,6 @@
 import CapsulesStackComponent
 import CarBrandComponent
+import MapKit
 import Models
 import Router
 import SwiftUI
@@ -93,14 +94,14 @@ public struct InfoView: View {
               .font(.subheadline)
 
             Button {
-              // TODO:
+              openAppleMap()
             } label: {
               HStack {
                 Spacer()
-                Image(systemName: "􀣺")
+                Image(systemName: "apple.logo")
                   .resizable()
                   .frame(width: 30, height: 30)
-                  .aspectRatio(1, contentMode: .fit)
+                  .foregroundStyle(Color.white)
                 Text(
                   String(
                     localized: "Apple Map",
@@ -115,7 +116,9 @@ public struct InfoView: View {
             }
             .background(DetailFeatureAsset.Colors.dodgleBlue.swiftUIColor)
 
-            Button {} label: {
+            Button {
+              openGoogleMap()
+            } label: {
               HStack {
                 Spacer()
                 DetailFeatureAsset.Images.googleMapIcon.swiftUIImage
@@ -200,6 +203,48 @@ public struct InfoView: View {
         )
       }
     )
+  }
+}
+
+extension InfoView {
+  func openGoogleMap() {
+    if UIApplication.shared.canOpenURL(URL(string: "comgooglemaps://")!) {
+      guard let url =
+        URL(
+          string: "comgooglemaps://?daddr=\(self.place.latitude),\(self.place.longitude)&zoom=14"
+        )
+      else { return }
+      UIApplication.shared.open(url)
+    } else {
+      guard let url =
+        URL(
+          string: "http://maps.apple.com/maps?daddr=\(self.place.latitude),\(self.place.longitude)&dirflg=d"
+        )
+      else { return }
+      UIApplication.shared.open(url)
+    }
+  }
+
+  func openAppleMap() {
+    let coordinate = CLLocationCoordinate2D(
+      latitude: self.place.latitude,
+      longitude: self.place.longitude
+    )
+    let regionDistance: CLLocationDistance = 10_000
+    let regionSpan = MKCoordinateRegion(
+      center: coordinate,
+      latitudinalMeters: regionDistance,
+      longitudinalMeters: regionDistance
+    )
+    let options = [
+      MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: regionSpan.center),
+      MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan: regionSpan.span)
+    ]
+    let mapItem = MKMapItem(
+      location: CLLocation(latitude: self.place.latitude, longitude: self.place.longitude),
+      address: nil
+    )
+    mapItem.openInMaps(launchOptions: options)
   }
 }
 
