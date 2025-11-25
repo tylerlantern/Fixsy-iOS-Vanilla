@@ -9,12 +9,31 @@ let bottomSheetModuleScheme = Scheme.scheme(
   runAction: .runAction(configuration: .debug)
 )
 
+let fixsyRelease = Scheme.scheme(
+  name: "FixsyReleaseApp",
+  buildAction: .buildAction(targets: [.target("AppCore")]),
+  runAction: .runAction(configuration: .release)
+)
+
+let fixsy = Scheme.scheme(
+  name: "Fixsy",
+  shared: true,
+  buildAction: .buildAction(targets: [.target("AppCore")]),
+  testAction: .targets([
+    .testableTarget(target: "APIClientTests"),
+    .testableTarget(target: "SearchFeatureTests")
+  ]),
+  archiveAction: .archiveAction(configuration: "Release")
+)
+
 let project = Project(
   name: "Fixsy",
   settings: .settings(
     base: .project_base,
-    debug: .project_debug,
-    release: .project_release
+    configurations: [
+      .debug(name: "Debug", settings: .project_debug),
+      .release(name: "Release", settings: .project_release)
+    ]
   ),
   targets: [
     .target(
@@ -64,14 +83,16 @@ let project = Project(
             "MARKETING_VERSION": "2.0.0",
             "CURRENT_PROJECT_VERSION": "1"
           ]),
-        debug: .app_base.merging(.app_debug).merging(.secret_debug).merging([
-          "PROVISIONING_PROFILE_SPECIFIER": "match Development com.to.fixsy.dev",
-          "PRODUCT_BUNDLE_IDENTIFIER": "com.to.fixsy.dev"
-        ]),
-        release: .app_base.merging(.app_release).merging(.secret_release).merging([
-          "PROVISIONING_PROFILE_SPECIFIER": "match AppStore com.to.fixsy",
-          "PRODUCT_BUNDLE_IDENTIFIER": "com.to.fixsy"
-        ])
+        configurations: [
+          .debug(name: "Debug", settings: .app_debug.merging(.secret_debug).merging([
+            "PROVISIONING_PROFILE_SPECIFIER": "match Development com.to.fixsy.dev",
+            "PRODUCT_BUNDLE_IDENTIFIER": "com.to.fixsy.dev"
+          ])),
+          .release(name: "Release", settings: .app_release.merging(.secret_release).merging([
+            "PROVISIONING_PROFILE_SPECIFIER": "match AppStore com.to.fixsy",
+            "PRODUCT_BUNDLE_IDENTIFIER": "com.to.fixsy"
+          ]))
+        ]
       ),
     ),
     .target(
@@ -507,6 +528,8 @@ let project = Project(
     // End Features
   ],
   schemes: [
+    bottomSheetModuleScheme,
+    fixsy,
     .scheme(
       name: "Fixsy-Tests",
       shared: true,

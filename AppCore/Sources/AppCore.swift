@@ -39,20 +39,25 @@ struct AppCore: App {
   @StateObject var bannerCenter = BannerCenter()
 
   public init() {
+    #if DEBUG
+      let config = Configs.dev
+    #else
+      let config = Configs.prod
+    #endif
     self.router = .liveValue
     let accessTokenClient = AccessTokenClient.live(
-      accessGroup: Configs.live.appGroup.accessGroup,
-      service: Configs.live.appGroup.identifier
+      accessGroup: config.appGroup.accessGroup,
+      service: config.appGroup.identifier
     )
     self.accessTokenClient = accessTokenClient
     let apiClientLive = APIClient.live(
-      url: Configs.live.mobileAPI.hostName,
+      url: config.mobileAPI.hostName,
       getToken: accessTokenClient.accessToken,
       updateToken: accessTokenClient.updateAccessToken
     )
     self.apiClient = apiClientLive
     self.authProvidersClient = AuthProvidersClient.live(
-      googleOAuthClientId: Configs.live.googleOAuthClientId
+      googleOAuthClientId: config.googleOAuthClientId
     )
     self.databaseClient = .liveValue
     self.locationManagerClient = .liveValue

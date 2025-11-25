@@ -6,7 +6,7 @@ public extension InfoPlist {
       with: [
         "CFBundleDisplayName": "Fixsy",
         "LSRequiresIPhoneOS": .boolean(true),
-        "UILaunchStoryboardName": "LaunchScreen.storyboard",
+        "UILaunchStoryboardName": .string("LaunchScreen"),
         "CFBundleShortVersionString": "$(MARKETING_VERSION)",
         "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
 
