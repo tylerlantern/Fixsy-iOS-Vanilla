@@ -117,10 +117,6 @@ public extension InfoPlist {
           [
             "CFBundleTypeRole": "Editor",
             "CFBundleURLSchemes": ["com.googleusercontent.apps.$(GOOGLE_OAUTH_CLIENT_ID)"]
-          ],
-          [
-            "CFBundleTypeRole": "Editor",
-            "CFBundleURLSchemes": ["fb$(FACEBOOK_APP_ID)"]
           ]
         ],
 
