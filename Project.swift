@@ -92,7 +92,7 @@ let project = Project(
             "PROVISIONING_PROFILE_SPECIFIER": "match AppStore com.to.fixsy",
             "PRODUCT_BUNDLE_IDENTIFIER": "com.to.fixsy"
           ]))
-        ]
+        ],
       ),
     ),
     .target(
