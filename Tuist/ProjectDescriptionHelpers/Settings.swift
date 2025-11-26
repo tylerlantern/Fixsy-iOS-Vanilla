@@ -5,7 +5,9 @@ public extension SettingsDictionary {
     [
       "CODE_SIGN_STYLE": "Manual",
       "DEVELOPMENT_TEAM": "F3QMGAV9F8",
-      "IPHONEOS_DEPLOYMENT_TARGET": "26.0"
+      "IPHONEOS_DEPLOYMENT_TARGET": "26.0",
+			"OTHER_LDFLAGS": .array(["$(inherited)", "-ObjC"]),
+			"_EXPERIMENTAL_SWIFT_EXPLICIT_MODULES": true
     ]
   }
 
