@@ -12,30 +12,23 @@ import SwiftUI
 
 public struct HomeView: View {
   public enum SheetDisplay {
-    case search, detail(_ placeId: Int)
-  }
-
-  @State public var mapVisualChannel: MapVisualChannel
-  @Namespace private var unionNamespace
-
-  public init() {
-    let event = AsyncStream<MapVisualChannel.Event>.makeStream()
-    let action = AsyncStream<MapVisualChannel.Action>.makeStream()
-    self.mapVisualChannel = .init(
-      eventStream: event.stream,
-      eventCont: event.continuation,
-      actionStream: action.stream,
-      actionCon: action.continuation
-    )
+    case search
+    case detail(_ placeId: Int)
   }
 
   enum Destination: Hashable { case detail }
+
+  @State public var mapVisualChannel: MapVisualChannel
+  @Namespace private var unionNamespace
+  @State public var sheetDisplayIpad: BottomSheetDisplayIpadType = .none
+
   @State var detent: PresentationDetent = BottomSheetDetents.collapsed
   @Environment(\.router) var router
   @Environment(\.apiClient) var apiClient
   @Environment(\.databaseClient) var databaseClient
   @Environment(\.locationManagerClient) var locationManagerClient
   @EnvironmentObject var bannerCenter: BannerCenter
+  @EnvironmentObject var banners: BannerCenter
 
   @State private var showBottomSheet = false
   @State var navPath = NavigationPath()
@@ -52,15 +45,53 @@ public struct HomeView: View {
 
   @State var isRefreshing: Bool = false
 
-  @EnvironmentObject var banners: BannerCenter
+  public init() {
+    let event = AsyncStream<MapVisualChannel.Event>.makeStream()
+    let action = AsyncStream<MapVisualChannel.Action>.makeStream()
+    self.mapVisualChannel = .init(
+      eventStream: event.stream,
+      eventCont: event.continuation,
+      actionStream: action.stream,
+      actionCon: action.continuation
+    )
+  }
 
   public var body: some View {
-    VStack {
-      MapVisualKitView(
-        channel: self.mapVisualChannel
-      )
+    if UIDevice.current.userInterfaceIdiom == .pad {
+      ZStack {
+        self.baseMapView
+
+        GeometryReader { geometry in
+          BottomSheetIpadView(
+            displayType: self.$sheetDisplayIpad,
+            maxHeight: geometry.size.height - 10,
+            minHeight: 90
+          ) {
+            self.sheetContent
+          }
+        }
+      }
+    } else {
+      self.baseMapView
+        .ignoresSafeArea()
+        .bottomSheet(
+          detent: self.$detent,
+          sheetHeight: self.$sheetHeight
+        ) {
+          self.sheetContent
+        }
     }
-    .ignoresSafeArea()
+  }
+}
+
+// MARK: - Subviews
+
+private extension HomeView {
+  @ViewBuilder
+  var baseMapView: some View {
+    MapVisualKitView(
+      channel: self.mapVisualChannel
+    )
     .task {
       self.handleLocationAuthorizationStatus()
       self.observeAuthStatus()
@@ -72,61 +103,63 @@ public struct HomeView: View {
     .overlay(
       alignment: .bottomTrailing,
       content: {
-        switch self.sheetDisplay {
-        case .detail:
-          EmptyView()
-        case .search:
-          BottomFloatinToolBar(
-            isRefreshing: self.isRefreshing,
-            sheetHeight: self.sheetHeight,
-            unionNamespace: self.unionNamespace,
-            onTapRefresh: {
-              self.fetchData()
-            },
-            onTapUserLocation: {
-              self.handleOnTapUserLocation()
-            }
-          )
-        }
+        self.bottomToolbar
       }
     )
-    .bottomSheet(
-      detent: self.$detent,
-      sheetHeight: self.$sheetHeight
-    ) {
-      switch self.sheetDisplay {
-      case .search:
-        self.router.route(
-          .app(
-            .search(
-              .root(
-                detent: self.$detent,
-                onFocusSearch: {},
-                onTapItemById: { id in
-                  self.sheetDisplay = .detail(id)
-                  self.mapVisualChannel.sendEvent(
-                    .selectedId(id)
-                  )
-                }
-              )
+  }
+
+  @ViewBuilder
+  var bottomToolbar: some View {
+    switch self.sheetDisplay {
+    case .detail:
+      EmptyView()
+    case .search:
+      BottomFloatinToolBar(
+        isRefreshing: self.isRefreshing,
+        sheetHeight: self.sheetHeight,
+        unionNamespace: self.unionNamespace,
+        onTapRefresh: {
+          self.fetchData()
+        },
+        onTapUserLocation: {
+          self.handleOnTapUserLocation()
+        }
+      )
+    }
+  }
+
+  @ViewBuilder
+  var sheetContent: some View {
+    switch self.sheetDisplay {
+    case .search:
+      self.router.route(
+        .app(
+          .search(
+            .root(
+              detent: self.$detent,
+              onFocusSearch: {},
+              onTapItemById: { id in
+                self.sheetDisplay = .detail(id)
+                self.mapVisualChannel.sendEvent(.selectedId(id))
+              }
             )
           )
         )
-      case let .detail(placeId):
-        self.router.route(
-          .app(
-            .detail(
-              .root(
-                placeId,
-                {
-                  self.sheetDisplay = .search
-                  self.detent = BottomSheetDetents.collapsed
-                }
-              )
+      )
+    case let .detail(placeId):
+      self.router.route(
+        .app(
+          .detail(
+            .root(
+              placeId,
+              {
+                self.sheetDisplay = .search
+                self.detent = BottomSheetDetents.collapsed
+              }
             )
           )
         )
-      }
+      )
     }
   }
 }

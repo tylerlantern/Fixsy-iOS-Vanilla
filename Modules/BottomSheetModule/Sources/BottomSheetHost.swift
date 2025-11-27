@@ -38,6 +38,17 @@ public struct BottomSheetModifier<SheetContent: View>: ViewModifier {
           selection: self.$detent
         )
         .presentationBackgroundInteraction(.enabled)
+        //				.presentationSizing(.fitted)
+        //				.presentationSizing(
+        //					.fitted
+        //						.fitted(horizontal: false, vertical: true)
+        //						.sticky(horizontal: false, vertical: true)
+        //				)
+        .presentationSizing(
+          .automatic
+            .fitted(horizontal: true, vertical: true) // fit to content
+            .sticky(vertical: true) // grow but don't shrink
+        )
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onGeometryChange(for: CGFloat.self) {
           max(min($0.size.height, 350), 0)

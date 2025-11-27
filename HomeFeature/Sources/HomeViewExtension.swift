@@ -65,6 +65,7 @@ extension HomeView {
     case let .didSelect(placeId):
       self.detent = BottomSheetDetents.medium
       self.sheetDisplay = .detail(placeId)
+      self.sheetDisplayIpad = .halfScreen
     case .zoom:
       break
     case .regionChanged:

@@ -36,14 +36,16 @@ public extension InfoPlist {
         ]),
 
         // MARK: - Orientations
-				"UIDeviceFamily": .array([
-					1, // iPhone
-					2  // iPad
-				]),
-				"UISupportedInterfaceOrientations": .array([
-					"UIInterfaceOrientationPortrait"
-				]),
-				"UIRequiresFullScreen~ipad": .boolean(true),
+
+        "UIDeviceFamily": .array([
+          1, // iPhone
+          2 // iPad
+        ]),
+        "UISupportedInterfaceOrientations": .array([
+          "UIInterfaceOrientationPortrait"
+        ]),
+        "UIRequiresFullScreen~ipad": .boolean(true),
+
         // MARK: - Privacy Usage Strings
 
         "NSCalendarsUsageDescription": .string(

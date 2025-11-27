@@ -10,13 +10,13 @@ import Configs
 import ConfigsLive
 import DatabaseClient
 import DatabaseClientLive
+import Foundation
 import LocationManagerClient
 import LocationManagerClientLive
 import PlaceStore
 import Router
 import RouterLive
 import SwiftUI
-import Foundation
 
 @main
 struct AppCore: App {
@@ -38,9 +38,9 @@ struct AppCore: App {
 
   public init() {
     #if DEBUG
-		let config = Configs.dev
+      let config = Configs.dev
     #else
-    let config = Configs.prod
+      let config = Configs.prod
     #endif
     self.router = .liveValue
     let accessTokenClient = AccessTokenClient.live(
