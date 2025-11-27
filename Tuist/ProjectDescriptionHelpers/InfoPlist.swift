@@ -48,13 +48,6 @@ public extension InfoPlist {
         ]),
         "UIRequiresFullScreen~ipad": .boolean(true),
 
-        // MARK: - Background Modes
-
-        "UIBackgroundModes": .array([
-          "location",
-          "remote-notification"
-        ]),
-
         // MARK: - Privacy Usage Strings
 
         "NSCalendarsUsageDescription": .string(
