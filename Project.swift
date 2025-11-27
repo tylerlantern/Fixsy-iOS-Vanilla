@@ -38,7 +38,7 @@ let project = Project(
   targets: [
     .target(
       name: "AppCore",
-			destinations: [.iPhone],
+			destinations: .iOS,
       product: .app,
       bundleId: "com.to.fixsy",
       infoPlist: .appInfoPlist,
