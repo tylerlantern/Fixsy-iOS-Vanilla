@@ -1,68 +1,70 @@
-# Setup
+# Fixsy
+Vehicle service locator and booking app for iPhone and iPad. Find nearby motorcycle garages, air pumps, wash stations, and tire patch points, read reviews, and get directions.
 
-1. Install `tuist`:
-   - Follow the instructions at [tuist.io](https://tuist.io) to install `tuist` on your machine.
+## Overview
+- Live on the App Store: https://apps.apple.com/th/app/fixsy/id6448919715
+- Maps-first experience that surfaces the nearest service spots with ratings.
+- Review system helps riders choose trusted garages and quick services.
+- Built with a modular Tuist workspace to keep features isolated and testable.
 
-2. Generate the project:
-   ```bash
-   tuist generate
-   ```
+## Features
+- Discover nearby motorcycle garages, inflating points, wash stations, and tire patch stations.
+- View ratings and reviews to choose the right place.
+- Map and list views with location-based sorting.
+- Detail pages with directions/contact actions via the router.
+- Profile and history modules for stored info and past interactions.
 
-3. (Optional) Rename the project:
-   - Update the `PRODUCT_NAME` in `Project.swift` with your desired project name.
+## Architecture
+- Tuist-managed workspace (`Project.swift`, `Tuist/`) with feature modules (`*Feature`) and live implementations (`*FeatureLive`).
+- Shared UI/data in `Components/`, `Models/`, and `Modules/`.
+- Navigation graph in `Router/RouterLive.swift`.
+- Clients follow the `Client`/`ClientLive` split (e.g., `APIClient`, `AccessTokenClient`).
+- Configs live in `Configs/` with runtime values in `ConfigsLive/`.
 
-4. Open the project:
-   ```bash
-   xed .
-   ```
+## Getting Started
+Prerequisites: Xcode (15+ recommended), Swift toolchain, and Tuist installed.
 
-5. Load secret file (`ConfgsLive.swift`)
-  ```bash
-
-  make loadSecret
-  ```
+1) Install Tuist  
+```bash
+curl -Ls https://install.tuist.io | bash
 ```
+
+2) Generate the workspace  
+```bash
+tuist generate
 ```
 
-
-# Save Secret
- `make saveSecret`
-
-# Edit Tuist configulation
-- Run `tuist edit`
-
-# Run Individual Feature to increase fast development
-- Run `tuist generate HomeFeatureApp --open` to create single app with following feature `HomeFeature`
-## Create Instance App
-- Add inside `targets : []`. Try to add under the feature you want
+3) Load secrets (required values for `ConfigsLive`)  
+```bash
+make loadSecret
 ```
-  //Existing feature
-  .framework(
-    name: "HomeFeature",
-    dependencies: [
-      .target(name: "Router")
-    ]
-  ),
-  // new block of statements to add
-  .featureDemoApp(
-    "HomeFeature",
-    deps: []
-  ),
-```
-- Add scheme at the top of the file
-```
-  let homeDemoScheme = Scheme.scheme(
-    name: "HomeFeatureApp",
-    buildAction: .buildAction(targets: [.target("HomeFeatureApp")]),
-    runAction: .runAction(configuration: .debug)
-  )
-```
-- Add `homeDemoScheme` inside parenthesis `schemes: []`
-- now you can run individual app instance 
-  `tuist generate HomeFeatureApp --open`
 
+4) Open in Xcode  
+```bash
+xed .
+```
 
-# Router
+5) Run the app from the `Fixsy.xcworkspace` (or use a feature demo target below).
 
-The `Router` is the navigation graph that holds all view navigation implementations in `RouterLive`.  
-The graph is self-explanatory, providing a clear overview of the navigation flow throughout the app. Reviewing it will give you a big-picture understanding of how views are navigated in the application.
+### Feature demo targets
+Generate and open a single-feature demo (example: Home):
+```bash
+tuist generate HomeFeatureApp --open
+```
+
+## Development
+- Format: `make fmt` (runs `swiftformat .`).
+- Edit Tuist manifest: `tuist edit`.
+- Secrets management: `make loadSecret` to pull, `make saveSecret` to push via `bin/secrets.sh`.
+
+## Tests
+- Full suite: `tuist test Fixsy`
+- Xcode scheme: `xcodebuild test -workspace Fixsy.xcworkspace -scheme Fixsy`
+
+## Contributing
+- Follow the Feature/FeatureLive naming pattern and keep DTOs in `Models/`.
+- Add boundary-focused tests with the Swift `Testing` DSL (`@Test`, `#expect`) under `Tests/<FeatureName>Tests`.
+- Run `make fmt` and ensure tests pass before opening a pull request.
+
+## License
+Apache-2.0 — see `LICENSE`.
