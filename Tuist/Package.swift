@@ -31,7 +31,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/google/GoogleSignIn-iOS.git",
-      from: "9.0.0"
+      from: "9.1.0"
     )
   ]
 )

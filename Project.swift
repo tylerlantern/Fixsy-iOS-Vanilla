@@ -308,7 +308,9 @@ let project = Project(
         .target(name: "LocationManagerClient"),
         .target(name: "BottomSheetModule"),
         .target(name: "PlaceStore"),
-        .target(name: "BannerCenterModule")
+        .target(name: "BannerCenterModule"),
+        .target(name: "RequestFormFeature"),
+        .target(name: "AccessTokenClient")
       ]
     ),
     .demoApp(
@@ -382,6 +384,37 @@ let project = Project(
     ),
     .demoApp(
       "SearchFeature",
+      deps: []
+    ),
+    .framework(
+      name: "RequestFormFeature",
+			hasResource: true,
+      dependencies: [
+        .target(name: "Router"),
+        .target(name: "Models"),
+        .target(name: "APIClient"),
+        .target(name: "LocationManagerClient"),
+        .target(name: "CarBrandsFeature"),
+        .target(name: "MapPickUpCenterFeature"),
+        .target(name: "CapsulesStackComponent"),
+        .target(name: "CarBrandComponent"),
+        .target(name: "BannerCenterModule")
+      ]
+    ),
+		.demoApp(
+			"RequestFormFeature",
+			deps: []
+		),
+    .framework(
+      name: "MapPickUpCenterFeature",
+      hasResource: true,
+      dependencies: [
+        .target(name: "Router"),
+        .target(name: "Models")
+      ]
+    ),
+    .demoApp(
+      "MapPickUpCenterFeature",
       deps: []
     ),
     .framework(

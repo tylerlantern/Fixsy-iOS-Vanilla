@@ -71,7 +71,6 @@ extension UserProfileView {
           self.banners.show(.error, title: apiError.title, body: apiError.body)
           return
         }
-
         self.banners.show(
           .error,
           title: String(

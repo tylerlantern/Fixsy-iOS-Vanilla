@@ -162,14 +162,17 @@ extension APIUserRoute {
       }
 
       let multipartFormData = MultipartFormData(multipartFormParameters: parameters)
-      let urlRequest = url
-        .appendingPathComponent("requestform")
-        .appendingPathComponent("create")
-        .makeAuthorizationURLRequest(
-          token: token,
-          version: "1.1",
-          formData: multipartFormData
-        )
+      var urlRequest = URLRequest(
+        url: url
+          .appendingPathComponent("requestform")
+          .appendingPathComponent("create"),
+        formData: multipartFormData
+      )
+      urlRequest.httpMethod = .post
+      setHeader(name: "version", value: "1.1")(&urlRequest)
+      authorizationHeader(
+        accessToken: token.accessToken
+      )(&urlRequest)
       return urlRequest
     case .carBrands:
       return url
@@ -282,29 +285,12 @@ extension URL {
     return urlRequest
   }
 
-  func makeAuthorizationURLRequest(
-    token: Token,
-    version: String?,
-    formData: MultipartFormData
-  ) -> URLRequest {
-    var urlRequest = makeCommonRequest(
-      url: self,
-      version: version,
-      method: HttpMethodNoBody.get,
-      formData: formData
-    )
-    authorizationHeader(
-      accessToken: token.accessToken
-    )(&urlRequest)
-    return urlRequest
-  }
 }
 
 func makeCommonRequest<Body: Encodable>(
   url: URL,
   version: String?,
-  method: HttpMethod<Body>?,
-  formData: MultipartFormData? = nil
+  method: HttpMethod<Body>?
 ) -> URLRequest {
   var urlRequest = URLRequest(
     url: url
@@ -319,10 +305,6 @@ func makeCommonRequest<Body: Encodable>(
     let encodedBody = try? JSONEncoder().encode(body)
     urlRequest.httpBody = encodedBody
   }
-  if let formData = formData {
-    setMultipartFormData(formData)(&urlRequest)
-  }
-
   jsonContentType(&urlRequest)
   return urlRequest
 }
