@@ -308,7 +308,9 @@ let project = Project(
         .target(name: "LocationManagerClient"),
         .target(name: "BottomSheetModule"),
         .target(name: "PlaceStore"),
-        .target(name: "BannerCenterModule")
+        .target(name: "BannerCenterModule"),
+        .target(name: "RequestFormFeature"),
+        .target(name: "AccessTokenClient")
       ]
     ),
     .demoApp(

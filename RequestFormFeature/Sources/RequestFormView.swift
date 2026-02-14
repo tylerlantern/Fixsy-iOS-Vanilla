@@ -14,22 +14,23 @@ import UIKit
 public struct RequestFormView: View {
   enum Field {
     case name
-    case phoneCode
     case phoneNumber
   }
 
   private let maxNumberOfImages: Int = 2
+  private let onDismiss: (() -> Void)?
 
   @Environment(\.apiClient) var apiClient
   @Environment(\.locationManagerClient) var locationManagerClient
-  @Environment(\.dismiss) var dismiss
+  @Environment(\.dismiss) var environmentDismiss
   @EnvironmentObject var banners: BannerCenter
 
   @FocusState private var focusedField: Field?
 
   @State private var name: String = ""
-  @State private var phoneCode: String = ""
+  @State private var selectedCountry: CountryCodeData?
   @State private var phoneNumber: String = ""
+  @State private var showCountryPicker: Bool = false
   @State private var service: APIUserRoute.Service = .motorcycle
 
   @State private var coordinateRegion: MKCoordinateRegion
@@ -53,9 +54,19 @@ public struct RequestFormView: View {
   @State private var presentedCarBrands: Bool = false
 
   public init(
-    coordinateRegion: MKCoordinateRegion = defaultRequestFormRegion()
+    coordinateRegion: MKCoordinateRegion = defaultRequestFormRegion(),
+    onDismiss: (() -> Void)? = nil
   ) {
     self._coordinateRegion = .init(initialValue: coordinateRegion)
+    self.onDismiss = onDismiss
+  }
+
+  private func dismiss() {
+    if let onDismiss {
+      onDismiss()
+    } else {
+      self.environmentDismiss()
+    }
   }
 
   public var body: some View {
@@ -89,7 +100,18 @@ public struct RequestFormView: View {
         }
       }
       .onAppear {
+        if self.selectedCountry == nil {
+          self.selectedCountry = CountryCodeDataLoader.defaultCountryCode()
+        }
         self.observeLocation()
+      }
+      .sheet(isPresented: self.$showCountryPicker) {
+        CountryCodePickerView(
+          countries: CountryCodeDataLoader.loadCountryCodes(),
+          onSelect: { country in
+            self.selectedCountry = country
+          }
+        )
       }
       .onDisappear {
         self.locationTask?.cancel()
@@ -182,18 +204,33 @@ private extension RequestFormView {
         .pickerStyle(.menu)
       }
 
-      VStack(spacing: 8) {
-        HStack(spacing: 8) {
-          TextField("Code", text: self.$phoneCode)
-            .keyboardType(.phonePad)
-            .focused(self.$focusedField, equals: .phoneCode)
-            .textFieldStyle(.roundedBorder)
-            .frame(width: 90)
-          TextField("Phone Number", text: self.$phoneNumber)
-            .keyboardType(.phonePad)
-            .focused(self.$focusedField, equals: .phoneNumber)
-            .textFieldStyle(.roundedBorder)
+      HStack {
+        Button {
+          self.showCountryPicker = true
+        } label: {
+          HStack(spacing: 6) {
+            if let country = self.selectedCountry {
+              Image(country.imageName, bundle: .module)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 24, height: 16)
+              Text(country.dialcode)
+            } else {
+              Text("Code")
+                .foregroundStyle(.secondary)
+            }
+            Image(systemName: "chevron.up.chevron.down")
+              .font(.caption2)
+              .foregroundStyle(.secondary)
+          }
         }
+        .buttonStyle(.plain)
+
+        Divider()
+
+        TextField("Phone Number", text: self.$phoneNumber)
+          .keyboardType(.phonePad)
+          .focused(self.$focusedField, equals: .phoneNumber)
       }
 
       if self.service == .car {
@@ -378,7 +415,7 @@ private extension RequestFormView {
           route: .requestForm(
             name: self.name,
             service: self.service,
-            phoneCode: self.phoneCode,
+            phoneCode: self.selectedCountry?.dialcode ?? "",
             phoneNumber: self.phoneNumber,
             latitude: pin.location.coordinate.latitude,
             longitude: pin.location.coordinate.longitude,
@@ -393,6 +430,7 @@ private extension RequestFormView {
       } catch {
         self.isSubmiting = false
         if let apiError = error as? APIError {
+					print("apiError",apiError)
           self.banners.show(.error, title: apiError.title, body: apiError.body)
           return
         }

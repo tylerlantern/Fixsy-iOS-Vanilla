@@ -1,3 +1,4 @@
+import AccessTokenClient
 import APIClient
 import AsyncAlgorithms
 import BannerCenterModule
@@ -7,6 +8,7 @@ import LocationManagerClient
 import MapKit
 import Models
 import PlaceStore
+import RequestFormFeature
 import Router
 import SwiftUI
 
@@ -27,6 +29,7 @@ public struct HomeView: View {
   @Environment(\.apiClient) var apiClient
   @Environment(\.databaseClient) var databaseClient
   @Environment(\.locationManagerClient) var locationManagerClient
+  @Environment(\.accessTokenClient) var accessTokenClient
   @EnvironmentObject var bannerCenter: BannerCenter
   @EnvironmentObject var banners: BannerCenter
 
@@ -44,6 +47,8 @@ public struct HomeView: View {
   @State private var sheetHeight: CGFloat = 0
 
   @State var isRefreshing: Bool = false
+  @State private var showRequestForm: Bool = false
+  @State private var presentedSocialSignInScreen: Bool = false
 
   public init() {
     let event = AsyncStream<MapVisualChannel.Event>.makeStream()
@@ -57,29 +62,55 @@ public struct HomeView: View {
   }
 
   public var body: some View {
-    if UIDevice.current.userInterfaceIdiom == .pad {
-      ZStack {
+    ZStack {
+      if UIDevice.current.userInterfaceIdiom == .pad {
+        ZStack {
+          self.baseMapView
+          GeometryReader { geometry in
+            BottomSheetIpadView(
+              displayType: self.$sheetDisplayIpad,
+              maxHeight: geometry.size.height - 10,
+              minHeight: 90
+            ) {
+              self.sheetContent
+            }
+          }
+        }
+      } else {
         self.baseMapView
-
-        GeometryReader { geometry in
-          BottomSheetIpadView(
-            displayType: self.$sheetDisplayIpad,
-            maxHeight: geometry.size.height - 10,
-            minHeight: 90
+          .ignoresSafeArea()
+          .bottomSheet(
+            show: .init(
+              get: { !(self.showRequestForm || self.presentedSocialSignInScreen) },
+              set: { _ in }
+            ),
+            detent: self.$detent,
+            sheetHeight: self.$sheetHeight
           ) {
             self.sheetContent
           }
-        }
       }
-    } else {
-      self.baseMapView
+
+      if self.showRequestForm {
+        RequestFormView(
+          onDismiss: {
+            self.showRequestForm = false
+          }
+        )
         .ignoresSafeArea()
-        .bottomSheet(
-          detent: self.$detent,
-          sheetHeight: self.$sheetHeight
-        ) {
-          self.sheetContent
-        }
+        .transition(.move(edge: .bottom))
+        .zIndex(1)
+      }
+    }
+    .animation(.easeInOut(duration: 0.3), value: self.showRequestForm)
+    .sheet(isPresented: self.$presentedSocialSignInScreen) {
+      self.router.route(
+        .app(
+          .search(
+            .socialSignIn
+          )
+        )
+      )
     }
   }
 }
@@ -106,6 +137,14 @@ private extension HomeView {
         self.bottomToolbar
       }
     )
+    .overlay(alignment: .topLeading) {
+      TopLeftToolBar(
+        unionNamespace: self.unionNamespace,
+        onTapRequestForm: {
+          self.handleOnTapRequestFormButton()
+        }
+      )
+    }
   }
 
   @ViewBuilder
@@ -162,6 +201,18 @@ private extension HomeView {
       )
     }
   }
+
+  func handleOnTapRequestFormButton() {
+    Task {
+      do {
+        guard let _ = try await self.accessTokenClient.accessToken() else {
+          self.presentedSocialSignInScreen = true
+          return
+        }
+        self.showRequestForm = true
+      } catch {}
+    }
+  }
 }
 
 @ViewBuilder
@@ -211,6 +262,27 @@ func BottomFloatinToolBar(
   }
   .offset(y: -sheetHeight)
   .padding(24)
+}
+
+@ViewBuilder
+func TopLeftToolBar(
+  unionNamespace: Namespace.ID,
+  onTapRequestForm: @escaping () -> ()
+) -> some View {
+  GlassEffectContainer {
+    Button {
+      onTapRequestForm()
+    } label: {
+      Label("Request Form", systemImage: "newspaper")
+        .labelStyle(.iconOnly)
+        .padding(8)
+    }
+    .buttonStyle(.glass)
+    .glassEffectUnion(id: "topLeftOptions", namespace: unionNamespace)
+    .font(.title3)
+  }
+	.offset(x: 16, y: 48)
+  .safeAreaPadding(.top)
 }
 
 #if DEBUG

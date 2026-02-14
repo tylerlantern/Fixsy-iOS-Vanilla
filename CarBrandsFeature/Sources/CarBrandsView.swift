@@ -30,7 +30,7 @@ public struct CarBrandsView: View {
     selectedIds: [Int],
     onTapSave: @escaping ([CarBrand]) -> ()
   ) {
-    self.store = .init(selectedIds: [])
+    self.store = .init(selectedIds: Set(selectedIds))
     self.onTapSave = onTapSave
   }
 

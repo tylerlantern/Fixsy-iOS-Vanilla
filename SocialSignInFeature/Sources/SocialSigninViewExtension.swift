@@ -13,6 +13,7 @@ extension SocialSignInView {
           ? self.authProvidersClient.appleAuth.signIn()
           : self.authProvidersClient.googleAuth.signIn()
       )
+			
       guard case let .success(socialAccount) = result else {
         banners.show(.error, String(localized: "Provider Authentication failed."))
         return
