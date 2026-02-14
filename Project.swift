@@ -385,6 +385,37 @@ let project = Project(
       deps: []
     ),
     .framework(
+      name: "RequestFormFeature",
+			hasResource: true,
+      dependencies: [
+        .target(name: "Router"),
+        .target(name: "Models"),
+        .target(name: "APIClient"),
+        .target(name: "LocationManagerClient"),
+        .target(name: "CarBrandsFeature"),
+        .target(name: "MapPickUpCenterFeature"),
+        .target(name: "CapsulesStackComponent"),
+        .target(name: "CarBrandComponent"),
+        .target(name: "BannerCenterModule")
+      ]
+    ),
+		.demoApp(
+			"RequestFormFeature",
+			deps: []
+		),
+    .framework(
+      name: "MapPickUpCenterFeature",
+      hasResource: true,
+      dependencies: [
+        .target(name: "Router"),
+        .target(name: "Models")
+      ]
+    ),
+    .demoApp(
+      "MapPickUpCenterFeature",
+      deps: []
+    ),
+    .framework(
       name: "ImagesInspectorFeature",
       dependencies: []
     ),
