@@ -1,10 +1,16 @@
 import Foundation
 
+public struct CursorPlaceResponse: Decodable, Equatable {
+  public let items: [PlaceResponse]
+  public let nextCursor: Int?
+  public let nextDistanceCursor: Double?
+}
+
 public struct MapResponse: Decodable {
   public let branches: [PlaceResponse]
 }
 
-public struct PlaceResponse: Decodable {
+public struct PlaceResponse: Decodable, Equatable {
   public let id: Int
   public let name: String
   public let latitude: Double
@@ -16,17 +22,18 @@ public struct PlaceResponse: Decodable {
   public let hasPatchTireStation: Bool
   public let hasCarGarage: Bool
   public let averageRate: Double
+  public let displayDistance: String?
   public let carGarage: CarGarageResponse?
   public let openCloseTime: OpenCloseTimeResponse
   public let images: [ImageResponse]
   public let contributorName: String
 }
 
-public struct CarGarageResponse: Decodable {
+public struct CarGarageResponse: Decodable, Equatable {
   public let brands: [CarBrandResponse]
 }
 
-public struct OpenCloseTimeResponse: Decodable {
+public struct OpenCloseTimeResponse: Decodable, Equatable {
   public let mondayOpen: String
   public let mondayClose: String
   public let tuesdayOpen: String

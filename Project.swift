@@ -379,7 +379,8 @@ let project = Project(
         .target(name: "APIClient"),
         .target(name: "AccessTokenClient"),
         .target(name: "ContentHeightSheetComponent"),
-        .target(name: "BannerCenterModule")
+        .target(name: "BannerCenterModule"),
+        .target(name: "ReviewListFeature"),
       ]
     ),
     .demoApp(

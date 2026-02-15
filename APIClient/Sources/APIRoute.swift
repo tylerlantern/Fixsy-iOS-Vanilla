@@ -13,6 +13,15 @@ public enum APIRoute: Equatable {
     password: String
   )
   case mapData
+  case mapDataList(
+    keyword: String,
+    services: [String],
+    lat: Double?,
+    lng: Double?,
+    cursor: Int?,
+    distanceCursor: Double?,
+    limit: Int
+  )
   case socialSignIn(
     token: String,
     provider: String

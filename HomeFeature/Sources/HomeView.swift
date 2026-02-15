@@ -261,7 +261,7 @@ func BottomFloatinToolBar(
     .font(.title3)
   }
   .offset(y: -sheetHeight)
-  .padding(24)
+	.padding(.horizontal,24)
 }
 
 @ViewBuilder

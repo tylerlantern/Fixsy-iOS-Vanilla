@@ -52,14 +52,7 @@ public struct Item: Identifiable, Equatable {
   public let image: SwiftUI.Image
   public let service: Service
   public let address: String
-  public let distance: Double?
-
-  var displayKmAways: String? {
-    guard let distance = distance else {
-      return nil
-    }
-    return distance.formatted(.number.precision(.fractionLength(0 ... 2)))
-  }
+  public let displayDistance: String?
 
   init(
     id: Int,
@@ -67,13 +60,13 @@ public struct Item: Identifiable, Equatable {
     image: SwiftUI.Image,
     service: Service,
     address: String,
-    distance: Double?
+    displayDistance: String?
   ) {
     self.id = id
     self.name = name
     self.image = image
     self.service = service
     self.address = address
-    self.distance = distance
+    self.displayDistance = displayDistance
   }
 }
