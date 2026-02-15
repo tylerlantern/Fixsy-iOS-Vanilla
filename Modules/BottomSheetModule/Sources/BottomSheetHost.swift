@@ -40,12 +40,6 @@ public struct BottomSheetModifier<SheetContent: View>: ViewModifier {
           selection: self.$detent
         )
         .presentationBackgroundInteraction(.enabled)
-        //				.presentationSizing(.fitted)
-        //				.presentationSizing(
-        //					.fitted
-        //						.fitted(horizontal: false, vertical: true)
-        //						.sticky(horizontal: false, vertical: true)
-        //				)
         .presentationSizing(
           .automatic
             .fitted(horizontal: true, vertical: true) // fit to content
@@ -55,6 +49,7 @@ public struct BottomSheetModifier<SheetContent: View>: ViewModifier {
         .onGeometryChange(for: CGFloat.self) {
           max(min($0.size.height, 350), 0)
         } action: { oldValue, newValue in
+					print("NEW SHEET HEIGHT",newValue)
           self.sheetHeight = newValue
           let progress = max(min((newValue - 300) / 50, 1), 0)
           self.toolbarOpacity = 1 - progress
@@ -124,7 +119,7 @@ public struct BottomSheetView<Content: View>: View {
 }
 
 public enum BottomSheetDetents {
-  public static let collapsed = PresentationDetent.height(80)
+  public static let collapsed = PresentationDetent.height(76)
   public static let medium = PresentationDetent.medium
   public static let expanded = PresentationDetent.large
 }

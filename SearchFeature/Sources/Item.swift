@@ -48,11 +48,9 @@ struct ItemView: View {
 
             Spacer()
 
-            if let displayKmAways = self.item.displayKmAways {
-              Text(
-                displayKmAways
-              )
-              .font(.callout)
+            if let displayDistance = self.item.displayDistance {
+              Text(displayDistance)
+                .font(.callout)
             }
           }
 
@@ -64,7 +62,6 @@ struct ItemView: View {
       Divider()
     }
     .containerShape(Rectangle())
-    .padding(.horizontal)
     .onTapGesture {
       self.onTap(self.item.id)
     }
@@ -80,7 +77,7 @@ struct ItemView: View {
         image: SearchFeatureAsset.Images.carIcon.swiftUIImage,
         service: .car,
         address: "1/25 Param 3 road, Bangkok",
-        distance: 20
+        displayDistance: "20 km"
       )
     ) { _ in
     }

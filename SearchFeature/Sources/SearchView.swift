@@ -8,18 +8,22 @@ import LocationManagerClient
 import MapKit
 import Models
 import PlaceStore
+import ReviewListFeature
 import Router
 import SwiftUI
+
+struct DistanceCursor: Hashable {
+  let cursor: Int
+  let distanceCursor: Double?
+}
 
 public struct SearchView: View {
   @State var presentedSocialSignInScreen: Bool = false
   @State var presentedUserProfileScreen: Bool = false
 
-  @State private var isFocused: Bool = false
   @FocusState private var focusedField: Field?
   @Binding var detent: PresentationDetent
 
-  @State var items: [Item] = []
   @State var searchText: String = ""
   @State var filter: PlaceFilter = .identity
 
@@ -27,16 +31,15 @@ public struct SearchView: View {
 
   enum Field { case search }
 
-  private let onFocusSearch: () -> ()
-  private let onTapItemById: (Int) -> ()
+  let onFocusSearch: () -> ()
+  let onTapItemById: (Int) -> ()
+	let pageSize = 20
 
+  @State var listStore: InfiniteListStore<Item, DistanceCursor, CursorPlaceResponse>?
+  @State var storeId: UUID = UUID()
   @State var observeFilterTask: Task<(), Error>?
-  @State var observePlaceTask: Task<(), Error>?
   @State var observeLocalUserTask: Task<(), Error>?
-
-  @State var transformTask: Task<(), Error>?
   @State var searchTask: Task<(), Error>?
-  @State var locTask: Task<(), Error>?
 
   @State var profileURL: URL? = nil
   @State var fetchLocalToken: Task<(), Error>?
@@ -61,41 +64,20 @@ public struct SearchView: View {
 
   public var body: some View {
     @Bindable var placeStore = self.placeStore
-    ScrollView(.vertical) {
-      VStack {
-        SearchFilterView()
-        if [
-          BottomSheetDetents.expanded,
-          BottomSheetDetents.medium
-        ].contains(self.detent) {
-          ForEach(self.items) { item in
-            ItemView(item: item) { id in self.onTapItemById(id) }
-          }
-        }
-      }
-    }
-    .animation(.snappy(duration: 0.25), value: self.items)
-    .onDisappear(
-      perform: {
-        self.observePlaceTask?.cancel()
-        self.observeFilterTask?.cancel()
-        self.transformTask?.cancel()
-      }
-    )
-    .safeAreaInset(edge: .top, spacing: 0) {
+    VStack(spacing: 0) {
       HStack(spacing: 10) {
         TextField(
           String(localized: "Search…", bundle: .module),
           text: self.$searchText,
         )
-        .padding(.horizontal, 20)
+        .padding(.horizontal, 12)
         .padding(.vertical, 12)
         .background(.gray.opacity(0.25), in: .capsule)
         .focused(self.$focusedField, equals: .search)
         .submitLabel(.search)
-        .onSubmit { self.observeLocalData() }
+        .onSubmit { self.triggerSearch() }
         .onChange(of: self.searchText) { _, _ in
-          self.observeLocalData()
+          self.debouncedSearch()
         }
         if self.focusedField == .search {
           Button {
@@ -118,9 +100,38 @@ public struct SearchView: View {
           }
         }
       }
-      .padding(.horizontal, 18)
-      .frame(height: 80)
-      .padding(.top, 5)
+      .padding(.horizontal, 14)
+			.padding(
+				.top,
+				self.detent == BottomSheetDetents.collapsed
+				? 47
+				: 12
+			)
+			
+      SearchFilterView()
+			
+      if [
+        BottomSheetDetents.expanded,
+        BottomSheetDetents.medium,
+      ].contains(self.detent),
+        let listStore
+      {
+        InfiniteListView(
+          store: listStore,
+          shimmerContent: {
+						HStack {
+							Spacer()
+							ProgressView()
+								.padding(.top, 24)
+							Spacer()
+						}
+          },
+          itemContent: { item in
+            ItemView(item: item) { id in self.onTapItemById(id) }
+          }
+        )
+        .id(self.storeId)
+      }
     }
     .onChange(of: self.focusedField) { _, newField in
       if newField == .search {
@@ -138,16 +149,15 @@ public struct SearchView: View {
       }
     )
     .task {
-      self.observeLocalData()
+      self.buildAndInitializeStore()
+      self.observeFilterChanges()
       self.observeUserProfile()
     }
     .onDisappear {
+      self.listStore?.handleOnDisappear()
       self.fetchLocalToken?.cancel()
       self.observeFilterTask?.cancel()
-      self.observePlaceTask?.cancel()
-      self.transformTask?.cancel()
       self.searchTask?.cancel()
-      self.locTask?.cancel()
       self.observeLocalUserTask?.cancel()
     }
     .sheet(

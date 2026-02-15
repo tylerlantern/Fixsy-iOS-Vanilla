@@ -30,6 +30,7 @@ public class InfiniteListStore<
   }
 
   public var items: [Item] = []
+  public let isRemoteOnly: Bool
 
   public var observeTask: Task<(), Error>?
   public var fetchTask: Task<(), Error>?
@@ -48,6 +49,21 @@ public class InfiniteListStore<
     self.parseResponse = parseResponse
     self.syncItems = syncItems
     self.clearItems = clearItems
+    self.isRemoteOnly = false
+  }
+
+  public init(
+    state: State = .shimmer,
+    fetchClosure: @escaping @Sendable (Cursor?) async throws -> NetworkResponse,
+    parseResponse: @escaping @Sendable (NetworkResponse) -> ([Item], _nextCursor: Cursor?)
+  ) {
+    self.state = state
+    self.fetchClosure = fetchClosure
+    self.observeAsyncStream = { AsyncThrowingStream { _ in } }
+    self.parseResponse = parseResponse
+    self.syncItems = { _, _ in }
+    self.clearItems = { }
+    self.isRemoteOnly = true
   }
 
   public func refresh() {
@@ -69,10 +85,18 @@ public class InfiniteListStore<
         let response = try await self.fetchClosure(self.currentCursor)
         self.isFetching = false
         let (parsedItems, nextCursor) = self.parseResponse(response)
-        if self.currentCursor == nil {
-          try await self.clearItems()
+        if self.isRemoteOnly {
+          if self.currentCursor == nil {
+            self.items = parsedItems
+          } else {
+            self.items.append(contentsOf: parsedItems)
+          }
+        } else {
+          if self.currentCursor == nil {
+            try await self.clearItems()
+          }
+          try await self.syncItems(parsedItems, self.currentCursor)
         }
-        try await self.syncItems(parsedItems, self.currentCursor)
         if parsedItems.isEmpty, nextCursor == nil {
           self.state = .emptyList
           return
@@ -103,7 +127,9 @@ public class InfiniteListStore<
   }
 
   public func initialize() {
-    self.observe()
+    if !self.isRemoteOnly {
+      self.observe()
+    }
     self.fetch()
   }
 

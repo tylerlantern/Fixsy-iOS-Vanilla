@@ -17,6 +17,24 @@ extension APIRoute {
           version: "1.1",
           method: .get
         )
+    case let .mapDataList(keyword, services, lat, lng, cursor, distanceCursor, limit):
+      return url
+        .appendingPathComponent("mapdata")
+        .appendingPathComponent("list")
+        .makeAnonymousURLRequest(
+          version: "1.0",
+          method: .post(
+            ListPlacesRequest(
+              keyword: keyword,
+              services: services,
+              lat: lat,
+              lng: lng,
+              cursor: cursor,
+              distanceCursor: distanceCursor,
+              limit: limit
+            )
+          )
+        )
     case let .socialSignIn(
       token: token,
       provider: provider
