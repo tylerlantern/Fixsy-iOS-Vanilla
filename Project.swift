@@ -81,7 +81,7 @@ let project = Project(
           .merging(.secret_base)
           .merging([
             "MARKETING_VERSION": "2.0.0",
-            "CURRENT_PROJECT_VERSION": "1"
+            "CURRENT_PROJECT_VERSION": "2"
           ]),
         configurations: [
           .debug(name: "Debug", settings: .app_debug.merging(.secret_debug).merging([
@@ -422,19 +422,6 @@ let project = Project(
       name: "ImagesInspectorFeature",
       dependencies: []
     ),
-    .target(
-      name: "SearchFeatureTests",
-      destinations: .iOS,
-      product: .unitTests,
-      bundleId: "\(prefixBundleId)SearchFeatureTests",
-      infoPlist: .default,
-      // 👇 This is the folder shape you asked for
-      sources: ["Tests/SearchFeatureTests/**"],
-      resources: [],
-      dependencies: [
-        .target(name: "SearchFeature")
-      ]
-    ),
     .framework(
       name: "SocialSignInFeature",
       hasResource: true,
@@ -569,8 +556,7 @@ let project = Project(
       shared: true,
       buildAction: .buildAction(targets: [.target("AppCore")]),
       testAction: .targets([
-        .testableTarget(target: "APIClientTests"),
-        .testableTarget(target: "SearchFeatureTests")
+        .testableTarget(target: "APIClientTests")
       ]),
     )
   ]

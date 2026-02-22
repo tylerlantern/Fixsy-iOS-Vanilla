@@ -49,7 +49,6 @@ public struct BottomSheetModifier<SheetContent: View>: ViewModifier {
         .onGeometryChange(for: CGFloat.self) {
           max(min($0.size.height, 350), 0)
         } action: { oldValue, newValue in
-					print("NEW SHEET HEIGHT",newValue)
           self.sheetHeight = newValue
           let progress = max(min((newValue - 300) / 50, 1), 0)
           self.toolbarOpacity = 1 - progress
