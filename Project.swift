@@ -80,8 +80,8 @@ let project = Project(
         base: .app_base
           .merging(.secret_base)
           .merging([
-            "MARKETING_VERSION": "2.0.0",
-            "CURRENT_PROJECT_VERSION": "2"
+            "MARKETING_VERSION": "2.0.1",
+            "CURRENT_PROJECT_VERSION": "1"
           ]),
         configurations: [
           .debug(name: "Debug", settings: .app_debug.merging(.secret_debug).merging([
